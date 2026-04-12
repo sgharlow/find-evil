@@ -95,7 +95,7 @@ async def parse_evtx(
         "time_after": time_after,
         "time_before": time_before,
         "source": source,
-    })
+    }, evidence_paths=[evtx_path])
     if isinstance(tc, dict):
         return tc
 

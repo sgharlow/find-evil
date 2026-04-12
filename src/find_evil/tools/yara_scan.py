@@ -161,7 +161,7 @@ async def yara_scan(
         "target_path": target_path,
         "rules_path": rules_path,
         "severity_filter": severity_filter,
-    })
+    }, evidence_paths=[target_path])
     if isinstance(tc, dict):
         return tc
 

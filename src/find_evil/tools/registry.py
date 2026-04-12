@@ -174,7 +174,7 @@ async def registry_query(
         "hive_path": hive_path,
         "query_type": query_type,
         "key_filter": key_filter,
-    })
+    }, evidence_paths=[hive_path])
     if isinstance(tc, dict):
         return tc
 

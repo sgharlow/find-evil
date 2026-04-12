@@ -70,6 +70,7 @@ class AuditLogger:
         output_hash: str = "",
         result_count: int = 0,
         summary: str = "",
+        elapsed_ms: float = 0.0,
     ) -> None:
         """Log successful completion of a tool invocation."""
         self._write({
@@ -77,6 +78,7 @@ class AuditLogger:
             "invocation_id": invocation_id,
             "output_hash": output_hash,
             "result_count": result_count,
+            "elapsed_ms": elapsed_ms,
             "summary": summary,
         })
 

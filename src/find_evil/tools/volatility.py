@@ -164,7 +164,7 @@ async def vol_pslist(memory_image: str, ctx: Context) -> dict:
     Args:
         memory_image: Path to memory dump file (must be a sealed evidence file).
     """
-    tc = enforce(ctx, "vol_pslist", {"memory_image": memory_image})
+    tc = enforce(ctx, "vol_pslist", {"memory_image": memory_image}, evidence_paths=[memory_image])
     if isinstance(tc, dict):
         return tc  # integrity violation
 
@@ -214,7 +214,7 @@ async def vol_netscan(memory_image: str, ctx: Context) -> dict:
     Args:
         memory_image: Path to memory dump file (must be a sealed evidence file).
     """
-    tc = enforce(ctx, "vol_netscan", {"memory_image": memory_image})
+    tc = enforce(ctx, "vol_netscan", {"memory_image": memory_image}, evidence_paths=[memory_image])
     if isinstance(tc, dict):
         return tc
 
@@ -262,7 +262,7 @@ async def vol_malfind(memory_image: str, ctx: Context, pid: int | None = None) -
         memory_image: Path to memory dump file (must be a sealed evidence file).
         pid: Optional PID to limit scan to a specific process.
     """
-    tc = enforce(ctx, "vol_malfind", {"memory_image": memory_image, "pid": pid})
+    tc = enforce(ctx, "vol_malfind", {"memory_image": memory_image, "pid": pid}, evidence_paths=[memory_image])
     if isinstance(tc, dict):
         return tc
 
@@ -308,7 +308,7 @@ async def vol_cmdline(memory_image: str, ctx: Context, pid: int | None = None) -
         memory_image: Path to memory dump file (must be a sealed evidence file).
         pid: Optional PID to get command line for a specific process.
     """
-    tc = enforce(ctx, "vol_cmdline", {"memory_image": memory_image, "pid": pid})
+    tc = enforce(ctx, "vol_cmdline", {"memory_image": memory_image, "pid": pid}, evidence_paths=[memory_image])
     if isinstance(tc, dict):
         return tc
 

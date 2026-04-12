@@ -108,7 +108,7 @@ async def build_timeline(
         "time_after": time_after,
         "time_before": time_before,
         "source_filter": source_filter,
-    })
+    }, evidence_paths=[evidence_path])
     if isinstance(tc, dict):
         return tc
 

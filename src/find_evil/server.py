@@ -250,6 +250,147 @@ import find_evil.tools.yara_scan  # noqa: E402, F401 — registers yara_scan
 import find_evil.tools.findings  # noqa: E402, F401 — registers submit_finding, generate_report
 
 
+# ---------------------------------------------------------------------------
+# MCP Resources — expose read-only data through the MCP protocol.
+# This goes beyond Tools to show full MCP mastery.
+# ---------------------------------------------------------------------------
+
+@mcp.resource("evidence://session")
+def get_session_resource() -> str:
+    """Current evidence session metadata — session ID, sealed files, integrity status.
+
+    Read this resource to check what evidence is currently sealed
+    and whether the session is active.
+    """
+    import json
+    # Access session via the module-level lifespan (available after startup)
+    # This is a best-effort resource — returns empty if no session yet
+    try:
+        session = mcp._lifespan_context["session"]  # type: ignore[attr-defined]
+    except (AttributeError, KeyError, TypeError):
+        return json.dumps({"status": "no_session", "message": "Server not yet initialized"})
+
+    if not session.session_id:
+        return json.dumps({"status": "no_session"})
+
+    return json.dumps({
+        "session_id": session.session_id,
+        "evidence_dir": session.evidence_dir,
+        "file_count": session.file_count,
+        "is_active": session.is_active,
+        "sealed_at": session.sealed_at.isoformat() if session.sealed_at else None,
+        "manifest": session.get_manifest(),
+    }, indent=2)
+
+
+@mcp.resource("evidence://audit-trail")
+def get_audit_trail_resource() -> str:
+    """Complete JSONL audit trail of all tool invocations and findings.
+
+    Every tool call, finding, self-correction, and integrity check is
+    recorded here with UUID provenance. Read this to trace any finding
+    back to its source tool call.
+    """
+    audit_path = os.environ.get("AUDIT_LOG_PATH", "audit_trail.jsonl")
+    try:
+        with open(audit_path) as f:
+            return f.read()
+    except FileNotFoundError:
+        return "[]  # No audit trail yet — run session_init and analysis tools first"
+
+
+@mcp.resource("evidence://tool-registry")
+def get_tool_registry_resource() -> str:
+    """List of all registered MCP tools and their descriptions.
+
+    Shows exactly which functions are available (read-only forensic tools)
+    and which are NOT available (destructive operations that don't exist).
+    """
+    import json
+    tools = mcp._tool_manager.list_tools()
+    registered = [
+        {"name": t.name, "description": t.description.split("\n")[0]}
+        for t in tools
+    ]
+    not_available = [
+        "execute_shell_cmd", "write_file", "rm", "dd", "mkfs",
+        "modify_evidence", "delete_file", "bash", "shell",
+    ]
+    return json.dumps({
+        "registered_tools": registered,
+        "not_available": not_available,
+        "total_registered": len(registered),
+        "total_blocked": len(not_available),
+        "security_model": "allowlist — destructive functions were never implemented",
+    }, indent=2)
+
+
+# ---------------------------------------------------------------------------
+# MCP Prompts — pre-built investigation templates.
+# ---------------------------------------------------------------------------
+
+@mcp.prompt()
+def triage(evidence_dir: str = "./evidence") -> str:
+    """Quick triage of a new evidence set — memory + network only.
+
+    Runs Phase 1 (TRIAGE) from the investigation protocol:
+    vol_pslist and vol_netscan to identify suspicious processes
+    and network connections. Use this for rapid initial assessment.
+    """
+    return (
+        f"I need you to triage the evidence in {evidence_dir}. "
+        f"Start by calling session_init to seal the evidence. "
+        f"Then run vol_pslist and vol_netscan on the memory image. "
+        f"Report any suspicious processes (unusual parent-child chains) "
+        f"and network connections (external IPs, non-standard ports). "
+        f"Do NOT proceed to deeper analysis — just triage."
+    )
+
+
+@mcp.prompt()
+def full_investigation(evidence_dir: str = "./evidence") -> str:
+    """Complete 7-phase DFIR investigation following the CLAUDE.md protocol.
+
+    Executes all phases: SEAL, TRIAGE, DEEP MEMORY, LOGS, PERSISTENCE,
+    TIMELINE, IOC SCAN, SYNTHESIS. Produces a full incident response
+    report with confidence-scored findings and provenance chain.
+    """
+    return (
+        f"Conduct a full DFIR investigation of the evidence in {evidence_dir}. "
+        f"Follow the investigation protocol in CLAUDE.md exactly:\n"
+        f"1. session_init to seal evidence\n"
+        f"2. vol_pslist + vol_netscan (triage)\n"
+        f"3. vol_malfind + vol_cmdline on suspicious PIDs (deep memory)\n"
+        f"4. parse_evtx on Security.evtx and System.evtx (logs)\n"
+        f"5. registry_query for Run keys and Services (persistence)\n"
+        f"6. build_timeline for temporal correlation (timeline)\n"
+        f"7. yara_scan for IOC patterns (IOC scan)\n"
+        f"8. submit_finding for each discovery through the DRS gate\n"
+        f"9. generate_report with all findings\n\n"
+        f"Score every finding through the DRS confidence gate. "
+        f"Self-correct any finding below 0.75 confidence."
+    )
+
+
+@mcp.prompt()
+def persistence_hunt(evidence_dir: str = "./evidence") -> str:
+    """Focused persistence mechanism hunt — registry + services + scheduled tasks.
+
+    Targets Phase 4 (PERSISTENCE) artifacts: Run keys, RunOnce, Services,
+    UserAssist execution history. Use after triage identifies compromise.
+    """
+    return (
+        f"Hunt for persistence mechanisms in the evidence at {evidence_dir}. "
+        f"Focus on:\n"
+        f"- registry_query with query_type='run_keys' — auto-start entries\n"
+        f"- registry_query with query_type='services' — installed services\n"
+        f"- registry_query with query_type='userassist' — execution history\n"
+        f"Flag any entries pointing to Temp directories, AppData, or "
+        f"user-writable paths. Cross-reference with parse_evtx Event ID 7045 "
+        f"(service install) for corroboration."
+    )
+
+
 def main() -> None:
     """Entry point for the find-evil MCP server."""
     mcp.run()
