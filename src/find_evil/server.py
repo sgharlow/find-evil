@@ -231,8 +231,9 @@ async def reseal_evidence(ctx: Context) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Forensic analysis tools will be registered here via imports.
-# Each tool module calls @mcp.tool() to register its functions.
+# Forensic analysis tools — imported AFTER mcp is defined to avoid circular
+# imports. Each module does `from find_evil.server import mcp` and registers
+# tools via @mcp.tool(). The import triggers registration.
 #
 # NOT AVAILABLE (by design — these functions do not exist):
 #   - execute_shell_cmd()
@@ -240,6 +241,10 @@ async def reseal_evidence(ctx: Context) -> dict:
 #   - modify_evidence()
 #   - Any function that writes to disk
 # ---------------------------------------------------------------------------
+
+import find_evil.tools.volatility  # noqa: E402, F401 — registers vol_pslist, vol_netscan, vol_malfind, vol_cmdline
+import find_evil.tools.evtx  # noqa: E402, F401 — registers parse_evtx
+import find_evil.tools.findings  # noqa: E402, F401 — registers submit_finding, generate_report
 
 
 def main() -> None:
