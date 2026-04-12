@@ -18,49 +18,164 @@ impossible by design, not by instruction.
 - A background daemon re-verifies hashes every 30 seconds AND before every tool call
 - Any modification halts the session and voids all findings
 - Full UUID-linked audit trail traces every finding back to its source tool call
+- DRS confidence gate forces self-correction on low-confidence findings
 
 ## Architecture
 
 ```
-Claude Code Agent          Evidence Integrity MCP Server
- (autonomous DFIR)    ──►   (Python, FastMCP, stdio)
-                              │
-                              ├─ Evidence Session Manager
-                              │   SHA-256 seal ─► verify ─► halt on mismatch
-                              │
-                              ├─ Hash Daemon (30s background thread)
-                              │
-                              ├─ Typed Tool Registry (read-only only)
-                              │   vol_pslist │ vol_netscan │ vol_malfind
-                              │   parse_evtx │ registry_query │ yara_scan
-                              │   build_timeline │ vol_cmdline │ ...
-                              │
-                              │   NOT AVAILABLE:
-                              │   ✗ execute_shell_cmd  ✗ write_file
-                              │   ✗ rm / dd / mkfs     ✗ modify_evidence
-                              │
-                              ├─ Audit Logger (JSONL + UUID provenance)
-                              │
-                              └─ DRS Confidence Gate (self-correction < 0.75)
-                                    │
-                              SIFT Workstation Tool Layer
-                              Volatility3 │ Plaso │ RegRipper
-                              python-evtx │ YARA │ Sleuth Kit
++------------------------------------------------------------------+
+|                    SIFT Workstation (Ubuntu)                      |
+|                                                                  |
+|  +------------------+    +------------------------------------+  |
+|  | Claude Code      |    | Evidence Integrity MCP Server      |  |
+|  | Agent            |--->| (Python 3.11+ / FastMCP / stdio)   |  |
+|  |                  |<---|                                    |  |
+|  | - Follows        |    |  [1] Evidence Session Manager      |  |
+|  |   CLAUDE.md      |    |      SHA-256 seal at session start |  |
+|  | - 7-phase        |    |      verify_all() on every call    |  |
+|  |   investigation  |    |      halt + void on mismatch       |  |
+|  | - DRS gate       |    |                                    |  |
+|  |   self-correct   |    |  [2] Hash Daemon (30s thread)      |  |
+|  | - Max-iter cap   |    |      Background re-verification    |  |
+|  +------------------+    |      Stops on first violation      |  |
+|                          |                                    |  |
+|                          |  [3] enforce() Gate                |  |
+|                          |      EVERY tool call goes through: |  |
+|                          |      verify -> log -> execute ->   |  |
+|                          |      hash output -> log complete   |  |
+|                          |                                    |  |
+|                          |  [4] Typed Tool Registry           |  |
+|                          |      14 read-only functions:       |  |
+|                          |                                    |  |
+|                          |    SESSION   vol_pslist             |  |
+|                          |    session_init   vol_netscan       |  |
+|                          |    verify_integrity  vol_malfind    |  |
+|                          |    list_sealed    vol_cmdline       |  |
+|                          |    reseal_evidence  parse_evtx     |  |
+|                          |                  registry_query    |  |
+|                          |    ANALYSIS      build_timeline    |  |
+|                          |    submit_finding  yara_scan       |  |
+|                          |    generate_report                 |  |
+|                          |                                    |  |
+|                          |    NOT AVAILABLE:                  |  |
+|                          |    X execute_shell_cmd             |  |
+|                          |    X write_file / rm / dd          |  |
+|                          |    X modify_evidence               |  |
+|                          |                                    |  |
+|                          |  [5] Audit Logger (JSONL)          |  |
+|                          |      UUID per invocation           |  |
+|                          |      Finding -> invocation chain   |  |
+|                          |                                    |  |
+|                          |  [6] DRS Confidence Gate           |  |
+|                          |      confidence = evidence*0.6     |  |
+|                          |                  + corroboration*0.4|  |
+|                          |      < 0.75: SELF-CORRECT          |  |
+|                          |      >= 0.75: ACCEPT               |  |
+|                          |                                    |  |
+|                          |  [7] Findings DB (SQLite)          |  |
+|                          |      Provenance chain              |  |
+|                          |      Self-correction log           |  |
+|                          +------------------------------------+  |
+|                                        |                         |
+|                          +-------------v----------------------+  |
+|                          | SIFT Tool Layer                    |  |
+|                          | Volatility3 | Plaso | RegRipper    |  |
+|                          | python-evtx | YARA  | Sleuth Kit   |  |
+|                          +------------------------------------+  |
++------------------------------------------------------------------+
+```
+
+**Data flow for every tool call:**
+
+```
+Agent calls tool
+  -> enforce() verifies evidence integrity (SHA-256)
+    -> audit logger records invocation start (UUID)
+      -> SIFT tool executes (read-only)
+        -> parser structures output (JSON)
+          -> audit logger records completion (output hash)
+            -> provenance metadata attached to result
+              -> result returned to agent
 ```
 
 ## Quick Start
 
 ```bash
 # Install
-pip install -e .
+git clone https://github.com/sgharlow/find-evil.git
+cd find-evil
+pip install -e ".[dev]"
 
-# Connect to Claude Code
-claude mcp add find-evil -- python -m find_evil.server
+# Run tests (134 passing)
+pytest tests/ -v
 
-# Or run with auto-sealed evidence
-EVIDENCE_DIR=/path/to/case-data claude mcp add find-evil -- python -m find_evil.server
+# Run the tamper detection demo
+python demo/tamper_demo.py
+
+# Run a full simulated investigation
+python demo/run_investigation.py
+
+# Inspect outputs
+cat output/audit_trail.jsonl   # JSONL audit trail with UUID provenance
+cat output/ir_report.md        # Generated incident response report
 ```
 
-## Status
+### Connect to Claude Code
 
-Under active development. See `PLAN.md` for implementation roadmap.
+```bash
+claude mcp add find-evil -- python -m find_evil.server
+```
+
+### Docker
+
+```bash
+docker-compose build
+docker-compose run mcp-server pytest tests/ -v
+docker-compose run mcp-server python demo/run_investigation.py
+```
+
+## Judging Criteria Map
+
+| Criterion | Weight | How This Submission Wins |
+|-----------|--------|------------------------|
+| **Constraint Implementation** | High | Destructive functions don't exist. Zero attack surface. Not a blocklist. |
+| **Audit Trail Quality** | High | UUID provenance chain: finding -> tool call -> verified evidence |
+| **IR Accuracy** | High | Structured JSON from typed tools, not raw text dumps to LLM |
+| **Autonomous Execution** | Tiebreaker | DRS gate forces self-correction below 0.75 confidence |
+| **Breadth/Depth** | Medium | 14 tools across memory, disk, logs, registry, network, IOCs |
+| **Usability** | Medium | `pip install -e .` + one command. Docker for reproducibility. |
+
+## Test Suite
+
+134 tests passing, organized by component:
+
+| Category | Tests | What They Verify |
+|----------|-------|-----------------|
+| Session integrity | 14 | SHA-256 sealing, tamper detection, halt, reseal |
+| Hash daemon | 7 | Background verification, on-demand checks, idempotency |
+| DRS confidence gate | 13 | Scoring formula, threshold, self-correction guidance |
+| Audit logger | 10 | JSONL format, UUID provenance, finding chain |
+| Volatility tools | 17 | Process, connection, cmdline anomaly detection |
+| EVTX tools | 9 | Event log parsing, suspicious event flagging |
+| Registry tools | 12 | Persistence detection, query filtering |
+| Timeline tools | 7 | Chronological ordering, source coverage, attack window |
+| YARA tools | 11 | Rule matching, severity, MITRE mapping |
+| Integration | 12 | enforce() gate, tool pipeline, audit trail completeness |
+| Scenario | 21 | Full 7-phase attack narrative, cross-tool correlation |
+
+## Submission Deliverables
+
+| # | Deliverable | Location |
+|---|------------|----------|
+| 1 | Code Repository | This repo (MIT license) |
+| 2 | Demo Video | `demo/run_investigation.py` (script), video TBD |
+| 3 | Architecture Diagram | This README (above) |
+| 4 | Project Description | This README + Devpost |
+| 5 | Dataset Documentation | `docs/dataset_documentation.md` |
+| 6 | Accuracy Report | `docs/accuracy_report.md` |
+| 7 | Try-It-Out Instructions | `docs/try_it_out.md` |
+| 8 | Agent Execution Logs | `output/audit_trail.jsonl` (generated by demo) |
+
+## License
+
+MIT
