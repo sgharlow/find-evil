@@ -1,8 +1,8 @@
 # Incident Response Report
 
-**Session ID:** 00d5172a-4a9a-4edd-b6bc-cf62adbb5ad3
-**Evidence Directory:** C:\Users\sghar\AppData\Local\Temp\tmpsyrh0uap
-**Generated:** 2026-04-12T16:56:21.720028+00:00
+**Session ID:** a39bdfda-79a2-480a-979b-cf7d119a34f0
+**Evidence Directory:** C:\Users\sghar\AppData\Local\Temp\tmpt37_utyr
+**Generated:** 2026-04-12T17:20:17.443433+00:00
 **Evidence Integrity:** VERIFIED (5 files sealed)
 **Analysis Mode:** simulated (SIFT tools not installed)
 
@@ -23,28 +23,28 @@ The investigation reveals a network intrusion via brute force (T1110.001), later
 - **Confidence:** 0.91 (evidence: 0.95, corroboration: 0.85)
 - **Artifact type:** network
 - **MITRE ATT&CK:** T1071.001
-- **Provenance:** 2820b982, 340aae60, f0dcdec1
+- **Provenance:** 3cceaecb, a66280b3, c4bfb03a
 
 ### Finding 2: Process injection: MZ header in PAGE_EXECUTE_READWRITE in svchost.exe (PID 4200)
 
 - **Confidence:** 0.75 (evidence: 0.92, corroboration: 0.50)
 - **Artifact type:** memory
 - **MITRE ATT&CK:** T1055.001
-- **Provenance:** 3231f6d7, c2b5d7a2
+- **Provenance:** 05ea6fd1, 90766842
 
 ### Finding 3: LOLBin chain: svchost -> cmd.exe -> powershell (encoded) -> rundll32
 
 - **Confidence:** 0.87 (evidence: 0.88, corroboration: 0.85)
 - **Artifact type:** memory
 - **MITRE ATT&CK:** T1059.003
-- **Provenance:** 8a8ec4a5, c2abf78e, c2b5d7a2
+- **Provenance:** 05ea6fd1, 6281a357, 7ad44e7e
 
 ### Finding 4: Persistence: Service + Run key pointing to Temp\update.dll
 
 - **Confidence:** 0.90 (evidence: 0.93, corroboration: 0.85)
 - **Artifact type:** registry
 - **MITRE ATT&CK:** T1543.003
-- **Provenance:** 340aae60, c2abf78e, d7486eec
+- **Provenance:** 23721bab, 7ad44e7e, a66280b3
 
 ---
 
