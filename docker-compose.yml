@@ -1,0 +1,33 @@
+# Evidence Integrity Enforcer — One-command judge deployment
+#
+# Usage:
+#   # Build and run with sample evidence
+#   docker-compose up --build
+#
+#   # Connect Claude Code to the containerized server
+#   claude mcp add find-evil -- docker-compose exec mcp-server python -m find_evil
+#
+#   # Run tests inside the container
+#   docker-compose run mcp-server pytest tests/ -v
+#
+#   # Run the tamper demo
+#   docker-compose run mcp-server python demo/tamper_demo.py
+
+services:
+  mcp-server:
+    build: .
+    stdin_open: true    # Required for MCP stdio transport
+    tty: true
+    volumes:
+      # Mount evidence directory (read-only for security)
+      - ./evidence:/evidence:ro
+      # Mount output directory for audit trail
+      - ./output:/output
+      # Mount demo scripts
+      - ./demo:/app/demo
+      # Mount tests for running inside container
+      - ./tests:/app/tests
+    environment:
+      - EVIDENCE_DIR=/evidence
+      - AUDIT_LOG_PATH=/output/audit_trail.jsonl
+      - HASH_CHECK_INTERVAL=30

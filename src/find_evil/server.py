@@ -244,6 +244,9 @@ async def reseal_evidence(ctx: Context) -> dict:
 
 import find_evil.tools.volatility  # noqa: E402, F401 — registers vol_pslist, vol_netscan, vol_malfind, vol_cmdline
 import find_evil.tools.evtx  # noqa: E402, F401 — registers parse_evtx
+import find_evil.tools.registry  # noqa: E402, F401 — registers registry_query
+import find_evil.tools.timeline  # noqa: E402, F401 — registers build_timeline
+import find_evil.tools.yara_scan  # noqa: E402, F401 — registers yara_scan
 import find_evil.tools.findings  # noqa: E402, F401 — registers submit_finding, generate_report
 
 
