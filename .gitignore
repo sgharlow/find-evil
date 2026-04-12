@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Test artifacts
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# DB
+*.db
+*.sqlite3
+
+# Docker
+docker-compose.override.yml
+
+# Audit logs (contain case data)
+audit_trail.jsonl
+
+# Case data (evidence files)
+case-data/
+*.E01
+*.img
+*.raw
+*.vmdk
+*.dd
+*.pcap
+*.pcapng
