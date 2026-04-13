@@ -115,15 +115,16 @@ and included in the final IR report, demonstrating the agent's reasoning quality
 
 | Category | Tests | Passing |
 |----------|-------|---------|
-| Session integrity | 14 | 14 |
+| Session integrity | 15 | 15 |
 | Hash daemon | 7 | 7 |
 | DRS confidence gate | 13 | 13 |
 | Audit logger | 10 | 10 |
-| Tool heuristics (Volatility) | 17 | 17 |
+| Tool heuristics (Volatility) | 18 | 18 |
 | Tool heuristics (EVTX) | 9 | 9 |
 | Tool heuristics (Registry) | 12 | 12 |
 | Tool heuristics (Timeline) | 7 | 7 |
 | Tool heuristics (YARA) | 11 | 10 (+1 skipped) |
+| Security bypass | 21 | 20 (+1 skipped) |
 | Integration (enforce gate) | 4 | 4 |
 | Integration (tool pipeline) | 3 | 3 |
 | Integration (audit trail) | 3 | 3 |

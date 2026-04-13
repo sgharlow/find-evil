@@ -151,15 +151,16 @@ docker-compose run mcp-server python demo/run_investigation.py
 
 | Category | Tests | What They Verify |
 |----------|-------|-----------------|
-| Session integrity | 14 | SHA-256 sealing, tamper detection, halt, reseal |
+| Session integrity | 15 | SHA-256 sealing, tamper detection, halt, reseal |
 | Hash daemon | 7 | Background verification, on-demand checks, idempotency |
 | DRS confidence gate | 13 | Scoring formula, threshold, self-correction guidance |
 | Audit logger | 10 | JSONL format, UUID provenance, finding chain |
-| Volatility tools | 17 | Process, connection, cmdline anomaly detection |
+| Volatility tools | 18 | Process, connection, cmdline anomaly detection |
 | EVTX tools | 9 | Event log parsing, suspicious event flagging |
 | Registry tools | 12 | Persistence detection, query filtering |
 | Timeline tools | 7 | Chronological ordering, source coverage, attack window |
 | YARA tools | 11 | Rule matching, severity, MITRE mapping |
+| Security bypass | 21 | Registry boundary, path traversal, state attacks, tamper bypass |
 | Integration | 12 | enforce() gate, tool pipeline, audit trail completeness |
 | Scenario | 21 | Full 7-phase attack narrative, cross-tool correlation |
 
@@ -168,7 +169,7 @@ docker-compose run mcp-server python demo/run_investigation.py
 | # | Deliverable | Location |
 |---|------------|----------|
 | 1 | Code Repository | This repo (MIT license) |
-| 2 | Demo Video | `demo/run_investigation.py` (script), video TBD |
+| 2 | Demo Video | `demo/video_demo.py` (script), `demo/VIDEO_SCRIPT.md` |
 | 3 | Architecture Diagram | This README (above) |
 | 4 | Project Description | This README + Devpost |
 | 5 | Dataset Documentation | `docs/dataset_documentation.md` |
