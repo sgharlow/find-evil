@@ -83,6 +83,124 @@ rule C2_IP_Indicator {
     condition:
         any of them
 }
+
+rule Mimikatz_Credential_Theft {
+    meta:
+        description = "Mimikatz credential dumping tool signatures"
+        severity = "critical"
+        mitre = "T1003.001"
+        author = "find-evil"
+    strings:
+        $s1 = "sekurlsa::logonpasswords" ascii nocase
+        $s2 = "sekurlsa::wdigest" ascii nocase
+        $s3 = "lsadump::sam" ascii nocase
+        $s4 = "lsadump::dcsync" ascii nocase
+        $s5 = "kerberos::golden" ascii nocase
+        $s6 = "privilege::debug" ascii nocase
+        $s7 = "mimikatz" ascii nocase
+        $s8 = "gentilkiwi" ascii nocase
+    condition:
+        2 of them
+}
+
+rule Ransomware_Note_Indicators {
+    meta:
+        description = "Common ransomware ransom note patterns"
+        severity = "critical"
+        mitre = "T1486"
+        author = "find-evil"
+    strings:
+        $r1 = "Your files have been encrypted" ascii nocase
+        $r2 = "bitcoin" ascii nocase
+        $r3 = "decrypt" ascii nocase
+        $r4 = "ransom" ascii nocase
+        $r5 = ".onion" ascii nocase
+        $r6 = "private key" ascii nocase
+        $r7 = "payment" ascii nocase
+        $r8 = "restore your files" ascii nocase
+    condition:
+        3 of them
+}
+
+rule Webshell_PHP_Indicators {
+    meta:
+        description = "PHP webshell patterns used for persistence"
+        severity = "high"
+        mitre = "T1505.003"
+        author = "find-evil"
+    strings:
+        $f1 = "eval(" ascii nocase
+        $f2 = "base64_decode(" ascii nocase
+        $f3 = "system(" ascii nocase
+        $f4 = "exec(" ascii nocase
+        $f5 = "passthru(" ascii nocase
+        $f6 = "shell_exec(" ascii nocase
+        $f7 = "$_REQUEST" ascii
+        $f8 = "$_POST" ascii
+        $f9 = "cmd" ascii
+    condition:
+        ($f7 or $f8) and 2 of ($f1, $f2, $f3, $f4, $f5, $f6) and $f9
+}
+
+rule Lateral_Movement_PsExec {
+    meta:
+        description = "PsExec and remote execution tool artifacts"
+        severity = "high"
+        mitre = "T1570"
+        author = "find-evil"
+    strings:
+        $p1 = "psexec" ascii nocase
+        $p2 = "PSEXESVC" ascii nocase
+        $p3 = "\\\\ADMIN$\\" ascii nocase
+        $p4 = "\\\\C$\\" ascii nocase
+        $p5 = "\\\\IPC$" ascii nocase
+        $wmi1 = "wmic" ascii nocase
+        $wmi2 = "process call create" ascii nocase
+        $wmi3 = "Win32_Process" ascii nocase
+    condition:
+        2 of ($p1, $p2, $p3, $p4, $p5) or ($wmi1 and ($wmi2 or $wmi3))
+}
+
+rule Data_Staging_Archive {
+    meta:
+        description = "Data staging via archive tools before exfiltration"
+        severity = "medium"
+        mitre = "T1560.001"
+        author = "find-evil"
+    strings:
+        $z1 = "7z.exe" ascii nocase
+        $z2 = "rar.exe" ascii nocase
+        $z3 = "Compress-Archive" ascii nocase
+        $z4 = "-p" ascii
+        $flag1 = "-r" ascii
+        $flag2 = "a " ascii
+        $target1 = "\\\\Desktop\\\\" ascii nocase
+        $target2 = "\\\\Documents\\\\" ascii nocase
+        $target3 = "\\\\Downloads\\\\" ascii nocase
+    condition:
+        ($z1 or $z2 or $z3) and ($flag1 or $flag2 or $z4) and any of ($target*)
+}
+
+rule LOLBin_Abuse_Pattern {
+    meta:
+        description = "Living-off-the-land binary abuse for defense evasion"
+        severity = "high"
+        mitre = "T1218"
+        author = "find-evil"
+    strings:
+        $l1 = "mshta" ascii nocase
+        $l2 = "certutil" ascii nocase
+        $l3 = "bitsadmin" ascii nocase
+        $l4 = "regsvr32" ascii nocase
+        $l5 = "msiexec" ascii nocase
+        $d1 = "http://" ascii nocase
+        $d2 = "https://" ascii nocase
+        $d3 = "-urlcache" ascii nocase
+        $d4 = "/transfer" ascii nocase
+        $d5 = "scrobj.dll" ascii nocase
+    condition:
+        any of ($l*) and any of ($d*)
+}
 """
 
 # Simulated YARA matches consistent with the attack scenario
@@ -133,6 +251,56 @@ SIMULATED_MATCHES = [
         "offset": 15728640,
         "matched_strings": [
             {"identifier": "$ip1", "offset": 15728640, "data": "185.220.101.34"},
+        ],
+    },
+    {
+        "rule": "Mimikatz_Credential_Theft",
+        "severity": "critical",
+        "mitre": "T1003.001",
+        "description": "Mimikatz credential dumping tool signatures",
+        "file": "memory.raw",
+        "offset": 50331648,
+        "matched_strings": [
+            {"identifier": "$s1", "offset": 50331648, "data": "sekurlsa::logonpasswords"},
+            {"identifier": "$s6", "offset": 50331580, "data": "privilege::debug"},
+        ],
+    },
+    {
+        "rule": "Lateral_Movement_PsExec",
+        "severity": "high",
+        "mitre": "T1570",
+        "description": "PsExec and remote execution tool artifacts",
+        "file": "memory.raw",
+        "offset": 58720256,
+        "matched_strings": [
+            {"identifier": "$p2", "offset": 58720256, "data": "PSEXESVC"},
+            {"identifier": "$p3", "offset": 58720300, "data": "\\\\ADMIN$\\"},
+        ],
+    },
+    {
+        "rule": "Data_Staging_Archive",
+        "severity": "medium",
+        "mitre": "T1560.001",
+        "description": "Data staging via archive tools before exfiltration",
+        "file": "memory.raw",
+        "offset": 62914560,
+        "matched_strings": [
+            {"identifier": "$z1", "offset": 62914560, "data": "7z.exe"},
+            {"identifier": "$flag1", "offset": 62914572, "data": "-r"},
+            {"identifier": "$target2", "offset": 62914580, "data": "\\Documents\\"},
+        ],
+    },
+    {
+        "rule": "LOLBin_Abuse_Pattern",
+        "severity": "high",
+        "mitre": "T1218",
+        "description": "Living-off-the-land binary abuse for defense evasion",
+        "file": "memory.raw",
+        "offset": 67108864,
+        "matched_strings": [
+            {"identifier": "$l2", "offset": 67108864, "data": "certutil"},
+            {"identifier": "$d3", "offset": 67108880, "data": "-urlcache"},
+            {"identifier": "$d2", "offset": 67108900, "data": "https://185.220.101.34:8444/payload"},
         ],
     },
 ]

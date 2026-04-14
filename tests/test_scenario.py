@@ -174,6 +174,25 @@ class TestAttackNarrative:
         assert "Cobalt_Strike_Shellcode_Pattern" in rules_matched
         assert "C2_IP_Indicator" in rules_matched
 
+    def test_phase6_yara_detects_post_exploitation(self):
+        """YARA should detect post-exploitation activity: credential theft, lateral movement."""
+        rules_matched = {m["rule"] for m in SIMULATED_MATCHES}
+        assert "Mimikatz_Credential_Theft" in rules_matched
+        assert "Lateral_Movement_PsExec" in rules_matched
+
+    def test_phase6_yara_detects_exfiltration_staging(self):
+        """YARA should detect data staging and LOLBin abuse for exfiltration."""
+        rules_matched = {m["rule"] for m in SIMULATED_MATCHES}
+        assert "Data_Staging_Archive" in rules_matched
+        assert "LOLBin_Abuse_Pattern" in rules_matched
+
+    def test_phase6_yara_c2_ip_appears_in_lolbin_download(self):
+        """LOLBin download URL should reference the same C2 infrastructure."""
+        lolbin = [m for m in SIMULATED_MATCHES if m["rule"] == "LOLBin_Abuse_Pattern"]
+        assert len(lolbin) >= 1
+        all_data = " ".join(s["data"] for s in lolbin[0]["matched_strings"])
+        assert "185.220.101.34" in all_data
+
     # --- Phase 7: SYNTHESIS (DRS Gate) ---
 
     def test_phase7_c2_finding_scores_high_confidence(self):
