@@ -177,11 +177,18 @@ def _is_suspicious_event(event: dict) -> bool:
 
 
 def _parse_real_evtx(evtx_path: str) -> list[dict]:
-    """Parse a real .evtx file using python-evtx library."""
+    """Parse a real .evtx file using python-evtx library.
+
+    Handles malformed records gracefully — python-evtx can throw KeyError,
+    UnicodeDecodeError, and other exceptions on certain record types
+    (e.g., binary XML substitution type 132). These are skipped with a
+    warning rather than aborting the entire parse.
+    """
     import Evtx.Evtx as evtx
     import xml.etree.ElementTree as ET
 
     events = []
+    parse_errors = 0
     with evtx.Evtx(evtx_path) as log:
         for record in log.records():
             try:
@@ -195,11 +202,15 @@ def _parse_real_evtx(evtx_path: str) -> list[dict]:
                 event_id_elem = system.find("ns:EventID", ns)
                 time_elem = system.find("ns:TimeCreated", ns)
                 computer_elem = system.find("ns:Computer", ns)
+                provider_elem = system.find("ns:Provider", ns)
+                channel_elem = system.find("ns:Channel", ns)
 
                 event = {
                     "EventID": int(event_id_elem.text) if event_id_elem is not None and event_id_elem.text else 0,
                     "TimeCreated": time_elem.get("SystemTime", "") if time_elem is not None else "",
                     "Computer": computer_elem.text if computer_elem is not None else "",
+                    "Source": provider_elem.get("Name", "") if provider_elem is not None else "",
+                    "Channel": channel_elem.text if channel_elem is not None else "",
                 }
 
                 # Extract EventData fields
@@ -211,7 +222,21 @@ def _parse_real_evtx(evtx_path: str) -> list[dict]:
                             event[name] = data_elem.text
 
                 events.append(event)
-            except ET.ParseError:
+            except (ET.ParseError, KeyError, UnicodeDecodeError, AttributeError):
+                # python-evtx can fail on records with unsupported binary XML
+                # substitution types (e.g., type 132). Skip gracefully.
+                parse_errors += 1
                 continue
+            except Exception:
+                # Catch-all for any other unexpected parsing failures.
+                # Never abort the entire log parse for a single bad record.
+                parse_errors += 1
+                continue
+
+    if parse_errors > 0:
+        logger.warning(
+            "Skipped %d unparseable records in %s (parsed %d successfully)",
+            parse_errors, evtx_path, len(events),
+        )
 
     return events
