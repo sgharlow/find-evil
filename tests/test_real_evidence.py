@@ -394,11 +394,18 @@ class TestForensicToolAvailability:
         assert isinstance(available, bool)
 
     def test_report_registry_availability(self):
-        """Report python-registry availability."""
-        from find_evil.tools.registry import _has_registry_lib
+        """Report python-registry and regipy availability."""
+        from find_evil.tools.registry import _has_registry_lib, _has_python_registry, _has_regipy
         available = _has_registry_lib()
-        status = "INSTALLED" if available else "NOT INSTALLED (simulated mode)"
-        print(f"\n  python-registry: {status}")
+        pr = _has_python_registry()
+        rp = _has_regipy()
+        parts = []
+        if pr:
+            parts.append("python-registry")
+        if rp:
+            parts.append("regipy")
+        status = f"INSTALLED ({', '.join(parts)})" if available else "NOT INSTALLED (simulated mode)"
+        print(f"\n  Registry libs: {status}")
         assert isinstance(available, bool)
 
     def test_report_plaso_availability(self):
@@ -417,4 +424,28 @@ class TestForensicToolAvailability:
             print(f"\n  Real EVTX fixture: {APPLICATION_EVTX.name} ({size_kb:.0f} KB)")
         else:
             print(f"\n  Real EVTX fixture: NOT FOUND (tests will be skipped)")
+        assert isinstance(exists, bool)
+
+    def test_real_registry_fixtures_exist(self):
+        """Report whether real registry hive test fixtures are available."""
+        system_hive = FIXTURES_DIR / "SYSTEM_test.dat"
+        software_hive = FIXTURES_DIR / "SOFTWARE_test.dat"
+        for hive in [system_hive, software_hive]:
+            exists = hive.exists()
+            if exists:
+                size_kb = hive.stat().st_size / 1024
+                print(f"\n  Registry fixture: {hive.name} ({size_kb:.0f} KB)")
+            else:
+                print(f"\n  Registry fixture: {hive.name} NOT FOUND")
+        assert isinstance(exists, bool)
+
+    def test_real_yara_evidence_exists(self):
+        """Report whether YARA evidence test fixture is available."""
+        evidence = FIXTURES_DIR / "evidence_iocs.bin"
+        exists = evidence.exists()
+        if exists:
+            size_kb = evidence.stat().st_size / 1024
+            print(f"\n  YARA evidence fixture: {evidence.name} ({size_kb:.0f} KB)")
+        else:
+            print(f"\n  YARA evidence fixture: NOT FOUND")
         assert isinstance(exists, bool)

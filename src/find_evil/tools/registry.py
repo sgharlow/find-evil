@@ -39,8 +39,30 @@ logger = logging.getLogger("find_evil.tools.registry")
 
 
 def _has_registry_lib() -> bool:
+    """Check for python-registry (preferred) or regipy (fallback)."""
     try:
         import Registry  # noqa: F401
+        return True
+    except ImportError:
+        pass
+    try:
+        from regipy.registry import RegistryHive  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
+def _has_python_registry() -> bool:
+    try:
+        import Registry  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
+def _has_regipy() -> bool:
+    try:
+        from regipy.registry import RegistryHive  # noqa: F401
         return True
     except ImportError:
         return False
@@ -256,7 +278,21 @@ def _is_suspicious_registry(entry: dict) -> bool:
 
 
 def _parse_real_registry(hive_path: str, query_type: str) -> list[dict]:
-    """Parse a real registry hive file using python-registry."""
+    """Parse a real registry hive file.
+
+    Uses python-registry (preferred) or regipy (fallback).
+    Both libraries read binary regf-format hive files.
+    """
+    if _has_python_registry():
+        return _parse_with_python_registry(hive_path, query_type)
+    elif _has_regipy():
+        return _parse_with_regipy(hive_path, query_type)
+    else:
+        raise ImportError("No registry parsing library available")
+
+
+def _parse_with_python_registry(hive_path: str, query_type: str) -> list[dict]:
+    """Parse using python-registry library."""
     from Registry import Registry
 
     reg = Registry.Registry(hive_path)
@@ -300,5 +336,54 @@ def _parse_real_registry(hive_path: str, query_type: str) -> list[dict]:
                 entries.append(entry)
         except Registry.RegistryKeyNotFoundException:
             pass
+
+    return entries
+
+
+def _parse_with_regipy(hive_path: str, query_type: str) -> list[dict]:
+    """Parse using regipy library (fallback when python-registry unavailable)."""
+    from regipy.registry import RegistryHive
+
+    hive = RegistryHive(hive_path)
+    entries = []
+
+    run_key_paths = {
+        "Microsoft\\Windows\\CurrentVersion\\Run",
+        "Microsoft\\Windows\\CurrentVersion\\RunOnce",
+        "Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+    }
+
+    for subkey in hive.recurse_subkeys(as_json=True):
+        path = subkey.path.lstrip("\\").replace("/", "\\")
+
+        # Run keys
+        if query_type in ("run_keys", "all") and path in run_key_paths:
+            for val in (subkey.values or []):
+                entries.append({
+                    "key_path": path,
+                    "value_name": val["name"],
+                    "value_data": str(val["value"]),
+                    "value_type": val.get("value_type", ""),
+                    "last_modified": str(subkey.timestamp) if hasattr(subkey, "timestamp") else "",
+                })
+
+        # Services
+        if query_type in ("services", "all") and "ControlSet001\\Services\\" in path:
+            # Only direct children of Services (not nested subkeys)
+            parts = path.split("\\")
+            if len(parts) == 3 and parts[0] == "ControlSet001" and parts[1] == "Services":
+                entry = {
+                    "key_path": path,
+                    "service_name": parts[2],
+                    "last_modified": str(subkey.timestamp) if hasattr(subkey, "timestamp") else "",
+                }
+                for val in (subkey.values or []):
+                    if val["name"] == "ImagePath":
+                        entry["image_path"] = str(val["value"])
+                    elif val["name"] == "Start":
+                        entry["start_type"] = val["value"]
+                    elif val["name"] == "DisplayName":
+                        entry["display_name"] = str(val["value"])
+                entries.append(entry)
 
     return entries

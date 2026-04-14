@@ -131,8 +131,11 @@ def main():
         (p / "test.raw").write_bytes(b"EVIDENCE_DATA_ABCDEF")
         sess = EvidenceSession()
         sess.initialize(str(p))
+        # Don't start the daemon's background thread — it can race with the
+        # main thread and detect the tamper first, setting is_active=False
+        # before enforce() runs.  enforce() calls daemon.verify_now()
+        # synchronously, so the background thread is not needed for this test.
         daemon = HashDaemon(sess, interval=60)
-        daemon.start()
         audit = AuditLogger(path=str(p / "a.jsonl"))
         ctx = MockCtx({"session": sess, "daemon": daemon, "audit": audit})
 
@@ -146,8 +149,6 @@ def main():
         check("enforce() blocks tool after tamper",
               isinstance(r, dict) and r.get("error") == "EVIDENCE_INTEGRITY_VIOLATION",
               "Returns EVIDENCE_INTEGRITY_VIOLATION dict")
-
-        daemon.stop()
 
     # ==================================================================
     section("2. AUDIT TRAIL QUALITY (High Weight)")
