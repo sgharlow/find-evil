@@ -151,8 +151,8 @@ rule Lateral_Movement_PsExec {
     strings:
         $p1 = "psexec" ascii nocase
         $p2 = "PSEXESVC" ascii nocase
-        $p3 = "\\\\ADMIN$\\" ascii nocase
-        $p4 = "\\\\C$\\" ascii nocase
+        $p3 = "\\\\ADMIN$\\\\" ascii nocase
+        $p4 = "\\\\C$\\\\" ascii nocase
         $p5 = "\\\\IPC$" ascii nocase
         $wmi1 = "wmic" ascii nocase
         $wmi2 = "process call create" ascii nocase
@@ -376,7 +376,11 @@ async def yara_scan(
 
 
 def _run_real_yara(target_path: str, rules_path: str | None) -> list[dict]:
-    """Run YARA scan using yara-python library."""
+    """Run YARA scan using yara-python library.
+
+    Supports both yara-python 4.x (StringMatch/StringMatchInstance objects)
+    and legacy 3.x (offset, identifier, data tuples) APIs.
+    """
     import yara
 
     if rules_path:
@@ -389,12 +393,25 @@ def _run_real_yara(target_path: str, rules_path: str | None) -> list[dict]:
     matches = []
     for match in raw_matches:
         matched_strings = []
-        for offset, identifier, data in match.strings:
-            matched_strings.append({
-                "identifier": identifier,
-                "offset": offset,
-                "data": data.decode("utf-8", errors="replace")[:100],
-            })
+        for string_match in match.strings:
+            # yara-python 4.x: StringMatch objects with .identifier and .instances
+            if hasattr(string_match, "instances"):
+                for instance in string_match.instances:
+                    matched_strings.append({
+                        "identifier": string_match.identifier,
+                        "offset": instance.offset,
+                        "data": instance.matched_data.decode(
+                            "utf-8", errors="replace"
+                        )[:100],
+                    })
+            else:
+                # Legacy 3.x: (offset, identifier, data) tuples
+                offset, identifier, data = string_match
+                matched_strings.append({
+                    "identifier": identifier,
+                    "offset": offset,
+                    "data": data.decode("utf-8", errors="replace")[:100],
+                })
 
         matches.append({
             "rule": match.rule,
