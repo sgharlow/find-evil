@@ -1,0 +1,38 @@
+# Evidence Integrity Enforcer — SIFT Live Mode
+#
+# Runs the MCP server with all forensic tools installed (live mode).
+#
+# Quick start:
+#   docker-compose -f docker-compose.sift.yml up --build
+#
+# Run tests (all 334 should pass, 0 skipped):
+#   docker-compose -f docker-compose.sift.yml run --rm mcp-server pytest tests/ -v --tb=short
+#
+# Run investigation demo:
+#   docker-compose -f docker-compose.sift.yml run --rm mcp-server python demo/run_investigation.py
+#
+# Connect Claude Code:
+#   claude mcp add find-evil -- docker-compose -f docker-compose.sift.yml exec mcp-server python -m find_evil
+
+services:
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.sift
+    stdin_open: true
+    tty: true
+    volumes:
+      # Mount evidence directory (read-only for forensic integrity)
+      - ./evidence:/evidence:ro
+      # Mount output for audit trail + reports
+      - ./output:/output
+      # Mount demo scripts
+      - ./demo:/app/demo
+      # Mount tests for running inside container
+      - ./tests:/app/tests
+      # Mount fixtures (includes real .evtx, .dat registry hives, YARA evidence)
+      - ./tests/fixtures:/app/tests/fixtures
+    environment:
+      - EVIDENCE_DIR=/evidence
+      - AUDIT_LOG_PATH=/output/audit_trail.jsonl
+      - HASH_CHECK_INTERVAL=30
