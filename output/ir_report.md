@@ -1,8 +1,8 @@
 # Incident Response Report
 
-**Session ID:** a39bdfda-79a2-480a-979b-cf7d119a34f0
-**Evidence Directory:** C:\Users\sghar\AppData\Local\Temp\tmpt37_utyr
-**Generated:** 2026-04-12T17:20:17.443433+00:00
+**Session ID:** 9675b350-8365-46c9-a6b0-e88d1f85f7c0
+**Evidence Directory:** C:\Users\sghar\AppData\Local\Temp\tmpc3dvr2oh
+**Generated:** 2026-04-15T03:55:44.381077+00:00
 **Evidence Integrity:** VERIFIED (5 files sealed)
 **Analysis Mode:** simulated (SIFT tools not installed)
 
@@ -10,9 +10,9 @@
 
 ## Executive Summary
 
-Autonomous DFIR analysis identified **4 findings** across 3 artifact types. 4 findings met the 0.75 confidence threshold. 2 finding(s) were flagged for self-correction due to insufficient corroboration.
+Autonomous DFIR analysis identified **6 findings** across 4 artifact types. 6 findings met the 0.75 confidence threshold. 4 finding(s) were flagged for self-correction due to insufficient corroboration.
 
-The investigation reveals a network intrusion via brute force (T1110.001), lateral movement using LOLBin chain (T1059.003), process injection (T1055.001), C2 communication to 185.220.101.34 (T1071.001), and persistence via service and Run key installation (T1543.003).
+The investigation reveals a network intrusion via brute force (T1110.001), privilege escalation using token manipulation (T1134.001) and UAC bypass, lateral movement using LOLBin chain (T1059.003), PsExec (T1570), WMI (T1047), and RDP (T1021.001), process injection (T1055.001), C2 communication to 185.220.101.34 (T1071.001), and persistence via service and Run key installation (T1543.003).
 
 ---
 
@@ -23,34 +23,54 @@ The investigation reveals a network intrusion via brute force (T1110.001), later
 - **Confidence:** 0.91 (evidence: 0.95, corroboration: 0.85)
 - **Artifact type:** network
 - **MITRE ATT&CK:** T1071.001
-- **Provenance:** 3cceaecb, a66280b3, c4bfb03a
+- **Provenance:** 0347eb5a, 049701de, b4286cbb
 
 ### Finding 2: Process injection: MZ header in PAGE_EXECUTE_READWRITE in svchost.exe (PID 4200)
 
 - **Confidence:** 0.75 (evidence: 0.92, corroboration: 0.50)
 - **Artifact type:** memory
 - **MITRE ATT&CK:** T1055.001
-- **Provenance:** 05ea6fd1, 90766842
+- **Provenance:** 6243c6c4, 7a88cec0
 
 ### Finding 3: LOLBin chain: svchost -> cmd.exe -> powershell (encoded) -> rundll32
 
 - **Confidence:** 0.87 (evidence: 0.88, corroboration: 0.85)
 - **Artifact type:** memory
 - **MITRE ATT&CK:** T1059.003
-- **Provenance:** 05ea6fd1, 6281a357, 7ad44e7e
+- **Provenance:** 5969e693, 7a88cec0, 9a55e2ce
 
 ### Finding 4: Persistence: Service + Run key pointing to Temp\update.dll
 
 - **Confidence:** 0.90 (evidence: 0.93, corroboration: 0.85)
 - **Artifact type:** registry
 - **MITRE ATT&CK:** T1543.003
-- **Provenance:** 23721bab, 7ad44e7e, a66280b3
+- **Provenance:** 0cbacc82, 9a55e2ce, b4286cbb
+
+### Finding 5: Lateral movement via PsExec: PSEXESVC installed on FILESERVER1 as LocalSystem
+
+- **Confidence:** 0.91 (evidence: 0.95, corroboration: 0.85)
+- **Artifact type:** log
+- **MITRE ATT&CK:** T1570
+- **Provenance:** 049701de, 9a55e2ce, b4286cbb
+
+### Finding 6: Lateral movement via RDP: admin logon (Type 10) from 192.168.1.105 to DC01
+
+- **Confidence:** 0.75 (evidence: 0.92, corroboration: 0.50)
+- **Artifact type:** log
+- **MITRE ATT&CK:** T1021.001
+- **Provenance:** 9a55e2ce, b4286cbb
 
 ---
 
 ## Self-Correction Log
 
 - **Original:** Brute force: 3 failed logons then success from 192.168.1.200 (confidence: 0.74)
+  **Reason:** Confidence 0.74 below threshold 0.75.
+
+- **Original:** Privilege escalation: SeDebugPrivilege + SeImpersonatePrivilege assigned to admin at logon (confidence: 0.73)
+  **Reason:** Confidence 0.73 below threshold 0.75.
+
+- **Original:** Lateral movement via WMI: WmiPrvSE.exe spawned cmd.exe on FILESERVER1 for domain enumeration (confidence: 0.74)
   **Reason:** Confidence 0.74 below threshold 0.75.
 
 - **Original:** Suspicious svchost.exe (PID 4200) — unusual parent (powershell) (confidence: 0.46)
@@ -68,6 +88,10 @@ The investigation reveals a network intrusion via brute force (T1110.001), later
 | Windows Update Helper | Persistence service | EVTX, registry |
 | WindowsUpdateHelper | Persistence Run key | registry |
 | FC 48 83 E4 F0 | Shellcode pattern | YARA, malfind |
+| PSEXESVC on FILESERVER1 | Lateral movement (PsExec) | EVTX, timeline |
+| WmiPrvSE.exe -> cmd.exe | Lateral movement (WMI) | EVTX, timeline |
+| RDP to DC01 (Type 10) | Lateral movement (RDP) | EVTX, timeline |
+| SeDebugPrivilege | Privilege escalation | EVTX, timeline |
 
 ---
 
