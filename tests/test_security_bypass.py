@@ -116,7 +116,7 @@ class TestToolRegistryBoundary:
             "session_init", "verify_integrity", "list_sealed_evidence", "reseal_evidence",
             "vol_pslist", "vol_netscan", "vol_malfind", "vol_cmdline",
             "parse_evtx", "registry_query", "build_timeline", "yara_scan",
-            "submit_finding", "generate_report",
+            "submit_finding", "generate_report", "export_stix",
         }
         assert tools == expected, f"Unexpected tools: {tools - expected}"
 
