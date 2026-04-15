@@ -297,3 +297,91 @@ class TestCrossToolCorrelation:
 
         overlap = pslist_pids & netscan_c2_pids
         assert overlap, f"rundll32 PID {pslist_pids} should appear in C2 connections {netscan_c2_pids}"
+
+
+class TestEnrichedAttackNarrative:
+    """Verify the enriched evidence tells a complete APT story including
+    lateral movement and privilege escalation phases."""
+
+    def test_privilege_escalation_in_evtx(self):
+        """4672 special privilege events exist in EVTX data."""
+        priv_events = [e for e in SIMULATED_EVENTS if e.get("EventID") == 4672]
+        assert len(priv_events) >= 1, "Privilege escalation events missing from EVTX"
+
+    def test_uac_bypass_in_evtx(self):
+        """eventvwr.exe UAC bypass appears in process creation events."""
+        uac_events = [
+            e for e in SIMULATED_EVENTS
+            if e.get("EventID") == 4688
+            and "eventvwr.exe" in e.get("NewProcessName", "").lower()
+        ]
+        assert len(uac_events) >= 1, "UAC bypass events missing from EVTX"
+
+    def test_psexec_lateral_movement_in_evtx(self):
+        """PsExec service install on remote host appears in EVTX."""
+        psexec_events = [
+            e for e in SIMULATED_EVENTS
+            if e.get("EventID") == 7045
+            and "PSEXESVC" in e.get("ServiceName", "")
+        ]
+        assert len(psexec_events) >= 1, "PsExec lateral movement missing from EVTX"
+
+    def test_wmi_lateral_movement_in_evtx(self):
+        """WMI remote execution appears in process creation events."""
+        wmi_events = [
+            e for e in SIMULATED_EVENTS
+            if e.get("EventID") == 4688
+            and "WmiPrvSE.exe" in e.get("ParentProcessName", "")
+        ]
+        assert len(wmi_events) >= 1, "WMI lateral movement missing from EVTX"
+
+    def test_rdp_lateral_movement_in_evtx(self):
+        """RDP logon (type 10) to DC appears in EVTX."""
+        rdp_events = [
+            e for e in SIMULATED_EVENTS
+            if e.get("EventID") == 4624 and e.get("LogonType") == 10
+        ]
+        assert len(rdp_events) >= 1, "RDP lateral movement missing from EVTX"
+
+    def test_enriched_timeline_has_all_phases(self):
+        """Enriched timeline covers privilege escalation and lateral movement."""
+        descriptions = " ".join(e["description"] for e in SIMULATED_TIMELINE)
+        # Original phases still present
+        assert "Failed logon" in descriptions
+        assert "185.220.101.34" in descriptions
+        # New phases
+        assert "privilege" in descriptions.lower() or "4672" in descriptions
+        assert "PsExec" in descriptions or "PSEXESVC" in descriptions
+        assert "WMI" in descriptions or "WmiPrvSE" in descriptions
+        assert "RDP" in descriptions or "Logon Type 10" in descriptions
+
+    def test_attack_narrative_logical_order(self):
+        """Full attack follows logical sequence:
+        brute force -> logon -> privesc -> payload -> C2 -> lateral movement.
+        """
+        # Extract key timestamps
+        brute_force = min(
+            e["TimeCreated"] for e in SIMULATED_EVENTS if e["EventID"] == 4625
+        )
+        logon = min(
+            e["TimeCreated"] for e in SIMULATED_EVENTS
+            if e["EventID"] == 4624 and e.get("IpAddress") == "192.168.1.200"
+        )
+        privesc = min(
+            e["TimeCreated"] for e in SIMULATED_EVENTS
+            if e["EventID"] == 4672
+        )
+        payload = min(
+            e["TimeCreated"] for e in SIMULATED_EVENTS
+            if e["EventID"] == 4688 and "cmd.exe" in e.get("NewProcessName", "").lower()
+            and e.get("Computer") == "WORKSTATION1"
+        )
+        lateral = min(
+            e["TimeCreated"] for e in SIMULATED_EVENTS
+            if e["EventID"] == 7045 and "PSEXESVC" in e.get("ServiceName", "")
+        )
+
+        assert brute_force < logon, "Brute force before logon"
+        assert logon < privesc, "Logon before privilege escalation"
+        assert privesc < payload, "Privesc before payload delivery"
+        assert payload < lateral, "Payload before lateral movement"

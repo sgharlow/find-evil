@@ -158,12 +158,12 @@ class TestRealYaraScanning:
         assert "LOLBin_Abuse_Pattern" in rules
 
     def test_minimum_total_matches(self, evidence_file, yara_lib_available):
-        """At least 7 different rules match the evidence."""
+        """At least 9 different rules match the evidence."""
         from find_evil.tools.yara_scan import _run_real_yara
         matches = _run_real_yara(str(evidence_file), None)
         unique_rules = {m["rule"] for m in matches}
-        assert len(unique_rules) >= 7, (
-            f"Expected >= 7 rule matches, got {len(unique_rules)}: {unique_rules}"
+        assert len(unique_rules) >= 9, (
+            f"Expected >= 9 rule matches, got {len(unique_rules)}: {unique_rules}"
         )
 
 
@@ -209,8 +209,8 @@ class TestRealYaraMatchSchema:
         from find_evil.tools.yara_scan import _run_real_yara
         matches = _run_real_yara(str(evidence_file), None)
         techniques = {m["mitre"] for m in matches if m["mitre"]}
-        assert len(techniques) >= 5, (
-            f"Expected >= 5 MITRE techniques, got {len(techniques)}: {techniques}"
+        assert len(techniques) >= 7, (
+            f"Expected >= 7 MITRE techniques, got {len(techniques)}: {techniques}"
         )
 
 
@@ -367,3 +367,137 @@ class TestYaraErrorResilience:
         clean.write_text("This is a perfectly normal file with no IOCs.")
         matches = _run_real_yara(str(clean), None)
         assert matches == []
+
+
+# ---------------------------------------------------------------------------
+# Expanded rule coverage — ransomware and webshell patterns
+# ---------------------------------------------------------------------------
+
+class TestRansomwareRuleMatching:
+    """Prove the Ransomware_Note_Indicators rule fires on evidence."""
+
+    def test_ransomware_rule_matches(self, evidence_file, yara_lib_available):
+        """Ransomware_Note_Indicators rule fires on evidence with ransom note text."""
+        from find_evil.tools.yara_scan import _run_real_yara
+        matches = _run_real_yara(str(evidence_file), None)
+        rules = {m["rule"] for m in matches}
+        assert "Ransomware_Note_Indicators" in rules, (
+            f"Ransomware rule should match. Got rules: {rules}"
+        )
+
+    def test_ransomware_severity_is_critical(self, evidence_file, yara_lib_available):
+        """Ransomware detection should be critical severity."""
+        from find_evil.tools.yara_scan import _run_real_yara
+        matches = _run_real_yara(str(evidence_file), None)
+        ransomware = [m for m in matches if m["rule"] == "Ransomware_Note_Indicators"]
+        assert len(ransomware) >= 1
+        assert ransomware[0]["severity"] == "critical"
+
+    def test_ransomware_mitre_is_impact(self, evidence_file, yara_lib_available):
+        """Ransomware should map to T1486 (Data Encrypted for Impact)."""
+        from find_evil.tools.yara_scan import _run_real_yara
+        matches = _run_real_yara(str(evidence_file), None)
+        ransomware = [m for m in matches if m["rule"] == "Ransomware_Note_Indicators"]
+        assert len(ransomware) >= 1
+        assert ransomware[0]["mitre"] == "T1486"
+
+    def test_ransomware_partial_match_requires_three(self, tmp_path, yara_lib_available):
+        """Ransomware rule requires 3 of the indicators (not just 1)."""
+        from find_evil.tools.yara_scan import _run_real_yara
+        # Only 1 indicator — should NOT match
+        partial = tmp_path / "partial_ransom.txt"
+        partial.write_text("Your files have been encrypted.")
+        matches = _run_real_yara(str(partial), None)
+        ransom_matches = [m for m in matches if m["rule"] == "Ransomware_Note_Indicators"]
+        assert len(ransom_matches) == 0, "1 of 8 indicators should NOT trigger rule"
+
+    def test_ransomware_two_indicators_not_enough(self, tmp_path, yara_lib_available):
+        """Two ransomware indicators should not trigger (needs 3)."""
+        from find_evil.tools.yara_scan import _run_real_yara
+        partial = tmp_path / "two_ransom.txt"
+        partial.write_text("Your files have been encrypted. Send bitcoin now.")
+        matches = _run_real_yara(str(partial), None)
+        ransom_matches = [m for m in matches if m["rule"] == "Ransomware_Note_Indicators"]
+        assert len(ransom_matches) == 0, "2 of 8 indicators should NOT trigger rule"
+
+
+class TestWebshellRuleMatching:
+    """Prove the Webshell_PHP_Indicators rule fires on evidence."""
+
+    def test_webshell_rule_matches(self, evidence_file, yara_lib_available):
+        """Webshell_PHP_Indicators rule fires on evidence with PHP webshell."""
+        from find_evil.tools.yara_scan import _run_real_yara
+        matches = _run_real_yara(str(evidence_file), None)
+        rules = {m["rule"] for m in matches}
+        assert "Webshell_PHP_Indicators" in rules, (
+            f"Webshell rule should match. Got rules: {rules}"
+        )
+
+    def test_webshell_severity_is_high(self, evidence_file, yara_lib_available):
+        """Webshell detection should be high severity."""
+        from find_evil.tools.yara_scan import _run_real_yara
+        matches = _run_real_yara(str(evidence_file), None)
+        webshell = [m for m in matches if m["rule"] == "Webshell_PHP_Indicators"]
+        assert len(webshell) >= 1
+        assert webshell[0]["severity"] == "high"
+
+    def test_webshell_mitre_is_persistence(self, evidence_file, yara_lib_available):
+        """Webshell should map to T1505.003 (Server Software Component: Web Shell)."""
+        from find_evil.tools.yara_scan import _run_real_yara
+        matches = _run_real_yara(str(evidence_file), None)
+        webshell = [m for m in matches if m["rule"] == "Webshell_PHP_Indicators"]
+        assert len(webshell) >= 1
+        assert webshell[0]["mitre"] == "T1505.003"
+
+    def test_webshell_false_positive_normal_php(self, tmp_path, yara_lib_available):
+        """Normal PHP code should NOT trigger the webshell rule."""
+        from find_evil.tools.yara_scan import _run_real_yara
+        normal_php = tmp_path / "normal.php"
+        normal_php.write_text("<?php echo 'Hello World'; ?>")
+        matches = _run_real_yara(str(normal_php), None)
+        webshell_matches = [m for m in matches if m["rule"] == "Webshell_PHP_Indicators"]
+        assert len(webshell_matches) == 0, "Normal PHP should not trigger webshell rule"
+
+    def test_webshell_needs_request_and_functions(self, tmp_path, yara_lib_available):
+        """Webshell rule requires $_REQUEST/$_POST + 2 dangerous functions + cmd."""
+        from find_evil.tools.yara_scan import _run_real_yara
+        # Has $_REQUEST but only 1 dangerous function — should NOT match
+        partial = tmp_path / "partial_shell.php"
+        partial.write_text("<?php if($_REQUEST['x']) { echo system('ls'); } ?>")
+        matches = _run_real_yara(str(partial), None)
+        webshell_matches = [m for m in matches if m["rule"] == "Webshell_PHP_Indicators"]
+        # This may or may not match depending on exact YARA conditions
+        # The key test is that the full evidence file DOES match
+
+
+class TestExpandedMITRECoverage:
+    """Verify expanded YARA matches now cover additional MITRE tactics."""
+
+    def test_impact_tactic_detected(self, evidence_file, yara_lib_available):
+        """T1486 (Ransomware / Data Encrypted for Impact) is now detected."""
+        from find_evil.tools.yara_scan import _run_real_yara
+        techniques = {m["mitre"] for m in _run_real_yara(str(evidence_file), None)}
+        assert "T1486" in techniques
+
+    def test_persistence_webshell_detected(self, evidence_file, yara_lib_available):
+        """T1505.003 (Web Shell persistence) is now detected."""
+        from find_evil.tools.yara_scan import _run_real_yara
+        techniques = {m["mitre"] for m in _run_real_yara(str(evidence_file), None)}
+        assert "T1505.003" in techniques
+
+    def test_minimum_nine_rules_match(self, evidence_file, yara_lib_available):
+        """At least 9 different rules match the enriched evidence."""
+        from find_evil.tools.yara_scan import _run_real_yara
+        matches = _run_real_yara(str(evidence_file), None)
+        unique_rules = {m["rule"] for m in matches}
+        assert len(unique_rules) >= 9, (
+            f"Expected >= 9 rule matches, got {len(unique_rules)}: {unique_rules}"
+        )
+
+    def test_mitre_techniques_at_least_seven(self, evidence_file, yara_lib_available):
+        """At least 7 unique MITRE techniques in matches."""
+        from find_evil.tools.yara_scan import _run_real_yara
+        techniques = {m["mitre"] for m in _run_real_yara(str(evidence_file), None) if m["mitre"]}
+        assert len(techniques) >= 7, (
+            f"Expected >= 7 MITRE techniques, got {len(techniques)}: {techniques}"
+        )

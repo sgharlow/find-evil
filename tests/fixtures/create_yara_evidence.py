@@ -49,6 +49,16 @@ def create_evidence_file():
     content += bytes([0xFC, 0x48, 0x83, 0xE4, 0xF0])
     content += b"\x00" * 512
 
+    # Pattern 9: Ransomware note indicators (matches Ransomware_Note_Indicators)
+    content += b"Your files have been encrypted with military-grade encryption.\r\n"
+    content += b"Send 2.5 bitcoin to the following address to receive your private key.\r\n"
+    content += b"Visit http://xxxxxxxx.onion/payment to decrypt your files.\r\n"
+    content += b"\x00" * 512
+
+    # Pattern 10: PHP webshell indicators (matches Webshell_PHP_Indicators)
+    content += b"<?php if(isset($_REQUEST['cmd'])){echo system(base64_decode($_POST['payload']));} ?>\r\n"
+    content += b"\x00" * 512
+
     filepath = FIXTURES_DIR / "evidence_iocs.bin"
     filepath.write_bytes(bytes(content))
     print(f"Created {filepath.name}: {len(content)} bytes")
