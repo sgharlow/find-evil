@@ -51,6 +51,12 @@ SIMULATED_TIMELINE = [
     # Successful logon after brute force
     {"timestamp": "2024-01-15T14:21:33Z", "source": "EVT", "source_type": "Security", "type": "Content Modification Time", "description": "[4624] Logon Type 3: admin from 192.168.1.200 - Network logon", "filename": "Security.evtx", "inode": "-"},
 
+    # Privilege escalation — SeDebugPrivilege assigned immediately after logon
+    {"timestamp": "2024-01-15T14:21:35Z", "source": "EVT", "source_type": "Security", "type": "Content Modification Time", "description": "[4672] Special privileges assigned: admin — SeDebugPrivilege, SeImpersonatePrivilege, SeTcbPrivilege", "filename": "Security.evtx", "inode": "-"},
+
+    # Privilege escalation — UAC bypass via eventvwr.exe
+    {"timestamp": "2024-01-15T14:22:30Z", "source": "EVT", "source_type": "Security", "type": "Content Modification Time", "description": "[4688] UAC bypass: eventvwr.exe spawned by cmd.exe (High Integrity)", "filename": "Security.evtx", "inode": "-"},
+
     # Lateral movement and payload delivery
     {"timestamp": "2024-01-15T14:22:47Z", "source": "EVT", "source_type": "Security", "type": "Content Modification Time", "description": "[4688] Process created: cmd.exe by svchost.exe (admin)", "filename": "Security.evtx", "inode": "-"},
     {"timestamp": "2024-01-15T14:22:47Z", "source": "PREFETCH", "source_type": "Prefetch", "type": "Last Run Time", "description": "CMD.EXE-087B4001.pf [Run count: 18]", "filename": "C:/Windows/Prefetch/CMD.EXE-087B4001.pf", "inode": "94521"},
@@ -72,8 +78,18 @@ SIMULATED_TIMELINE = [
     {"timestamp": "2024-01-15T14:24:02Z", "source": "EVT", "source_type": "System", "type": "Content Modification Time", "description": "[7045] Service installed: Windows Update Helper (update.dll, AUTO_START)", "filename": "System.evtx", "inode": "-"},
     {"timestamp": "2024-01-15T14:24:10Z", "source": "REG", "source_type": "Registry", "type": "Key Last Written Time", "description": "Run key added: WindowsUpdateHelper -> rundll32.exe update.dll", "filename": "NTUSER.DAT", "inode": "-"},
 
+    # Lateral movement — PsExec to FILESERVER1
+    {"timestamp": "2024-01-15T14:25:11Z", "source": "EVT", "source_type": "System", "type": "Content Modification Time", "description": "[7045] PsExec service installed on FILESERVER1: PSEXESVC (demand start, LocalSystem)", "filename": "System.evtx", "inode": "-"},
+
+    # Lateral movement — WMI remote execution on FILESERVER1
+    {"timestamp": "2024-01-15T14:26:05Z", "source": "EVT", "source_type": "Security", "type": "Content Modification Time", "description": "[4688] WMI remote exec on FILESERVER1: WmiPrvSE.exe spawned process — whoami, net user, Domain Admins enumeration", "filename": "Security.evtx", "inode": "-"},
+
     # C2 beacon pattern (4-minute intervals)
     {"timestamp": "2024-01-15T14:27:18Z", "source": "NET", "source_type": "Network Connection", "type": "Connection Time", "description": "TCP 192.168.1.105:52400 -> 185.220.101.34:8443 CLOSE_WAIT (rundll32.exe)", "filename": "-", "inode": "-"},
+
+    # Lateral movement — RDP to Domain Controller
+    {"timestamp": "2024-01-15T14:28:44Z", "source": "EVT", "source_type": "Security", "type": "Content Modification Time", "description": "[4624] Logon Type 10 (RDP): admin from 192.168.1.105 to DC01 — lateral movement to Domain Controller", "filename": "Security.evtx", "inode": "-"},
+
     {"timestamp": "2024-01-15T14:31:18Z", "source": "NET", "source_type": "Network Connection", "type": "Connection Time", "description": "TCP 192.168.1.105:52456 -> 185.220.101.34:8443 ESTABLISHED (rundll32.exe)", "filename": "-", "inode": "-"},
 ]
 

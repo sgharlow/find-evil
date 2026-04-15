@@ -251,6 +251,34 @@ def main():
                 "mitre": "T1543.003",
             },
             {
+                "description": "Privilege escalation: SeDebugPrivilege + SeImpersonatePrivilege assigned to admin at logon",
+                "artifact_type": "log",
+                "evidence_strength": 0.88,
+                "sources": ["parse_evtx", "build_timeline"],
+                "mitre": "T1134.001",
+            },
+            {
+                "description": "Lateral movement via PsExec: PSEXESVC installed on FILESERVER1 as LocalSystem",
+                "artifact_type": "log",
+                "evidence_strength": 0.95,
+                "sources": ["parse_evtx", "build_timeline", "yara_scan"],
+                "mitre": "T1570",
+            },
+            {
+                "description": "Lateral movement via WMI: WmiPrvSE.exe spawned cmd.exe on FILESERVER1 for domain enumeration",
+                "artifact_type": "log",
+                "evidence_strength": 0.90,
+                "sources": ["parse_evtx", "build_timeline"],
+                "mitre": "T1047",
+            },
+            {
+                "description": "Lateral movement via RDP: admin logon (Type 10) from 192.168.1.105 to DC01",
+                "artifact_type": "log",
+                "evidence_strength": 0.92,
+                "sources": ["parse_evtx", "build_timeline"],
+                "mitre": "T1021.001",
+            },
+            {
                 "description": "Suspicious svchost.exe (PID 4200) — unusual parent (powershell)",
                 "artifact_type": "memory",
                 "evidence_strength": 0.60,
@@ -341,9 +369,11 @@ def main():
             f"due to insufficient corroboration.",
             "",
             "The investigation reveals a network intrusion via brute force (T1110.001), "
-            "lateral movement using LOLBin chain (T1059.003), process injection (T1055.001), "
-            "C2 communication to 185.220.101.34 (T1071.001), and persistence via service "
-            "and Run key installation (T1543.003).",
+            "privilege escalation using token manipulation (T1134.001) and UAC bypass, "
+            "lateral movement using LOLBin chain (T1059.003), PsExec (T1570), WMI (T1047), "
+            "and RDP (T1021.001), process injection (T1055.001), C2 communication to "
+            "185.220.101.34 (T1071.001), and persistence via service and Run key "
+            "installation (T1543.003).",
             "",
             "---",
             "",
@@ -393,6 +423,10 @@ def main():
             "| Windows Update Helper | Persistence service | EVTX, registry |",
             "| WindowsUpdateHelper | Persistence Run key | registry |",
             "| FC 48 83 E4 F0 | Shellcode pattern | YARA, malfind |",
+            "| PSEXESVC on FILESERVER1 | Lateral movement (PsExec) | EVTX, timeline |",
+            "| WmiPrvSE.exe -> cmd.exe | Lateral movement (WMI) | EVTX, timeline |",
+            "| RDP to DC01 (Type 10) | Lateral movement (RDP) | EVTX, timeline |",
+            "| SeDebugPrivilege | Privilege escalation | EVTX, timeline |",
             "",
             "---",
             "",

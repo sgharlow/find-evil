@@ -54,6 +54,20 @@ SIMULATED_EVENTS = [
     {"EventID": 4688, "TimeCreated": "2024-01-15T14:23:15Z", "Source": "Security", "Computer": "WORKSTATION1", "NewProcessName": "C:\\Windows\\System32\\rundll32.exe", "ParentProcessName": "C:\\Windows\\System32\\svchost.exe", "CommandLine": "rundll32.exe C:\\Users\\victim\\AppData\\Local\\Temp\\update.dll,DllRegisterServer", "SubjectUserName": "admin", "TokenElevationType": "%%1937"},
     # Service installation (persistence)
     {"EventID": 7045, "TimeCreated": "2024-01-15T14:24:02Z", "Source": "System", "Computer": "WORKSTATION1", "ServiceName": "Windows Update Helper", "ImagePath": "C:\\Users\\victim\\AppData\\Local\\Temp\\update.dll", "ServiceType": "user mode service", "StartType": "auto start", "AccountName": "LocalSystem"},
+    # Lateral movement — PsExec service installation on remote host
+    {"EventID": 7045, "TimeCreated": "2024-01-15T14:25:11Z", "Source": "System", "Computer": "FILESERVER1", "ServiceName": "PSEXESVC", "ImagePath": "%SystemRoot%\\PSEXESVC.exe", "ServiceType": "user mode service", "StartType": "demand start", "AccountName": "LocalSystem"},
+    # Lateral movement — WMI remote process creation
+    {"EventID": 4688, "TimeCreated": "2024-01-15T14:26:03Z", "Source": "Security", "Computer": "FILESERVER1", "NewProcessName": "C:\\Windows\\System32\\wbem\\WmiPrvSE.exe", "ParentProcessName": "C:\\Windows\\System32\\svchost.exe", "CommandLine": "C:\\Windows\\system32\\wbem\\wmiprvse.exe -secured -Embedding", "SubjectUserName": "admin", "TokenElevationType": "%%1937"},
+    {"EventID": 4688, "TimeCreated": "2024-01-15T14:26:05Z", "Source": "Security", "Computer": "FILESERVER1", "NewProcessName": "C:\\Windows\\System32\\cmd.exe", "ParentProcessName": "C:\\Windows\\System32\\wbem\\WmiPrvSE.exe", "CommandLine": "cmd.exe /c whoami && net user && net group \"Domain Admins\" /domain", "SubjectUserName": "admin", "TokenElevationType": "%%1937"},
+    # Lateral movement — RDP logon (LogonType 10)
+    {"EventID": 4624, "TimeCreated": "2024-01-15T14:28:44Z", "Source": "Security", "Computer": "DC01", "LogonType": 10, "TargetUserName": "admin", "TargetDomainName": "CORP", "IpAddress": "192.168.1.105", "IpPort": "53211", "LogonProcessName": "User32"},
+    # Privilege escalation — special privileges assigned (token manipulation indicator)
+    {"EventID": 4672, "TimeCreated": "2024-01-15T14:21:35Z", "Source": "Security", "Computer": "WORKSTATION1", "SubjectUserName": "admin", "SubjectDomainName": "CORP", "PrivilegeList": "SeDebugPrivilege SeImpersonatePrivilege SeTcbPrivilege SeAssignPrimaryTokenPrivilege"},
+    # Privilege escalation — UAC bypass via eventvwr.exe (process creation)
+    {"EventID": 4688, "TimeCreated": "2024-01-15T14:22:30Z", "Source": "Security", "Computer": "WORKSTATION1", "NewProcessName": "C:\\Windows\\System32\\eventvwr.exe", "ParentProcessName": "C:\\Windows\\System32\\cmd.exe", "CommandLine": "eventvwr.exe", "SubjectUserName": "admin", "TokenElevationType": "%%1937", "MandatoryLabel": "S-1-16-12288"},
+    {"EventID": 4688, "TimeCreated": "2024-01-15T14:22:32Z", "Source": "Security", "Computer": "WORKSTATION1", "NewProcessName": "C:\\Windows\\System32\\mmc.exe", "ParentProcessName": "C:\\Windows\\System32\\eventvwr.exe", "CommandLine": "\"C:\\Windows\\System32\\mmc.exe\" \"C:\\Windows\\System32\\eventvwr.msc\"", "SubjectUserName": "admin", "TokenElevationType": "%%1937", "MandatoryLabel": "S-1-16-12288"},
+    # Privilege escalation — sensitive privilege use (SeDebugPrivilege)
+    {"EventID": 4673, "TimeCreated": "2024-01-15T14:23:03Z", "Source": "Security", "Computer": "WORKSTATION1", "SubjectUserName": "admin", "SubjectDomainName": "CORP", "Service": "-", "PrivilegeName": "SeDebugPrivilege", "ObjectType": "Process", "AccessMask": "0x1FFFFF"},
     # Normal system events
     {"EventID": 7036, "TimeCreated": "2024-01-15T08:00:30Z", "Source": "System", "Computer": "WORKSTATION1", "ServiceName": "Windows Update", "State": "running"},
     {"EventID": 6005, "TimeCreated": "2024-01-15T08:00:01Z", "Source": "System", "Computer": "WORKSTATION1", "Description": "The Event log service was started."},
@@ -161,16 +175,46 @@ def _is_suspicious_event(event: dict) -> bool:
         if hour.isdigit() and (int(hour) < 6 or int(hour) > 22):
             return True
 
+    # RDP logon (type 10) — lateral movement indicator
+    if eid == 4624 and event.get("LogonType") == 10:
+        return True
+
     # Process creation with suspicious command lines
     if eid == 4688:
         cmdline = event.get("CommandLine", "").lower()
         if any(x in cmdline for x in ["-enc", "bypass", "hidden", "temp\\"]):
             return True
+        # WMI-spawned processes (lateral movement via WMI)
+        parent = event.get("ParentProcessName", "").lower()
+        if "wmiprvse.exe" in parent:
+            return True
+        # UAC bypass indicators (eventvwr, fodhelper, etc.)
+        proc = event.get("NewProcessName", "").lower()
+        if "eventvwr.exe" in proc and "cmd.exe" in parent:
+            return True
 
-    # Service installation from temp/user paths
+    # Service installation from temp/user paths or known attack tools
     if eid == 7045:
         path = event.get("ImagePath", "").lower()
+        svc_name = event.get("ServiceName", "").lower()
         if any(x in path for x in ["\\temp\\", "\\appdata\\", "\\users\\"]):
+            return True
+        # PsExec service
+        if "psexesvc" in svc_name or "psexesvc" in path:
+            return True
+
+    # Privilege escalation — special privileges assigned
+    if eid == 4672:
+        privs = event.get("PrivilegeList", "").lower()
+        if any(x in privs for x in ["sedebugprivilege", "seimpersonateprivilege",
+                                      "setcbprivilege", "seassignprimarytokenprivilege"]):
+            return True
+
+    # Privilege escalation — sensitive privilege use
+    if eid == 4673:
+        priv_name = event.get("PrivilegeName", "").lower()
+        if priv_name in ("sedebugprivilege", "seimpersonateprivilege",
+                         "setcbprivilege", "seassignprimarytokenprivilege"):
             return True
 
     return False

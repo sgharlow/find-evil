@@ -240,6 +240,19 @@ def main():
     check("Malicious DLL in EVTX",
           any(dll in str(e) for e in SIMULATED_EVENTS))
 
+    # Lateral movement IOCs
+    check("PsExec lateral movement in EVTX",
+          any(e.get("EventID") == 7045 and "PSEXESVC" in e.get("ServiceName", "")
+              for e in SIMULATED_EVENTS))
+    check("WMI lateral movement in EVTX",
+          any(e.get("EventID") == 4688 and "WmiPrvSE" in e.get("ParentProcessName", "")
+              for e in SIMULATED_EVENTS))
+    check("RDP lateral movement in EVTX",
+          any(e.get("EventID") == 4624 and e.get("LogonType") == 10
+              for e in SIMULATED_EVENTS))
+    check("Privilege escalation (4672) in EVTX",
+          any(e.get("EventID") == 4672 for e in SIMULATED_EVENTS))
+
     # Structured output (not raw text dumps)
     check("All simulated tool outputs are structured dicts/lists",
           all(isinstance(x, (dict, list)) for x in [

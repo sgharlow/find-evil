@@ -2,6 +2,6 @@
   "private": true,
   "scripts": {
     "typecheck": "echo 'Python project — type checking via mypy/pyright, not tsc'",
-    "test": "pytest tests/ -v --tb=short"
+    "test": "python -m pytest tests/ --tb=short -q"
   }
 }
