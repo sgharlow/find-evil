@@ -131,4 +131,4 @@ and included in the final IR report, demonstrating the agent's reasoning quality
 | Integration (findings DB) | 2 | 2 |
 | Scenario (attack narrative) | 17 | 17 |
 | Scenario (cross-tool correlation) | 4 | 4 |
-| **Total** | **156** | **154 + 2 skipped** |
+| **Total** | **270** | **195 + 75 skipped** |
