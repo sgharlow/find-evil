@@ -164,6 +164,30 @@ docker-compose run mcp-server python demo/run_investigation.py
 | Integration | 12 | enforce() gate, tool pipeline, audit trail completeness |
 | Scenario | 21 | Full 7-phase attack narrative, cross-tool correlation |
 
+## MITRE ATT&CK Coverage
+
+The investigation demo detects techniques across the full attack lifecycle:
+
+| Tactic | Technique | ID | Detection Source |
+|--------|-----------|-----|-----------------|
+| Initial Access | Brute Force | T1110.001 | EVTX (4625→4624 sequence) |
+| Execution | Command-Line Interface | T1059.001 | vol_cmdline (encoded PowerShell) |
+| Execution | LOLBin Chain | T1059.003 | vol_pslist (parent-child anomaly) |
+| Persistence | Service Install | T1543.003 | registry_query + EVTX (7045) |
+| Persistence | Registry Run Key | T1547.001 | registry_query (Temp path) |
+| Privilege Escalation | Token Manipulation | T1134.001 | EVTX (4672 SeDebugPrivilege) |
+| Defense Evasion | Process Injection | T1055.001 | vol_malfind (MZ in RWX) |
+| Defense Evasion | Masquerading | T1036.004 | vol_pslist (svchost under powershell) |
+| Credential Access | LSASS Dump | T1003.001 | yara_scan (mimikatz pattern) |
+| Lateral Movement | PsExec | T1570 | EVTX (PSEXESVC install) |
+| Lateral Movement | WMI | T1047 | EVTX (WmiPrvSE→cmd) |
+| Lateral Movement | RDP | T1021.001 | EVTX (Type 10 logon) |
+| Collection | Archive Data | T1560.001 | yara_scan (compression header) |
+| Command & Control | Web Protocols | T1071.001 | vol_netscan (185.220.101.34:8443) |
+| User Execution | Malicious File | T1204.002 | yara_scan (update.dll) |
+
+**15 techniques across 11 tactics** — covering initial access through C2 with cross-tool corroboration.
+
 ## Submission Deliverables
 
 | # | Deliverable | Location |
