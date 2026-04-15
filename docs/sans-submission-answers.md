@@ -89,7 +89,7 @@ Evidence protection operates at four independent layers. Compromising one layer 
 
 ### Layer 1: Function Registry (Attack Surface Elimination)
 
-The MCP server's function registry contains exactly 14 read-only tools. Destructive operations were never implemented. If the model attempts to call `execute_shell_cmd()`, the server returns "Function 'execute_shell_cmd' is not registered." There is no other pathway to evidence files. This is verified by 5 dedicated tests in `test_security_bypass.py::TestToolRegistryBoundary` that check for shell, write, delete, and modify tool names against the live registry.
+The MCP server's function registry contains exactly 15 read-only tools. Destructive operations were never implemented. If the model attempts to call `execute_shell_cmd()`, the server returns "Function 'execute_shell_cmd' is not registered." There is no other pathway to evidence files. This is verified by 5 dedicated tests in `test_security_bypass.py::TestToolRegistryBoundary` that check for shell, write, delete, and modify tool names against the live registry.
 
 ### Layer 2: SHA-256 Hash Sealing (Content-Based Tamper Detection)
 
@@ -218,7 +218,7 @@ cat output/ir_report.md          # Generated incident response report
 - `server.py` lines 239-250: Comment block explicitly documents that `execute_shell_cmd`, `write_file`, `rm`, `dd`, and `modify_evidence` do not exist
 - `test_security_bypass.py::TestToolRegistryBoundary`: 5 tests verify no shell, write, delete, or modify tools in the live registry
 - `validate_submission.py` Section 1: Programmatic proof against 9 destructive tool names
-- Tool count is asserted to be exactly 14 -- no unexpected tools can be added without test failure
+- Tool count is asserted to be exactly 15 -- no unexpected tools can be added without test failure
 
 **Why this wins:** This is not a blocklist that denies specific commands at runtime. It is an allowlist where destructive commands were never implemented. The attack surface is zero.
 
@@ -260,13 +260,15 @@ cat output/ir_report.md          # Generated incident response report
 
 ### 5. Breadth and Depth (Medium Weight)
 
-**Claim:** 14 tools across 7 artifact categories with MITRE ATT&CK mapping.
+**Claim:** 15 tools across 7 artifact categories with MITRE ATT&CK mapping and STIX 2.1 export.
 
 **Evidence:**
-- 7 categories: memory (4 tools), logs (1), registry (1), timeline (1), IOC scanning (1), findings (2), session (4)
+- 7 categories: memory (4 tools), logs (1), registry (1), timeline (1), IOC scanning (1), findings (3 — submit, report, STIX export), session (4)
+- STIX 2.1 bundle export enables interoperability with MISP, OpenCTI, ThreatConnect, and STIX-consuming SIEMs
+- IOC extraction: auto-extracts IPs, MD5/SHA-256 hashes, file paths, registry keys from findings
 - MITRE techniques mapped: T1059.001 (PowerShell), T1055 (Process Injection), T1071.001 (C2 over HTTPS), T1543.003 (Service Persistence), at minimum
 - Simulated scenario covers the full kill chain: initial access (brute force) through persistence (service + Run key)
-- 3 MCP Resources and 3 MCP Prompts beyond the 14 tools
+- 3 MCP Resources and 3 MCP Prompts beyond the 15 tools
 
 ### 6. Usability and Documentation (Medium Weight)
 

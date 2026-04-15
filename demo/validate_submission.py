@@ -75,9 +75,9 @@ def main():
         "session_init", "verify_integrity", "list_sealed_evidence", "reseal_evidence",
         "vol_pslist", "vol_netscan", "vol_malfind", "vol_cmdline",
         "parse_evtx", "registry_query", "build_timeline", "yara_scan",
-        "submit_finding", "generate_report",
+        "submit_finding", "generate_report", "export_stix",
     }
-    check("All 14 expected tools registered",
+    check("All 15 expected tools registered",
           tool_names == expected_tools,
           f"Found: {sorted(tool_names)}")
 
@@ -310,7 +310,7 @@ def main():
         "logs": ["parse_evtx"],
         "registry": ["registry_query"],
         "ioc_scanning": ["yara_scan"],
-        "findings": ["submit_finding", "generate_report"],
+        "findings": ["submit_finding", "generate_report", "export_stix"],
         "session": ["session_init", "verify_integrity", "list_sealed_evidence", "reseal_evidence"],
     }
     check("7 artifact categories covered",
@@ -318,8 +318,8 @@ def main():
           f"Categories: {sorted(artifact_categories.keys())}")
 
     total_tools = sum(len(v) for v in artifact_categories.values())
-    check("14 tools across all categories",
-          total_tools == 14)
+    check("15 tools across all categories",
+          total_tools == 15)
 
     # MITRE ATT&CK coverage
     mitre_from_yara = {m.get("mitre") for m in SIMULATED_MATCHES if m.get("mitre")}

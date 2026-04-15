@@ -142,7 +142,7 @@ docker-compose run mcp-server python demo/run_investigation.py
 | **Audit Trail Quality** | High | UUID provenance chain: finding -> tool call -> verified evidence |
 | **IR Accuracy** | High | Structured JSON from typed tools, not raw text dumps to LLM |
 | **Autonomous Execution** | Tiebreaker | DRS gate forces self-correction below 0.75 confidence |
-| **Breadth/Depth** | Medium | 14 tools across memory, disk, logs, registry, network, IOCs |
+| **Breadth/Depth** | Medium | 15 tools across memory, disk, logs, registry, network, IOCs, STIX export |
 | **Usability** | Medium | `pip install -e .` + one command. Docker for reproducibility. |
 
 ## Test Suite
