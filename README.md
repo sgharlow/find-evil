@@ -55,7 +55,7 @@ impossible by design, not by instruction.
 |                          |                  registry_query    |  |
 |                          |    ANALYSIS      build_timeline    |  |
 |                          |    submit_finding  yara_scan       |  |
-|                          |    generate_report                 |  |
+|                          |    generate_report export_stix     |  |
 |                          |                                    |  |
 |                          |    NOT AVAILABLE:                  |  |
 |                          |    X execute_shell_cmd             |  |
@@ -106,7 +106,7 @@ git clone https://github.com/sgharlow/find-evil.git
 cd find-evil
 pip install -e ".[dev]"
 
-# Run tests (334 total: 333 passing, 1 skipped)
+# Run tests (355 total: 354 passing, 1 skipped)
 pytest tests/ -v
 
 # Run the tamper detection demo
@@ -147,7 +147,7 @@ docker-compose run mcp-server python demo/run_investigation.py
 
 ## Test Suite
 
-334 tests (333 passing, 1 skipped), organized by component:
+355 tests (354 passing, 1 skipped), organized by component:
 
 | Category | Tests | What They Verify |
 |----------|-------|-----------------|
@@ -160,6 +160,7 @@ docker-compose run mcp-server python demo/run_investigation.py
 | Registry tools | 12 | Persistence detection, query filtering |
 | Timeline tools | 7 | Chronological ordering, source coverage, attack window |
 | YARA tools | 11 | Rule matching, severity, MITRE mapping |
+| Findings & STIX | 21 | IOC extraction (IP, hash, path, registry), STIX 2.1 indicator generation |
 | Security bypass | 21 | Registry boundary, path traversal, state attacks, tamper bypass |
 | Integration | 12 | enforce() gate, tool pipeline, audit trail completeness |
 | Scenario | 21 | Full 7-phase attack narrative, cross-tool correlation |
