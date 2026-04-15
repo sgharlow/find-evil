@@ -117,7 +117,7 @@ It cannot. The function does not exist. The server returns an error. This is not
 
 ## Accuracy and Testing
 
-### Test Suite: 334 Tests (245 passing, 89 skipped)
+### Test Suite: 334 Tests (333 passing, 1 skipped)
 
 | Category | Tests | Passing | What They Verify |
 |----------|-------|---------|-----------------|
@@ -134,7 +134,7 @@ It cannot. The function does not exist. The server returns an error. This is not
 | Integration | 12 | 12 | enforce() gate, tool pipeline, audit trail completeness |
 | Scenario | 21 | 21 | Full 7-phase attack narrative, cross-tool correlation |
 
-The 89 skipped tests are real-evidence tests requiring SIFT Workstation dependencies (python-evtx, yara-python, python-registry). This is expected and documented.
+The 1 skipped test is a symlink security test requiring admin privileges on Windows — it passes on Linux/SIFT. All other tests run without live SIFT dependencies.
 
 ### Detection Accuracy (Simulated Scenario with Known Ground Truth)
 
@@ -175,7 +175,7 @@ Each tool includes pattern-based detection heuristics tested with both true-posi
 git clone https://github.com/sgharlow/find-evil.git
 cd find-evil
 pip install -e ".[dev]"
-pytest tests/ -v                          # 334 tests (245 passing, 89 skipped)
+pytest tests/ -v                          # 334 tests (333 passing, 1 skipped)
 python demo/tamper_demo.py                # Watch tamper detection live
 python demo/run_investigation.py          # Full 7-phase simulated investigation
 python demo/validate_submission.py        # Automated proof of every judging criterion
