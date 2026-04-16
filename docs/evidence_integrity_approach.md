@@ -6,10 +6,10 @@ Evidence protection in this submission is **architectural, not prompt-based**.
 
 ### Layer 1: Function Registry (Attack Surface Elimination)
 
-The MCP server exposes exactly 14 typed, read-only functions. Destructive
+The MCP server exposes exactly 15 typed, read-only functions. Destructive
 operations — shell execution, file writing, file deletion, disk formatting —
 **do not exist in the function registry**. The agent's only interface to
-evidence files is through these 14 functions. There is no `execute_shell_cmd()`,
+evidence files is through these 15 functions. There is no `execute_shell_cmd()`,
 no `write_file()`, no `rm()`, no `dd()`.
 
 This is not a blocklist that denies specific commands. It is an allowlist where

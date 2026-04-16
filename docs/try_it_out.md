@@ -18,7 +18,7 @@ cd find-evil
 # 2. Install
 pip install -e ".[dev]"
 
-# 3. Run the test suite (334 total: 333 passing, 1 skipped)
+# 3. Run the test suite (497 total: 496 passing, 1 skipped)
 pytest tests/ -v
 
 # 4. Run the tamper detection demo
@@ -38,7 +38,7 @@ cat output/ir_report.md                    # Generated IR report
 # Register the MCP server
 claude mcp add find-evil -- python -m find_evil
 
-# Now Claude Code can use all 14 forensic tools
+# Now Claude Code can use all 15 forensic tools
 # Start a conversation and ask it to investigate evidence
 ```
 

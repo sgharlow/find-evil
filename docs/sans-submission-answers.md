@@ -18,7 +18,7 @@ The core insight is that **allowlists beat blocklists**, and **server-side enfor
 
 Most AI DFIR tools add a "don't modify evidence" rule to the system prompt. That is a blocklist enforced on the client side -- the model can ignore it, hallucinate around it, or have it overridden by prompt injection. This submission takes the opposite approach:
 
-1. **Destructive functions were never implemented.** There is no `execute_shell_cmd()`, no `write_file()`, no `rm()`, no `dd()`. The MCP server exposes exactly 14 typed, read-only functions. The attack surface is zero because the functions simply do not exist in the registry -- not because they are denied at runtime.
+1. **Destructive functions were never implemented.** There is no `execute_shell_cmd()`, no `write_file()`, no `rm()`, no `dd()`. The MCP server exposes exactly 15 typed, read-only functions. The attack surface is zero because the functions simply do not exist in the registry -- not because they are denied at runtime.
 
 2. **Integrity verification is server-side and mandatory.** The `enforce()` gate in `tools/_base.py` runs SHA-256 verification of every sealed evidence file *before* every tool call. This check executes on the server, not in the model's context window. The model cannot skip it, suppress it, or argue its way past it.
 
@@ -48,7 +48,7 @@ The server runs as a Python 3.11+ FastMCP application communicating over stdio w
 - Sequence: verify active session -> verify evidence integrity (SHA-256) -> validate file paths (anti-traversal) -> generate invocation UUID -> log start -> execute tool -> hash output -> log completion -> attach provenance metadata
 - Returns `EVIDENCE_INTEGRITY_VIOLATION` if any check fails -- tool never executes
 
-**[4] 14 Typed Read-Only Tools**
+**[4] 15 Typed Read-Only Tools**
 
 | Category | Tools | What They Do |
 |----------|-------|-------------|
@@ -117,7 +117,7 @@ It cannot. The function does not exist. The server returns an error. This is not
 
 ## Accuracy and Testing
 
-### Test Suite: 492 Tests (491 passing, 1 skipped)
+### Test Suite: 497 Tests (496 passing, 1 skipped)
 
 | Category | Tests | Passing | What They Verify |
 |----------|-------|---------|-----------------|
@@ -133,6 +133,10 @@ It cannot. The function does not exist. The server returns an error. This is not
 | Security bypass | 21 | 20 (+1 skip) | Registry boundary, path traversal, state attacks, tamper bypass |
 | Integration | 12 | 12 | enforce() gate, tool pipeline, audit trail completeness |
 | Scenario | 21 | 21 | Full 7-phase attack narrative, cross-tool correlation |
+| Doc consistency | 50 | 50 | README/CLAUDE.md/submission accuracy, tool registry cross-reference, package metadata |
+| YARA edge cases | 43 | 43 | Rule syntax, metadata, severity filtering, MITRE tactic breadth |
+| Evidence sealing edge cases | 49 | 49 | Empty dirs, large files, concurrency, timing, all extensions |
+| Findings & STIX | 21 | 21 | IOC extraction (IP, hash, path, registry), STIX 2.1 indicator generation |
 
 The 1 skipped test is a symlink security test requiring admin privileges on Windows — it passes on Linux/SIFT. All other tests run without live SIFT dependencies.
 
@@ -175,7 +179,7 @@ Each tool includes pattern-based detection heuristics tested with both true-posi
 git clone https://github.com/sgharlow/find-evil.git
 cd find-evil
 pip install -e ".[dev]"
-pytest tests/ -v                          # 492 tests (491 passing, 1 skipped)
+pytest tests/ -v                          # 497 tests (496 passing, 1 skipped)
 python demo/tamper_demo.py                # Watch tamper detection live
 python demo/run_investigation.py          # Full 7-phase simulated investigation
 python demo/validate_submission.py        # Automated proof of every judging criterion

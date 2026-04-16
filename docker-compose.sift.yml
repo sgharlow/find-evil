@@ -5,7 +5,7 @@
 # Quick start:
 #   docker-compose -f docker-compose.sift.yml up --build
 #
-# Run tests (all 334 should pass, 0 skipped):
+# Run tests (all 497 should pass, 0 skipped):
 #   docker-compose -f docker-compose.sift.yml run --rm mcp-server pytest tests/ -v --tb=short
 #
 # Run investigation demo:

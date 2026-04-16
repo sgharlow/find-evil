@@ -87,7 +87,7 @@ and included in the final IR report, demonstrating the agent's reasoning quality
 |---------------|--------|-------------|
 | Call unregistered destructive tool | "Function not registered" error | `test_integration.py` security check |
 | Direct shell access | Not possible — no shell tool exists | MCP function registry inspection |
-| Modify evidence via tool | Not possible — all tools are read-only | Code review of all 14 tool functions |
+| Modify evidence via tool | Not possible — all tools are read-only | Code review of all 15 tool functions |
 | Bypass hash check | Not possible — enforce() gate is server-side | `test_enforce_blocks_on_tampered_evidence` |
 
 ## Limitations
@@ -131,4 +131,8 @@ and included in the final IR report, demonstrating the agent's reasoning quality
 | Integration (findings DB) | 2 | 2 |
 | Scenario (attack narrative) | 17 | 17 |
 | Scenario (cross-tool correlation) | 4 | 4 |
-| **Total** | **334** | **333 + 1 skipped** |
+| Doc consistency | 50 | 50 |
+| YARA edge cases | 43 | 43 |
+| Evidence sealing edge cases | 49 | 49 |
+| Findings & STIX | 21 | 21 |
+| **Total** | **497** | **496 + 1 skipped** |
