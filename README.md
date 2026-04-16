@@ -45,7 +45,7 @@ impossible by design, not by instruction.
 |                          |      hash output -> log complete   |  |
 |                          |                                    |  |
 |                          |  [4] Typed Tool Registry           |  |
-|                          |      14 read-only functions:       |  |
+|                          |      15 read-only functions:       |  |
 |                          |                                    |  |
 |                          |    SESSION   vol_pslist             |  |
 |                          |    session_init   vol_netscan       |  |
@@ -147,7 +147,7 @@ docker-compose run mcp-server python demo/run_investigation.py
 
 ## Test Suite
 
-355 tests (354 passing, 1 skipped), organized by component:
+492 tests (491 passing, 1 skipped), organized by component:
 
 | Category | Tests | What They Verify |
 |----------|-------|-----------------|
@@ -164,6 +164,9 @@ docker-compose run mcp-server python demo/run_investigation.py
 | Security bypass | 21 | Registry boundary, path traversal, state attacks, tamper bypass |
 | Integration | 12 | enforce() gate, tool pipeline, audit trail completeness |
 | Scenario | 21 | Full 7-phase attack narrative, cross-tool correlation |
+| Doc consistency | 45 | README/CLAUDE.md/submission accuracy, tool registry cross-reference |
+| YARA edge cases | 43 | Rule syntax, metadata, severity filtering, MITRE tactic breadth |
+| Evidence sealing edge cases | 49 | Empty dirs, large files, concurrency, timing, all extensions |
 
 ## MITRE ATT&CK Coverage
 
