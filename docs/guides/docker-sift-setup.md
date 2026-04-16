@@ -59,7 +59,7 @@ This is the moment of truth — tests that were skipped locally should now pass:
 docker-compose -f docker-compose.sift.yml run --rm mcp-server pytest tests/ -v --tb=short
 ```
 
-**Expected result:** 492 tests, most passing (the 89 previously-skipped tests should now run). Some may still skip if they need specific evidence files not present.
+**Expected result:** 497 tests, most passing (the 89 previously-skipped tests should now run). Some may still skip if they need specific evidence files not present.
 
 ---
 

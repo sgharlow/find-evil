@@ -38,7 +38,7 @@
 
 **Point out on screen**:
 - The 5 evidence files being sealed with hash prefixes
-- "Available functions" — the 14 read-only tools
+- "Available functions" — the 15 read-only tools
 - "NOT available" — shell, write, rm, dd in red
 
 > "Notice what's NOT available. Shell commands, file writes, delete
@@ -156,7 +156,7 @@ Phase 4-6 (briefly):
 ## [4:40 - 5:00] CLOSE
 
 **Say**:
-> "This is open source under MIT. Fourteen typed functions. Zero
+> "This is open source under MIT. Fifteen typed functions. Zero
 > destructive. A hash daemon that catches tampering in seconds.
 > A confidence gate that forces the agent to self-correct.
 > And a UUID audit trail that makes every finding forensically

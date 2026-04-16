@@ -435,3 +435,52 @@ class TestDocumentationStructure:
         """README must mention the license."""
         readme = _read_text(README_PATH)
         assert "MIT" in readme or "License" in readme
+
+
+# ---------------------------------------------------------------------------
+# 7. Package metadata consistency
+# ---------------------------------------------------------------------------
+
+class TestPackageMetadataConsistency:
+    """Verify pyproject.toml metadata is correct and entry point exists."""
+
+    PYPROJECT_PATH = PROJECT_ROOT / "pyproject.toml"
+
+    def test_pyproject_exists(self):
+        """pyproject.toml must exist."""
+        assert self.PYPROJECT_PATH.exists(), "pyproject.toml must exist"
+
+    def test_pyproject_version_is_set(self):
+        """pyproject.toml must have a non-empty version string."""
+        content = _read_text(self.PYPROJECT_PATH)
+        match = re.search(r'version\s*=\s*"([^"]+)"', content)
+        assert match, "pyproject.toml must define a version"
+        version = match.group(1)
+        assert len(version) >= 5, (
+            f"Version '{version}' looks too short — expected semver like '0.1.0'"
+        )
+
+    def test_pyproject_description_mentions_mcp_or_dfir(self):
+        """pyproject.toml description should mention MCP or DFIR."""
+        content = _read_text(self.PYPROJECT_PATH)
+        match = re.search(r'description\s*=\s*"([^"]+)"', content)
+        assert match, "pyproject.toml must define a description"
+        desc = match.group(1).lower()
+        assert "mcp" in desc or "dfir" in desc, (
+            f"pyproject.toml description should mention MCP or DFIR, "
+            f"got: '{match.group(1)}'"
+        )
+
+    def test_package_entry_point_exists(self):
+        """The server entry point module must exist on disk."""
+        entry_point = PROJECT_ROOT / "src" / "find_evil" / "server.py"
+        assert entry_point.exists(), (
+            "Entry point src/find_evil/server.py must exist"
+        )
+
+    def test_package_is_importable(self):
+        """The find_evil package must be importable."""
+        import find_evil
+        assert hasattr(find_evil, "__path__"), (
+            "find_evil must be a proper Python package"
+        )
