@@ -101,7 +101,15 @@ class TestREADMEToolConsistency:
         # Exclude known non-tool references:
         # - list_sealed: abbreviated form of list_sealed_evidence in ASCII diagram
         # - verify_all: internal EvidenceSession method, not an MCP tool
-        known_non_tools = {"list_sealed", "verify_all", "require_active"}
+        # - registry_key: STIX 2.1 IOC type name in the STIX export format
+        #   section, not a tool (the regex matches because the snake_case
+        #   pattern catches registry_* even though this is a data field)
+        known_non_tools = {
+            "list_sealed",
+            "verify_all",
+            "require_active",
+            "registry_key",
+        }
         phantom = readme_tool_names - tools - known_non_tools
         assert not phantom, (
             f"README references tools that are not registered: {phantom}"
