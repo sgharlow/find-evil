@@ -1,0 +1,52 @@
+INTEGRITY VIOLATION detected (on-demand check): VIOLATION — 1 file(s) tampered, 3 checked
+======================================================================
+  EVIDENCE INTEGRITY ENFORCER — Tamper Detection Demo
+======================================================================
+
+[SETUP] Created 3 mock evidence files in C:\Users\STEVE~1.HAR\AppData\Local\Temp\tmpboq8s00u
+
+[STEP 1] Sealing evidence files with SHA-256 hashes...
+  Session ID: 75056a7f-338a-4eb1-81dd-f4b8d8a150ac
+  Files sealed: 3
+    memory.raw            sha256: cccde5a349050c34...  SEALED
+    network.pcap          sha256: 29fc8cdd36810d34...  SEALED
+    victim-hdd.img        sha256: 74a2f808f1ae6d5e...  SEALED
+
+[STEP 2] Hash daemon started (2-second verification cycle)
+
+[STEP 3] Verifying integrity (should pass)...
+  Status: OK
+  Files verified: 3
+
+[STEP 4] TAMPERING with evidence: victim-hdd.img
+  (Appending bytes — SHA-256 detects content changes, not metadata)
+  Evidence file modified.
+
+[STEP 5] Verifying integrity (should FAIL)...
+
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  ! EVIDENCE INTEGRITY VIOLATION DETECTED                    !
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  File:     victim-hdd.img
+  Expected: 74a2f808f1ae6d5e...
+  Actual:   4f4c1e20ef023cd2...
+
+  ANALYSIS HALTED — chain of custody broken.
+  All findings voided. Session suspended.
+
+[STEP 6] Confirming session is halted...
+  Session active: False
+
+[STEP 7] Re-sealing evidence (new session)...
+  New session ID: 4d709751-4bdc-4701-aa82-aa2fcac5f66a
+  Files sealed: 3
+  Session active: True
+
+======================================================================
+  Demo complete. Evidence integrity enforcement verified.
+
+  Key takeaway: SHA-256 hashes file CONTENT, not metadata.
+  `touch` would NOT trigger detection — byte modification does.
+  The agent cannot bypass this — destructive functions don't exist.
+======================================================================
