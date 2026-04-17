@@ -1,8 +1,8 @@
 # Incident Response Report
 
-**Session ID:** 9675b350-8365-46c9-a6b0-e88d1f85f7c0
-**Evidence Directory:** C:\Users\sghar\AppData\Local\Temp\tmpc3dvr2oh
-**Generated:** 2026-04-15T03:55:44.381077+00:00
+**Session ID:** 3c01c7b0-c3d4-4c7f-acea-8baad07fe003
+**Evidence Directory:** C:\Users\Steve.Harlow\AppData\Local\Temp\tmpa54ya7go
+**Generated:** 2026-04-17T04:08:42.535379+00:00
 **Evidence Integrity:** VERIFIED (5 files sealed)
 **Analysis Mode:** simulated (SIFT tools not installed)
 
@@ -23,42 +23,42 @@ The investigation reveals a network intrusion via brute force (T1110.001), privi
 - **Confidence:** 0.91 (evidence: 0.95, corroboration: 0.85)
 - **Artifact type:** network
 - **MITRE ATT&CK:** T1071.001
-- **Provenance:** 0347eb5a, 049701de, b4286cbb
+- **Provenance:** 003cfa25, 3ef15c97, f68253e7
 
 ### Finding 2: Process injection: MZ header in PAGE_EXECUTE_READWRITE in svchost.exe (PID 4200)
 
 - **Confidence:** 0.75 (evidence: 0.92, corroboration: 0.50)
 - **Artifact type:** memory
 - **MITRE ATT&CK:** T1055.001
-- **Provenance:** 6243c6c4, 7a88cec0
+- **Provenance:** 1207f72f, e63b4e36
 
 ### Finding 3: LOLBin chain: svchost -> cmd.exe -> powershell (encoded) -> rundll32
 
 - **Confidence:** 0.87 (evidence: 0.88, corroboration: 0.85)
 - **Artifact type:** memory
 - **MITRE ATT&CK:** T1059.003
-- **Provenance:** 5969e693, 7a88cec0, 9a55e2ce
+- **Provenance:** 09285cf7, 8c9e9a04, e63b4e36
 
 ### Finding 4: Persistence: Service + Run key pointing to Temp\update.dll
 
 - **Confidence:** 0.90 (evidence: 0.93, corroboration: 0.85)
 - **Artifact type:** registry
 - **MITRE ATT&CK:** T1543.003
-- **Provenance:** 0cbacc82, 9a55e2ce, b4286cbb
+- **Provenance:** 09285cf7, 3ef15c97, f99f7570
 
 ### Finding 5: Lateral movement via PsExec: PSEXESVC installed on FILESERVER1 as LocalSystem
 
 - **Confidence:** 0.91 (evidence: 0.95, corroboration: 0.85)
 - **Artifact type:** log
 - **MITRE ATT&CK:** T1570
-- **Provenance:** 049701de, 9a55e2ce, b4286cbb
+- **Provenance:** 003cfa25, 09285cf7, 3ef15c97
 
 ### Finding 6: Lateral movement via RDP: admin logon (Type 10) from 192.168.1.105 to DC01
 
 - **Confidence:** 0.75 (evidence: 0.92, corroboration: 0.50)
 - **Artifact type:** log
 - **MITRE ATT&CK:** T1021.001
-- **Provenance:** 9a55e2ce, b4286cbb
+- **Provenance:** 09285cf7, 3ef15c97
 
 ---
 
