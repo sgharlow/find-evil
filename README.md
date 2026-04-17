@@ -192,6 +192,34 @@ The investigation demo detects techniques across the full attack lifecycle:
 
 **15 techniques across 11 tactics** — covering initial access through C2 with cross-tool corroboration.
 
+## STIX 2.1 Export Format
+
+The `export_stix` tool produces a standards-compliant STIX 2.1 bundle containing indicators for every IOC extracted from findings. Output is ready to consume by threat intelligence platforms (MISP, OpenCTI, ThreatConnect) and SIEMs that ingest STIX feeds.
+
+**Sample indicator** (IPv4 C2 address, emitted when an external IP appears in a finding):
+
+```json
+{
+  "type": "indicator",
+  "spec_version": "2.1",
+  "id": "indicator--6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+  "created": "2026-04-16T14:07:00Z",
+  "modified": "2026-04-16T14:07:00Z",
+  "name": "IPV4: 185.220.101.34",
+  "pattern": "[ipv4-addr:value = '185.220.101.34']",
+  "pattern_type": "stix",
+  "valid_from": "2026-04-16T14:07:00Z",
+  "labels": ["malicious-activity"],
+  "external_references": [
+    {"source_name": "find-evil", "description": "Linked to finding(s): f3a1b2c4"}
+  ]
+}
+```
+
+**Supported IOC types:** `ipv4`, `md5`, `sha256`, `file_path`, `registry_key`. Private/internal IPs (10/8, 172.16/12, 192.168/16, 127/8) are excluded automatically. Every indicator carries an `external_references` entry linking back to the finding UUID(s) that produced it — provenance is preserved end-to-end.
+
+Implementation: [`src/find_evil/tools/findings.py`](./src/find_evil/tools/findings.py) (`_stix_indicator` + `export_stix`).
+
 ## Submission Deliverables
 
 | # | Deliverable | Location |
