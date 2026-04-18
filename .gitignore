@@ -67,3 +67,7 @@ case-data/
 # Application_small.evtx (~69KB) IS committed as a real-evidence test fixture
 tests/fixtures/*.evtx
 !tests/fixtures/Application_small.evtx
+
+# Demo artifacts — demo/video_demo.py regenerates with fresh UUIDs per run
+output/
+
