@@ -17,7 +17,7 @@ The server ships with 15 forensic tools, a 7-phase investigation protocol, a DRS
 | 1 | Project description + value proposition | [`README.md`](./README.md) (top), [`docs/sans-submission-answers.md`](./docs/sans-submission-answers.md) |
 | 2 | Architecture diagram | [`README.md`](./README.md) lines 23-100 (ASCII) |
 | 3 | Tool inventory (15 tools, MITRE coverage) | [`README.md`](./README.md) MITRE ATT&CK Coverage + Judging Criteria Map |
-| 4 | Test strategy + results (541 tests) | [`README.md`](./README.md) Test Suite section + `pytest --collect-only` |
+| 4 | Test strategy + results (544 tests) | [`README.md`](./README.md) Test Suite section + `pytest --collect-only` |
 | 5 | Demo scripts | [`demo/run_investigation.py`](./demo/run_investigation.py), [`demo/tamper_demo.py`](./demo/tamper_demo.py), [`demo/VIDEO_SCRIPT.md`](./demo/VIDEO_SCRIPT.md) |
 | 6 | STIX 2.1 export format | [`README.md`](./README.md) STIX 2.1 Export Format section (sample indicator) |
 | 7 | Try-it-out guide | [`docs/try_it_out.md`](./docs/try_it_out.md) |
@@ -38,7 +38,7 @@ Full setup in [`docs/guides/docker-sift-setup.md`](./docs/guides/docker-sift-set
 
 ## Tests
 
-- **541 automated tests**, all passing (`pytest`).
+- **544 automated tests** (543 passing, 1 Windows-admin symlink test skipped) — `pytest`.
 - Breakdown in [`README.md`](./README.md) Test Suite section.
 - CI: [`.github/workflows/`](./.github/workflows/).
 

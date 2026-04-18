@@ -106,7 +106,7 @@ git clone https://github.com/sgharlow/find-evil.git
 cd find-evil
 pip install -e ".[dev]"
 
-# Run tests (497 total: 496 passing, 1 skipped)
+# Run tests (544 total: 543 passing, 1 skipped)
 pytest tests/ -v
 
 # Run the tamper detection demo
@@ -147,7 +147,7 @@ docker-compose run mcp-server python demo/run_investigation.py
 
 ## Test Suite
 
-497 tests (496 passing, 1 skipped), organized by component:
+544 tests (543 passing, 1 skipped), organized by component:
 
 | Category | Tests | What They Verify |
 |----------|-------|-----------------|

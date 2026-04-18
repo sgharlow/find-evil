@@ -18,7 +18,7 @@ cd find-evil
 # 2. Install
 pip install -e ".[dev]"
 
-# 3. Run the test suite (497 total: 496 passing, 1 skipped)
+# 3. Run the test suite (544 total: 543 passing, 1 skipped)
 pytest tests/ -v
 
 # 4. Run the tamper detection demo

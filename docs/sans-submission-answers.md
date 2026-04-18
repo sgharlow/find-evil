@@ -117,7 +117,7 @@ It cannot. The function does not exist. The server returns an error. This is not
 
 ## Accuracy and Testing
 
-### Test Suite: 497 Tests (496 passing, 1 skipped)
+### Test Suite: 544 Tests (543 passing, 1 skipped)
 
 | Category | Tests | Passing | What They Verify |
 |----------|-------|---------|-----------------|
@@ -179,7 +179,7 @@ Each tool includes pattern-based detection heuristics tested with both true-posi
 git clone https://github.com/sgharlow/find-evil.git
 cd find-evil
 pip install -e ".[dev]"
-pytest tests/ -v                          # 497 tests (496 passing, 1 skipped)
+pytest tests/ -v                          # 544 tests (543 passing, 1 skipped)
 python demo/tamper_demo.py                # Watch tamper detection live
 python demo/run_investigation.py          # Full 7-phase simulated investigation
 python demo/validate_submission.py        # Automated proof of every judging criterion
