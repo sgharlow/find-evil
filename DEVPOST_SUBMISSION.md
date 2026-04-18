@@ -63,7 +63,7 @@ Output is a court-quality incident response report plus a STIX 2.1 bundle for do
 - **Seven components:** Evidence Session Manager, Hash Daemon (background thread), `enforce()` gate, 15-tool typed registry, JSONL Audit Logger, DRS Confidence Gate, Findings DB (SQLite).
 - **Three MCP surfaces:** Tools (15), Resources (3: `evidence://session`, `evidence://audit-trail`, `evidence://tool-registry`), Prompts (3: `triage`, `full_investigation`, `persistence_hunt`). Full protocol coverage, not just the tool API.
 - **Investigation protocol in `CLAUDE.md`:** 7 mandatory phases (SEAL → TRIAGE → DEEP MEMORY → LOGS → PERSISTENCE → TIMELINE → IOC SCAN → SYNTHESIS), 15-call budget per phase, DRS gate between every finding and the report.
-- **Tests:** 497 pytest tests (496 passing, 1 skipped — a Windows-admin-only symlink test). Includes 21 security-bypass tests and 11 dedicated spoliation tests.
+- **Tests:** 544 pytest tests (543 passing, 1 skipped — a Windows-admin-only symlink test). Includes 21 security-bypass tests and 11 dedicated spoliation tests.
 
 Key design tradeoff: **simulated evidence for reproducibility, live SIFT backends for production.** Tool output is labeled `"mode": "simulated"` vs `"mode": "live"` so judges can run the full pipeline on any laptop, and the same code runs against real images on a SIFT Workstation.
 
@@ -85,7 +85,7 @@ Key design tradeoff: **simulated evidence for reproducibility, live SIFT backend
 
 - **Zero attack surface, proven.** 5 dedicated tests assert no shell/write/delete/modify tools exist in the live registry. Tool count is pinned to exactly 15 — any unexpected addition fails CI.
 - **11 spoliation tests, all green.** Byte-append, deletion, same-size replacement, mid-investigation tamper, daemon detection, on-demand detection, audit logging, reseal recovery.
-- **497 total tests. 100% true-positive, 0% false-positive, 0% hallucination rate** on the simulated attack scenario.
+- **544 total tests. 100% true-positive, 0% false-positive, 0% hallucination rate** on the simulated attack scenario.
 - **MITRE coverage spans 15 techniques across 11 tactics** (initial access through C2, with lateral movement).
 
 ## What we learned

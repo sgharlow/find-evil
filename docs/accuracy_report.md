@@ -135,4 +135,4 @@ and included in the final IR report, demonstrating the agent's reasoning quality
 | YARA edge cases | 43 | 43 |
 | Evidence sealing edge cases | 49 | 49 |
 | Findings & STIX | 21 | 21 |
-| **Total** | **497** | **496 + 1 skipped** |
+| **Total** | **544** | **543 + 1 skipped** |
