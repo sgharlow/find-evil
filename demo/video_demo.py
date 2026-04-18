@@ -35,6 +35,7 @@ from find_evil.audit.logger import AuditLogger
 from find_evil.analysis.findings_db import FindingsDB
 from find_evil.analysis.drs_gate import DRSGate, Finding
 from find_evil.tools._base import enforce, complete, ToolContext
+from find_evil.tools.findings import build_stix_bundle
 
 # --- ANSI colors ---
 RESET = "\033[0m"
@@ -478,6 +479,33 @@ def main():
         elapsed = clock_str()
         print(f"\n  {DIM}Audit trail:  {audit_count} entries -> {audit_path}{RESET}")
         print(f"  {DIM}Findings DB:  {output_dir / 'findings.db'}{RESET}")
+
+        # ================================================================
+        # ACT 6: STIX 2.1 EXPORT (threat-intel handoff)
+        # ================================================================
+
+        banner("STIX 2.1 EXPORT: Threat Intel Handoff")
+        pause(1)
+
+        print(f"\n  {DIM}$ sift-enforcer export-stix --case ./evidence/{RESET}\n")
+        pause(0.5)
+
+        bundle = build_stix_bundle(all_findings, info.session_id, info.file_count)
+        stix_path = output_dir / "bundle.stix.json"
+        stix_path.write_text(json.dumps(bundle, indent=2), encoding="utf-8")
+
+        ind_count = sum(1 for o in bundle["objects"] if o["type"] == "indicator")
+        rel_count = sum(1 for o in bundle["objects"] if o["type"] == "relationship")
+
+        print(f"  {GREEN}STIX 2.1 bundle written: {stix_path}{RESET}")
+        print(f"  {GREEN}  bundle id:     {bundle['id']}{RESET}")
+        print(f"  {GREEN}  indicators:    {ind_count}{RESET}")
+        print(f"  {GREEN}  relationships: {rel_count}{RESET}")
+        print(f"  {GREEN}  total objects: {len(bundle['objects'])}{RESET}")
+        print()
+        print(f"  {DIM}Ready to ingest into MISP / OpenCTI / ThreatConnect.{RESET}")
+
+        pause(2)
 
         daemon.stop()
 
