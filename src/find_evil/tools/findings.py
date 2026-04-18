@@ -390,6 +390,59 @@ def _stix_indicator(ioc_type: str, value: str, finding_ids: list[str]) -> dict:
     }
 
 
+def build_stix_bundle(findings: list[dict], session_id: str, file_count: int) -> dict:
+    """Build a STIX 2.1 bundle from a list of findings.
+
+    Pure function with no MCP dependency — callable from demo scripts and tests.
+    The MCP tool wrapper export_stix() composes this with session context.
+    """
+    iocs = _extract_iocs(findings)
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    bundle_id = f"bundle--{uuid_mod.uuid4()}"
+    report_id = f"report--{uuid_mod.uuid4()}"
+
+    objects: list[dict] = []
+    indicator_ids: list[str] = []
+
+    finding_ids = [f["finding_id"] for f in findings]
+    for ioc_type, values in iocs.items():
+        for value in sorted(values):
+            indicator = _stix_indicator(ioc_type, value, finding_ids)
+            objects.append(indicator)
+            indicator_ids.append(indicator["id"])
+
+    objects.append({
+        "type": "report",
+        "spec_version": "2.1",
+        "id": report_id,
+        "created": now,
+        "modified": now,
+        "name": f"Evidence Integrity Enforcer — Session {session_id[:8]}",
+        "published": now,
+        "report_types": ["threat-report"],
+        "object_refs": indicator_ids,
+        "description": (
+            f"Automated DFIR analysis: {len(findings)} findings, "
+            f"{len(indicator_ids)} IOC indicators extracted. "
+            f"Evidence integrity verified ({file_count} files sealed)."
+        ),
+    })
+
+    for ind_id in indicator_ids:
+        objects.append({
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": f"relationship--{uuid_mod.uuid4()}",
+            "created": now,
+            "modified": now,
+            "relationship_type": "indicates",
+            "source_ref": ind_id,
+            "target_ref": report_id,
+        })
+
+    return {"type": "bundle", "id": bundle_id, "objects": objects}
+
+
 @mcp.tool()
 async def export_stix(ctx: Context) -> dict:
     """Export all findings and IOCs as a STIX 2.1 bundle.
@@ -418,69 +471,17 @@ async def export_stix(ctx: Context) -> dict:
             })
 
         findings = db.get_findings(session.session_id)
-        iocs = _extract_iocs(findings)
-
-        now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-        bundle_id = f"bundle--{uuid_mod.uuid4()}"
-        report_id = f"report--{uuid_mod.uuid4()}"
-
-        objects: list[dict] = []
-        indicator_ids: list[str] = []
-
-        # Build indicators from IOCs
-        finding_ids = [f["finding_id"] for f in findings]
-        for ioc_type, values in iocs.items():
-            for value in sorted(values):
-                indicator = _stix_indicator(ioc_type, value, finding_ids)
-                objects.append(indicator)
-                indicator_ids.append(indicator["id"])
-
-        # Build Report object
-        report_obj = {
-            "type": "report",
-            "spec_version": "2.1",
-            "id": report_id,
-            "created": now,
-            "modified": now,
-            "name": f"Evidence Integrity Enforcer — Session {session.session_id[:8]}",
-            "published": now,
-            "report_types": ["threat-report"],
-            "object_refs": indicator_ids,
-            "description": (
-                f"Automated DFIR analysis: {len(findings)} findings, "
-                f"{len(indicator_ids)} IOC indicators extracted. "
-                f"Evidence integrity verified ({session.file_count} files sealed)."
-            ),
-        }
-        objects.append(report_obj)
-
-        # Build relationships
-        for ind_id in indicator_ids:
-            objects.append({
-                "type": "relationship",
-                "spec_version": "2.1",
-                "id": f"relationship--{uuid_mod.uuid4()}",
-                "created": now,
-                "modified": now,
-                "relationship_type": "indicates",
-                "source_ref": ind_id,
-                "target_ref": report_id,
-            })
-
-        bundle = {
-            "type": "bundle",
-            "id": bundle_id,
-            "objects": objects,
-        }
+        bundle = build_stix_bundle(findings, session.session_id, session.file_count)
+        indicator_count = sum(1 for o in bundle["objects"] if o["type"] == "indicator")
 
         result = {
             "tool": "export_stix",
             "stix_bundle": json.dumps(bundle, indent=2),
-            "indicator_count": len(indicator_ids),
-            "object_count": len(objects),
+            "indicator_count": indicator_count,
+            "object_count": len(bundle["objects"]),
             "summary": (
-                f"STIX 2.1 bundle exported: {len(indicator_ids)} indicators, "
-                f"{len(objects)} total objects"
+                f"STIX 2.1 bundle exported: {indicator_count} indicators, "
+                f"{len(bundle['objects'])} total objects"
             ),
         }
 
