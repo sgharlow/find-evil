@@ -152,7 +152,7 @@ No live deployment — this is a local MCP server. Paste the following:
 git clone https://github.com/sgharlow/find-evil.git
 cd find-evil
 pip install -e ".[dev]"
-pytest tests/ -v                     # 497 tests, 496 pass + 1 skip
+pytest tests/ -v                     # 544 tests, 540 pass + 1 skip
 python demo/tamper_demo.py           # live tamper detection demo
 python demo/run_investigation.py     # full 7-phase simulated investigation
 python demo/validate_submission.py   # 30+ automated judging-criteria checks
@@ -287,7 +287,7 @@ Formula: `confidence = (evidence_strength * 0.6) + (corroboration * 0.4)`, thres
 Byte-append, file deletion, same-size replacement, session halt on violation, enforce-gate blocking after tamper, `touch` NOT triggering (correct), daemon background detection, on-demand detection, mid-investigation tamper halting the pipeline, tamper events logged to audit trail, reseal recovery creating a fresh session.
 
 ## Test Suite Summary
-497 tests total — 496 passing, 1 skipped (Windows-admin-only symlink test; passes on Linux/SIFT).
+544 tests total — 543 passing, 1 skipped (Windows-admin-only symlink test; passes on Linux/SIFT).
 
 Full detail: `docs/accuracy_report.md` and `docs/evidence_integrity_approach.md`.
 ```

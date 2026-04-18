@@ -25,6 +25,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 README_PATH = PROJECT_ROOT / "README.md"
 CLAUDE_MD_PATH = PROJECT_ROOT / "CLAUDE.md"
 SUBMISSION_PATH = PROJECT_ROOT / "docs" / "sans-submission-answers.md"
+DEVPOST_PATH = PROJECT_ROOT / "DEVPOST_SUBMISSION.md"
 TESTS_DIR = PROJECT_ROOT / "tests"
 TOOLS_DIR = PROJECT_ROOT / "src" / "find_evil" / "tools"
 
@@ -327,6 +328,68 @@ class TestSubmissionAnswersConsistency:
         mentioned = sum(1 for ext in EVIDENCE_EXTENSIONS if ext in submission)
         assert mentioned >= 3, (
             f"Submission should mention at least 3 evidence extensions, found {mentioned}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# 4a. Devpost submission drift guard
+# ---------------------------------------------------------------------------
+
+class TestDevpostSubmissionConsistency:
+    """Verify DEVPOST_SUBMISSION.md stays aligned with the live codebase.
+
+    Drift between the Devpost draft and reality has bitten this repo once
+    already (commit 4d2e2c3 fixed a '497 test' vs '541 test' mismatch);
+    catch it in CI before the next submission slip.
+    """
+
+    def test_devpost_file_exists(self):
+        assert DEVPOST_PATH.exists(), "DEVPOST_SUBMISSION.md must exist at repo root"
+
+    def test_devpost_mentions_correct_tool_count(self):
+        """Devpost submission should reference the actual tool count."""
+        devpost = _read_text(DEVPOST_PATH)
+        actual = _get_registered_tool_count()
+        assert str(actual) in devpost, (
+            f"Devpost submission should mention actual tool count ({actual})"
+        )
+
+    def test_devpost_test_count_is_current(self):
+        """Any numeric test-count claim in Devpost must match the real count.
+
+        Extracts every '<N> tests' / '<N> test' phrase with N >= 100 (to
+        skip per-class breakout counts like "11 dedicated tests"), then
+        requires at least one claim to fall within ±2 of the current
+        pytest collection total. Uses `pytest --collect-only -q` so
+        parametrized tests are counted correctly (def-counting misses
+        expansion).
+        """
+        import subprocess
+        import sys
+
+        devpost = _read_text(DEVPOST_PATH)
+        # Run pytest collection and parse the trailing "<N> tests collected"
+        # line. Fall back to skip if pytest isn't invokable from this env.
+        result = subprocess.run(
+            [sys.executable, "-m", "pytest", "--collect-only", "-q"],
+            cwd=PROJECT_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=120,
+        )
+        match = re.search(r"(\d+)\s+tests?\s+collected", result.stdout + result.stderr)
+        if not match:
+            pytest.skip("Could not determine pytest collection count")
+        actual = int(match.group(1))
+        assert actual > 0
+
+        # Plausible totals claimed in docs (>= 100 to skip breakout counts)
+        claimed = [int(m) for m in re.findall(r"(\d{3,})\s+tests?\b", devpost)]
+        assert claimed, "Devpost should mention at least one numeric test total"
+        in_range = [c for c in claimed if abs(c - actual) <= 2]
+        assert in_range, (
+            f"Devpost's test totals {claimed} don't match actual count {actual}. "
+            f"Update DEVPOST_SUBMISSION.md before the next submission."
         )
 
 
