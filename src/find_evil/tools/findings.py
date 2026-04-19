@@ -12,9 +12,11 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
 import uuid as uuid_mod
 from datetime import datetime, timezone
+from pathlib import Path
 
 from mcp.server.fastmcp import Context
 
@@ -346,14 +348,29 @@ async def generate_report(ctx: Context, title: str = "Incident Response Report")
 
         report_markdown = "\n".join(report_lines)
 
+        # Persist to output/ir_report.md so downstream consumers and recordings
+        # see the real file. Output dir configurable via FIND_EVIL_OUTPUT_DIR,
+        # defaults to /output (the Docker mount) or ./output on host.
+        output_dir = Path(os.environ.get("FIND_EVIL_OUTPUT_DIR", "/output" if Path("/output").is_dir() else "./output"))
+        report_path = output_dir / "ir_report.md"
+        written_path = None
+        try:
+            output_dir.mkdir(parents=True, exist_ok=True)
+            report_path.write_text(report_markdown, encoding="utf-8")
+            written_path = str(report_path)
+        except OSError as write_err:
+            logger.warning("could not persist ir_report.md: %s", write_err)
+
         result = {
             "tool": "generate_report",
             "report": report_markdown,
             "findings_count": len(findings),
             "corrections_count": len(corrections),
+            "output_path": written_path,
             "summary": (
                 f"IR report generated: {len(findings)} findings, "
                 f"{len(corrections)} self-corrections"
+                + (f" (written to {written_path})" if written_path else "")
             ),
         }
 
@@ -474,14 +491,27 @@ async def export_stix(ctx: Context) -> dict:
         bundle = build_stix_bundle(findings, session.session_id, session.file_count)
         indicator_count = sum(1 for o in bundle["objects"] if o["type"] == "indicator")
 
+        # Persist to output/bundle.stix.json for downstream consumers.
+        output_dir = Path(os.environ.get("FIND_EVIL_OUTPUT_DIR", "/output" if Path("/output").is_dir() else "./output"))
+        bundle_path = output_dir / "bundle.stix.json"
+        written_path = None
+        try:
+            output_dir.mkdir(parents=True, exist_ok=True)
+            bundle_path.write_text(json.dumps(bundle, indent=2), encoding="utf-8")
+            written_path = str(bundle_path)
+        except OSError as write_err:
+            logger.warning("could not persist bundle.stix.json: %s", write_err)
+
         result = {
             "tool": "export_stix",
             "stix_bundle": json.dumps(bundle, indent=2),
             "indicator_count": indicator_count,
             "object_count": len(bundle["objects"]),
+            "output_path": written_path,
             "summary": (
                 f"STIX 2.1 bundle exported: {indicator_count} indicators, "
                 f"{len(bundle['objects'])} total objects"
+                + (f" (written to {written_path})" if written_path else "")
             ),
         }
 
