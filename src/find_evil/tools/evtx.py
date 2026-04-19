@@ -20,6 +20,7 @@ Backend: python-evtx library when available, simulated data for dev/testing.
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any
 
 from mcp.server.fastmcp import Context
@@ -28,6 +29,26 @@ from find_evil.server import mcp
 from find_evil.tools._base import enforce, complete, fail
 
 logger = logging.getLogger("find_evil.tools.evtx")
+
+
+def _load_computer_redact_map() -> dict[str, str]:
+    # FIND_EVIL_COMPUTER_REDACT_MAP="orig1=new1,orig2=new2" — applied to the
+    # Computer field of parsed events. Lets fixtures captured on real hosts
+    # be shared publicly without leaking hostnames.
+    raw = os.environ.get("FIND_EVIL_COMPUTER_REDACT_MAP", "")
+    if not raw:
+        return {}
+    pairs: dict[str, str] = {}
+    for entry in raw.split(","):
+        if "=" in entry:
+            k, v = entry.split("=", 1)
+            k, v = k.strip(), v.strip()
+            if k:
+                pairs[k] = v
+    return pairs
+
+
+_COMPUTER_REDACT_MAP = _load_computer_redact_map()
 
 
 def _has_evtx_lib() -> bool:
@@ -249,10 +270,13 @@ def _parse_real_evtx(evtx_path: str) -> list[dict]:
                 provider_elem = system.find("ns:Provider", ns)
                 channel_elem = system.find("ns:Channel", ns)
 
+                computer_raw = computer_elem.text if computer_elem is not None else ""
+                computer = _COMPUTER_REDACT_MAP.get(computer_raw, computer_raw)
+
                 event = {
                     "EventID": int(event_id_elem.text) if event_id_elem is not None and event_id_elem.text else 0,
                     "TimeCreated": time_elem.get("SystemTime", "") if time_elem is not None else "",
-                    "Computer": computer_elem.text if computer_elem is not None else "",
+                    "Computer": computer,
                     "Source": provider_elem.get("Name", "") if provider_elem is not None else "",
                     "Channel": channel_elem.text if channel_elem is not None else "",
                 }

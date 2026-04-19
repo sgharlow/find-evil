@@ -71,3 +71,6 @@ tests/fixtures/*.evtx
 # Demo artifacts — demo/video_demo.py regenerates with fresh UUIDs per run
 output/
 
+
+# Walkthrough screenshots (local capture only, not part of submission)
+screenshots/
