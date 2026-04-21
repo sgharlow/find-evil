@@ -26,7 +26,7 @@ The Docker SIFT image installs `python-evtx`, `yara-python`, `python-registry`, 
 Open a terminal in the `find-evil` project directory:
 
 ```bash
-cd C:/Users/sghar/CascadeProjects/find-evil
+cd /path/to/find-evil
 
 # Build the image (~2-3 min first time, cached after)
 docker build -f Dockerfile.sift -t find-evil-sift .

@@ -39,7 +39,7 @@ JSON
 
 # Feed the payload through stdio. Sleep a beat after so the third response has
 # time to flush before the container exits.
-output=$({ echo "$payload"; sleep 3; } | MSYS_NO_PATHCONV=1 docker run --rm -i -e FIND_EVIL_COMPUTER_REDACT_MAP="TDC-5690-SH.Opus.OpusInspection.com=VICTUS" -v "$REPO_ROOT/evidence:/evidence:ro" -v "$REPO_ROOT/output:/output" find-evil-sift:latest 2>/dev/null)
+output=$({ echo "$payload"; sleep 3; } | MSYS_NO_PATHCONV=1 docker run --rm -i -e FIND_EVIL_COMPUTER_REDACT_MAP="DESKTOP-ABC123.corp.example.com=VICTUS" -v "$REPO_ROOT/evidence:/evidence:ro" -v "$REPO_ROOT/output:/output" find-evil-sift:latest 2>/dev/null)
 
 [ "${DEBUG_SMOKE:-0}" = "1" ] && { echo "--- DEBUG ---"; echo "REPO_ROOT=$REPO_ROOT"; echo "payload bytes=${#payload}"; echo "output bytes=${#output}"; echo "output lines=$(echo "$output" | wc -l)"; echo "--- /DEBUG ---"; }
 
