@@ -74,3 +74,7 @@ output/
 
 # Walkthrough screenshots (local capture only, not part of submission)
 screenshots/
+
+# Large media — videos uploaded to YouTube, regenerable audio
+assets/*.mp4
+assets/*.mp3

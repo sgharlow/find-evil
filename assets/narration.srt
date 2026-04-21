@@ -1,0 +1,131 @@
+1
+00:00:00,000 --> 00:00:06,020
+Evidence Integrity Enforcer, a DFIR agent with 15 read-only MCP tools.
+
+2
+00:00:06,020 --> 00:00:11,260
+Every evidence file is sealed with a SHA-256 hash before a single tool runs.
+
+3
+00:00:11,260 --> 00:00:13,820
+This is constraint by architecture, not by prompt.
+
+4
+00:00:13,820 --> 00:00:18,299
+Claude invokes volatility plugins, registry queries, event log parsers, YARA scans, and
+
+5
+00:00:18,299 --> 00:00:19,660
+timeline builder.
+
+6
+00:00:19,660 --> 00:00:22,139
+Every call logged to JSONL with a UUID.
+
+7
+00:00:22,139 --> 00:00:24,379
+No shell, no write, no delete.
+
+8
+00:00:24,379 --> 00:00:26,620
+Those functions don't exist in the server.
+
+9
+00:00:26,620 --> 00:00:28,660
+The attack surface is zero.
+
+10
+00:00:28,780 --> 00:00:31,260
+Now the DRS confidence gate.
+
+11
+00:00:31,260 --> 00:00:33,740
+Each finding is scored on two dimensions.
+
+12
+00:00:33,740 --> 00:00:39,820
+Evidence strength, weighted 0.6, plus cross-tool corroboration, weighted 0.4.
+
+13
+00:00:39,820 --> 00:00:45,400
+Below the 0.75 threshold, the agent self-corrects, seeks a second independent tool to confirm
+
+14
+00:00:45,400 --> 00:00:47,139
+before committing.
+
+15
+00:00:47,139 --> 00:00:51,220
+The yellow self-correction lines are the agent catching itself in real-time and going back
+
+16
+00:00:51,220 --> 00:00:53,020
+for more evidence.
+
+17
+00:00:53,020 --> 00:00:54,900
+No human in the loop.
+
+18
+00:00:54,900 --> 00:00:59,299
+parse_evtx catches encoded PowerShell in the security log.
+
+19
+00:00:59,299 --> 00:01:01,660
+Execution policy bypass.
+
+20
+00:01:01,660 --> 00:01:06,379
+YARA matches certutil -urlcache — the LOLBin download stage.
+
+21
+00:01:06,379 --> 00:01:10,139
+A Cobalt Strike beacon signature hits at memory offset 5016.
+
+22
+00:01:10,139 --> 00:01:16,820
+C2 traffic to 185.220.101.34 on port 8443 — the standard Cobalt Strike HTTPS listener.
+
+23
+00:01:16,820 --> 00:01:23,699
+Process injection via rundll32 — MITRE ATT&CK technique T1055.001.
+
+24
+00:01:23,699 --> 00:01:29,220
+Eight findings committed, each with an evidence score, a corroboration count, and UUID provenance
+
+25
+00:01:29,220 --> 00:01:32,419
+linking back to exact tool calls in the audit trail.
+
+26
+00:01:32,419 --> 00:01:36,860
+generate_report writes the IR markdown — findings, IOCs, recommendations.
+
+27
+00:01:36,860 --> 00:01:42,379
+export_stix produces a STIX 2.1 bundle — indicator, relationship, and report objects, ready to
+
+28
+00:01:42,379 --> 00:01:45,820
+push into MISP, OpenCTI, or ThreatConnect.
+
+29
+00:01:45,820 --> 00:01:49,300
+Threat intel in a format any SOC already consumes.
+
+30
+00:01:49,300 --> 00:01:50,300
+Investigation complete.
+
+31
+00:01:50,300 --> 00:01:52,099
+Chain of custody intact.
+
+32
+00:01:52,099 --> 00:01:57,099
+Defender clock: 34 seconds. Adversary breakout time: 7 minutes.
+
+33
+00:01:57,099 --> 00:01:59,419
+Every finding, forensically defensible.

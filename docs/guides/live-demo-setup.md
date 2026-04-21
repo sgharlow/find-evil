@@ -37,9 +37,9 @@ instead — it passes the args through unmodified:
 
 ```bash
 REPO_WIN=$(python -c "print(r'$(pwd -W)')")
-# => C:/Users/sghar/CascadeProjects/find-evil
+# => /path/to/find-evil (Windows: C:/Users/<you>/...)
 
-claude mcp add-json find-evil "{\"type\":\"stdio\",\"command\":\"docker\",\"args\":[\"run\",\"--rm\",\"-i\",\"-e\",\"FIND_EVIL_COMPUTER_REDACT_MAP=TDC-5690-SH.Opus.OpusInspection.com=VICTUS\",\"-v\",\"${REPO_WIN}/evidence:/evidence:ro\",\"-v\",\"${REPO_WIN}/output:/output\",\"find-evil-sift:latest\"]}"
+claude mcp add-json find-evil "{\"type\":\"stdio\",\"command\":\"docker\",\"args\":[\"run\",\"--rm\",\"-i\",\"-e\",\"FIND_EVIL_COMPUTER_REDACT_MAP=DESKTOP-ABC123.corp.example.com=VICTUS\",\"-v\",\"${REPO_WIN}/evidence:/evidence:ro\",\"-v\",\"${REPO_WIN}/output:/output\",\"find-evil-sift:latest\"]}"
 ```
 
 **On Linux / macOS** the simpler form works:
@@ -47,7 +47,7 @@ claude mcp add-json find-evil "{\"type\":\"stdio\",\"command\":\"docker\",\"args
 ```bash
 REPO=$(pwd)
 claude mcp add find-evil -- docker run --rm -i \
-  -e FIND_EVIL_COMPUTER_REDACT_MAP="TDC-5690-SH.Opus.OpusInspection.com=VICTUS" \
+  -e FIND_EVIL_COMPUTER_REDACT_MAP="DESKTOP-ABC123.corp.example.com=VICTUS" \
   -v "$REPO/evidence:/evidence:ro" \
   -v "$REPO/output:/output" \
   find-evil-sift:latest

@@ -18,7 +18,7 @@ The server ships with 15 forensic tools, a 7-phase investigation protocol, a DRS
 | 2 | Architecture diagram | [`README.md`](./README.md) lines 23-100 (ASCII) |
 | 3 | Tool inventory (15 tools, MITRE coverage) | [`README.md`](./README.md) MITRE ATT&CK Coverage + Judging Criteria Map |
 | 4 | Test strategy + results (544 tests) | [`README.md`](./README.md) Test Suite section + `pytest --collect-only` |
-| 5 | Demo scripts | [`demo/run_investigation.py`](./demo/run_investigation.py), [`demo/tamper_demo.py`](./demo/tamper_demo.py), [`demo/VIDEO_SCRIPT.md`](./demo/VIDEO_SCRIPT.md) |
+| 5 | Demo video + scripts | **Video: https://youtu.be/7VTVS9E6cX8 (2:00)** · [`demo/run_investigation.py`](./demo/run_investigation.py) · [`demo/tamper_demo.py`](./demo/tamper_demo.py) · [`demo/VIDEO_SCRIPT.md`](./demo/VIDEO_SCRIPT.md) |
 | 6 | STIX 2.1 export format | [`README.md`](./README.md) STIX 2.1 Export Format section (sample indicator) |
 | 7 | Try-it-out guide | [`docs/try_it_out.md`](./docs/try_it_out.md) |
 | 8 | Accuracy / DRS methodology | [`docs/accuracy_report.md`](./docs/accuracy_report.md) |
