@@ -2,6 +2,11 @@
 
 > **Hackathon window:** Apr 15 – Jun 15, 2026 · **Project:** Evidence Integrity Enforcer · **License:** MIT
 
+| | |
+|---|---|
+| **GitHub** | https://github.com/sgharlow/find-evil |
+| **Demo Video (2:00)** | https://youtu.be/7VTVS9E6cX8 |
+
 Root-level pointer for judges. Detailed answers to the 8 SANS submission questions live in [`docs/sans-submission-answers.md`](./docs/sans-submission-answers.md).
 
 ## What It Is
