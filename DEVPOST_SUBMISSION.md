@@ -118,6 +118,7 @@ python, python-3.11, claude-code, mcp, fastmcp, custom-mcp-server, sift-workstat
 | GitHub repository | `https://github.com/sgharlow/find-evil` |
 | Demo video (YouTube) | https://youtu.be/7VTVS9E6cX8 |
 | Automated validation script | `https://github.com/sgharlow/find-evil/blob/main/demo/validate_submission.py` |
+| Audit-trail sample (UUID-linked, all 6 event types) | `https://github.com/sgharlow/find-evil/blob/main/demo/audit_trail_sample.jsonl` |
 
 ### Project Media — Image gallery  *(JPG/PNG/GIF, 5 MB max each, 3:2 ratio)*
 
@@ -126,7 +127,7 @@ Recommended uploads, in order:
 2. DRS gate decision tree (screenshot from `demo/run_investigation.py` output showing ACCEPT vs SELF-CORRECT).
 3. Audit trail excerpt (pretty-printed JSONL showing `tool_call_start → tool_call_complete → finding_committed → provenance` chain).
 4. MITRE ATT&CK coverage heatmap (15 techniques × 11 tactics from `README.md`).
-5. Test suite summary screenshot (`pytest tests/ -v` tail showing 496 passed / 1 skipped).
+5. Test suite summary screenshot (`pytest tests/ -v` tail showing 543 passed / 1 skipped — 544 total).
 
 ---
 
@@ -152,7 +153,7 @@ No live deployment — this is a local MCP server. Paste the following:
 git clone https://github.com/sgharlow/find-evil.git
 cd find-evil
 pip install -e ".[dev]"
-pytest tests/ -v                     # 544 tests, 540 pass + 1 skip
+pytest tests/ -v                     # 544 tests, 543 pass + 1 skip
 python demo/tamper_demo.py           # live tamper detection demo
 python demo/run_investigation.py     # full 7-phase simulated investigation
 python demo/validate_submission.py   # 30+ automated judging-criteria checks
@@ -357,7 +358,7 @@ Full detail: `docs/accuracy_report.md` and `docs/evidence_integrity_approach.md`
 - [ ] **Includes:** UUID per invocation, tool name, arguments, timestamp, integrity-check status, output hash (SHA-256)
 - [ ] **Event types present:** `tool_call_start`, `tool_call_complete`, `finding_committed`, `self_correction`, `integrity_check`, `session_halt`
 - [ ] **This is a single-agent submission** → tool execution logs with timestamps + invocation UUIDs satisfy the "tool execution logs with timestamps and token usage" requirement. Token usage is emitted by Claude Code's own session transcript; link or attach that alongside `audit_trail.jsonl` if judges want the LLM-side view.
-- [ ] Upload `output/audit_trail.jsonl` (or a trimmed excerpt) to the repo so judges can inspect without running the demo
+- [x] Trimmed, hostname-redacted excerpt committed at [`demo/audit_trail_sample.jsonl`](./demo/audit_trail_sample.jsonl) — 7 entries covering all 6 event types (`session_start`, `integrity_check`, `tool_call_start`, `tool_call_complete`, `finding_committed`, `self_correction`, `session_halt`). Regenerate with `python scripts/build_audit_sample.py` after re-running the demo. Full untrimmed `output/audit_trail.jsonl` is gitignored but produced fresh on every demo run.
 
 ### Built-With Tags (required at submit time)
 
@@ -380,7 +381,7 @@ claude-code, python, python-3.11, mcp, fastmcp, custom-mcp-server, sift-workstat
 
 ```bash
 # From the repo root
-pytest tests/ -v                             # expect 496 passed, 1 skipped
+pytest tests/ -v                             # expect 543 passed, 1 skipped (544 total)
 python demo/validate_submission.py           # expect all sections PASS
 python demo/run_investigation.py             # regenerates audit_trail.jsonl
 ls -lh output/audit_trail.jsonl output/ir_report.md   # both present, non-empty
