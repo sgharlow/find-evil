@@ -22,6 +22,11 @@ impossible by design, not by instruction.
 
 ## Architecture
 
+![Find Evil — architecture overview](screenshots/find-evil-architecture.png)
+
+<details>
+<summary>ASCII architecture (text-only view)</summary>
+
 ```
 +------------------------------------------------------------------+
 |                    SIFT Workstation (Ubuntu)                      |
@@ -84,6 +89,8 @@ impossible by design, not by instruction.
 |                          +------------------------------------+  |
 +------------------------------------------------------------------+
 ```
+
+</details>
 
 **Data flow for every tool call:**
 

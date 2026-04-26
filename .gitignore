@@ -73,7 +73,14 @@ output/
 
 
 # Walkthrough screenshots (local capture only, not part of submission)
-screenshots/
+screenshots/*
+# Exceptions: Devpost media assets must be tracked (README links to architecture PNG)
+!screenshots/find-evil-thumbnail.png
+!screenshots/find-evil-thumbnail-mid.png
+!screenshots/find-evil-architecture.png
+!screenshots/find-evil-architecture-mid.png
+!screenshots/find-evil-title.png
+!screenshots/find-evil-title-mid.png
 
 # Large media — videos uploaded to YouTube, regenerable audio
 assets/*.mp4
