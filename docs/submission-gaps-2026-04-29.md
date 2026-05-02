@@ -8,6 +8,17 @@
 
 SUBMISSION.md is **submission-ready** — all 8 SANS deliverables are linked, GitHub + demo video URLs resolve, license is present. **One gap:** the document delegates the 15-tool list to `README.md` rather than enumerating the tools inline with one-line descriptions. Fix is optional (judges will follow the link), but inlining makes the doc self-contained.
 
+## Status (2026-05-01 update)
+
+| Gap | Priority | Status |
+|-----|----------|--------|
+| G1 — Tool list not inline | LOW | OPEN (optional polish; passes on its own) |
+| G2 — `docs/sans-submission-answers.md` presence | MEDIUM | ✅ CLOSED — file present (19,530 bytes), both refs resolve |
+| G3 — Test count claim "544" | MEDIUM | ✅ CLOSED — pytest verifies 544 (543 passed, 1 skipped); all docs consistent |
+| G4 — Hackathon header dates | LOW | OPEN (formatting only) |
+
+Both MEDIUM gaps are resolved. Remaining items (G1, G4) are LOW-priority polish.
+
 ## 15-Tool Inventory — Verified Present in Source
 
 Counted `@mcp.tool()` decorators across the codebase:
@@ -56,11 +67,13 @@ Counted `@mcp.tool()` decorators across the codebase:
 **Observation:** SUBMISSION.md references this file twice. I did not verify file presence in this audit.
 **Recommendation:** `ls -1 find-evil/docs/sans-submission-answers.md` before final submission.
 **Priority:** MEDIUM — broken-link risk.
+**Resolution (2026-05-01):** ✅ CLOSED. File exists (`docs/sans-submission-answers.md`, 19,530 bytes). Both inline references in SUBMISSION.md (lines 10 and 22) resolve to the present file. No broken-link risk.
 
 ### G3 — Test count claim "544" needs re-verification
 **Observation:** SUBMISSION.md says 544 (543 passing, 1 skipped). MEMORY.md and CLAUDE.md say 541. Numbers should match before submission.
 **Recommendation:** Run `pytest --collect-only -q | tail -3` and reconcile across SUBMISSION.md, README.md, and MEMORY.md.
 **Priority:** MEDIUM — minor credibility hit if numbers diverge.
+**Resolution (2026-05-01):** ✅ CLOSED. `pytest --collect-only -q` reports **544 tests collected**; `pytest -q` reports **543 passed, 1 skipped in 11.49s**. SUBMISSION.md (lines 25, 46), README.md (lines 116, 157), and MEMORY.md row 17 are all consistent at 544 (543 passing, 1 skipped). The audit's "541" reference was based on a pre-rebaseline snapshot — no divergence remains.
 
 ### G4 — Hackathon window dates static
 **Observation:** Header says "Apr 15 – Jun 15, 2026". Submission deadline is Jun 15. No dynamic deadline reminder needed for judges, but worth confirming dates match the official Devpost listing.
