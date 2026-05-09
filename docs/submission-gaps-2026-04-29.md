@@ -8,16 +8,16 @@
 
 SUBMISSION.md is **submission-ready** — all 8 SANS deliverables are linked, GitHub + demo video URLs resolve, license is present. **One gap:** the document delegates the 15-tool list to `README.md` rather than enumerating the tools inline with one-line descriptions. Fix is optional (judges will follow the link), but inlining makes the doc self-contained.
 
-## Status (2026-05-01 update)
+## Status (2026-05-08 update)
 
 | Gap | Priority | Status |
 |-----|----------|--------|
-| G1 — Tool list not inline | LOW | OPEN (optional polish; passes on its own) |
-| G2 — `docs/sans-submission-answers.md` presence | MEDIUM | ✅ CLOSED — file present (19,530 bytes), both refs resolve |
-| G3 — Test count claim "544" | MEDIUM | ✅ CLOSED — pytest verifies 544 (543 passed, 1 skipped); all docs consistent |
-| G4 — Hackathon header dates | LOW | OPEN (formatting only) |
+| G1 — Tool list not inline | LOW | ✅ CLOSED 2026-05-08 — inline 15-tool table added to `SUBMISSION.md` after the "15 forensic tools" sentence; Deliverable #3 row updated to point at it |
+| G2 — `docs/sans-submission-answers.md` presence | MEDIUM | ✅ CLOSED 2026-05-01 — file present (19,530 bytes), both refs resolve |
+| G3 — Test count claim "544" | MEDIUM | ✅ CLOSED 2026-05-01 — pytest verifies 544 (543 passed, 1 skipped); all docs consistent |
+| G4 — Hackathon header dates | LOW | ✅ CLOSED 2026-05-08 — header reads "Apr 15 – Jun 15, 2026"; dates internally consistent across `SUBMISSION.md`, `README.md`, `status.md`, `MEMORY.md` row 17. Submission deadline 2026-06-15 confirmed in MEMORY. No formatting issue. |
 
-Both MEDIUM gaps are resolved. Remaining items (G1, G4) are LOW-priority polish.
+All four gaps resolved. SUBMISSION.md is judging-ready against the 8-deliverable checklist.
 
 ## 15-Tool Inventory — Verified Present in Source
 
@@ -62,6 +62,7 @@ Counted `@mcp.tool()` decorators across the codebase:
 **Observation:** SUBMISSION.md says "15 forensic tools" but does not enumerate them. Judges must navigate to README.md for the inventory.
 **Recommendation:** Optional — paste the 15-row table from this doc directly into SUBMISSION.md (after line 16 "the server ships with 15 forensic tools"). Self-contained submission docs are a courtesy.
 **Priority:** LOW — passing on its own.
+**Resolution (2026-05-08):** ✅ CLOSED. Inline 15-tool table added to `SUBMISSION.md` directly after the "15 forensic tools" sentence. Deliverable #3 row updated to "Inline table above (15 Forensic Tools); MITRE mapping in README.md". Submission doc is now self-contained for tool inventory.
 
 ### G2 — `docs/sans-submission-answers.md` not verified to exist
 **Observation:** SUBMISSION.md references this file twice. I did not verify file presence in this audit.
@@ -78,6 +79,7 @@ Counted `@mcp.tool()` decorators across the codebase:
 ### G4 — Hackathon window dates static
 **Observation:** Header says "Apr 15 – Jun 15, 2026". Submission deadline is Jun 15. No dynamic deadline reminder needed for judges, but worth confirming dates match the official Devpost listing.
 **Priority:** LOW — formatting only.
+**Resolution (2026-05-08):** ✅ CLOSED. Dates "Apr 15 – Jun 15, 2026" are internally consistent across `SUBMISSION.md` (line 3), `README.md`, `status.md`, and `MEMORY.md` row 17. Submission deadline of 2026-06-15 confirmed in MEMORY index. Header format is plain prose, no static-date hazard for judges. No edit needed beyond consistency check.
 
 ## Files referenced (no edits made by this audit)
 
