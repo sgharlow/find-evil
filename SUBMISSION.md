@@ -15,13 +15,35 @@ A purpose-built MCP server that wraps SIFT Workstation forensic tools as typed, 
 
 The server ships with 15 forensic tools, a 7-phase investigation protocol, a DRS (Decision-Relevance Scoring) confidence gate, and STIX 2.1 export for interop with threat intelligence platforms.
 
+## 15 Forensic Tools (Inventory)
+
+| #  | Tool                   | File                                | Phase            | One-line description                                                              |
+|----|------------------------|-------------------------------------|------------------|-----------------------------------------------------------------------------------|
+| 1  | `session_init`         | `src/find_evil/server.py`           | 0 SEAL           | Initialize an evidence session and seal all files with SHA-256 hashes             |
+| 2  | `verify_integrity`     | `src/find_evil/server.py`           | 0 SEAL           | Verify hashes of all sealed evidence files match originals                        |
+| 3  | `list_sealed_evidence` | `src/find_evil/server.py`           | 0 SEAL           | List sealed evidence files and their hash fingerprints                            |
+| 4  | `reseal_evidence`      | `src/find_evil/server.py`           | 0 SEAL           | Re-seal evidence after a tamper event or manual intervention                      |
+| 5  | `vol_pslist`           | `src/find_evil/tools/volatility.py` | 1 TRIAGE         | List running processes from a Windows memory image (Volatility3)                  |
+| 6  | `vol_netscan`          | `src/find_evil/tools/volatility.py` | 1 TRIAGE         | List network connections from a Windows memory image (Volatility3)                |
+| 7  | `vol_malfind`          | `src/find_evil/tools/volatility.py` | 2 DEEP MEMORY    | Detect injected code in process memory (Volatility3 malfind)                      |
+| 8  | `vol_cmdline`          | `src/find_evil/tools/volatility.py` | 2 DEEP MEMORY    | Get command-line arguments for processes from a memory image                      |
+| 9  | `parse_evtx`           | `src/find_evil/tools/evtx.py`       | 3 LOGS           | Parse Windows EVTX files filtering by Event ID                                    |
+| 10 | `registry_query`       | `src/find_evil/tools/registry.py`   | 4 PERSISTENCE    | Query a Windows registry hive for persistence indicators                          |
+| 11 | `build_timeline`       | `src/find_evil/tools/timeline.py`   | 5 TIMELINE       | Generate a super-timeline from disk + memory + log evidence                       |
+| 12 | `yara_scan`            | `src/find_evil/tools/yara_scan.py`  | 6 IOC SCAN       | Scan files or memory with YARA rules for malware/IOC matches                      |
+| 13 | `submit_finding`       | `src/find_evil/tools/findings.py`   | 7 SYNTHESIS      | Submit a finding through the DRS confidence gate for inclusion in the report      |
+| 14 | `generate_report`      | `src/find_evil/tools/findings.py`   | 7 SYNTHESIS      | Generate a structured incident response report from accepted findings             |
+| 15 | `export_stix`          | `src/find_evil/tools/findings.py`   | 7 SYNTHESIS      | Export findings and IOCs as a STIX 2.1 bundle for threat-intel interop            |
+
+Verified by `@mcp.tool()` decorator count across `src/find_evil/**/*.py`. MITRE ATT&CK mapping in [`README.md`](./README.md).
+
 ## 8 SANS Deliverables — Where to Find Each
 
 | # | Deliverable | Where |
 |---|---|---|
 | 1 | Project description + value proposition | [`README.md`](./README.md) (top), [`docs/sans-submission-answers.md`](./docs/sans-submission-answers.md) |
 | 2 | Architecture diagram | [`README.md`](./README.md) lines 23-100 (ASCII) |
-| 3 | Tool inventory (15 tools, MITRE coverage) | [`README.md`](./README.md) MITRE ATT&CK Coverage + Judging Criteria Map |
+| 3 | Tool inventory (15 tools, MITRE coverage) | Inline table above (15 Forensic Tools); MITRE mapping in [`README.md`](./README.md) MITRE ATT&CK Coverage + Judging Criteria Map |
 | 4 | Test strategy + results (544 tests) | [`README.md`](./README.md) Test Suite section + `pytest --collect-only` |
 | 5 | Demo video + scripts | **Video: https://youtu.be/7VTVS9E6cX8 (2:00)** · [`demo/run_investigation.py`](./demo/run_investigation.py) · [`demo/tamper_demo.py`](./demo/tamper_demo.py) · [`demo/VIDEO_SCRIPT.md`](./demo/VIDEO_SCRIPT.md) |
 | 6 | STIX 2.1 export format | [`README.md`](./README.md) STIX 2.1 Export Format section (sample indicator) |
