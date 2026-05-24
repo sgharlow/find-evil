@@ -8,7 +8,7 @@
 
 SUBMISSION.md is **submission-ready** — all 8 SANS deliverables are linked, GitHub + demo video URLs resolve, license is present. **One gap:** the document delegates the 15-tool list to `README.md` rather than enumerating the tools inline with one-line descriptions. Fix is optional (judges will follow the link), but inlining makes the doc self-contained.
 
-## Status (2026-05-08 update)
+## Status (G2+G3 closed 2026-05-01; G1+G4 closed 2026-05-08 — all four resolved)
 
 | Gap | Priority | Status |
 |-----|----------|--------|
