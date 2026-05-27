@@ -31,6 +31,14 @@ EVIDENCE_EXTENSIONS = frozenset({
     ".lnk",                           # LNK shortcut files
 })
 
+# Real Windows registry hives ship with NO file extension (SYSTEM, SOFTWARE,
+# SAM, SECURITY, DEFAULT, COMPONENTS) or a .dat suffix (NTUSER.DAT, UsrClass.dat).
+# Recognize them by basename so live evidence directories seal them too.
+EVIDENCE_FILENAMES = frozenset({
+    "system", "software", "sam", "security", "default", "components",
+    "ntuser.dat", "usrclass.dat",
+})
+
 
 class EvidenceIntegrityError(Exception):
     """Raised when evidence integrity cannot be guaranteed."""
@@ -186,7 +194,10 @@ class EvidenceSession:
         """Recursively find evidence files by extension."""
         files = []
         for entry in root.rglob("*"):
-            if entry.is_file() and entry.suffix.lower() in EVIDENCE_EXTENSIONS:
+            if entry.is_file() and (
+                entry.suffix.lower() in EVIDENCE_EXTENSIONS
+                or entry.name.lower() in EVIDENCE_FILENAMES
+            ):
                 files.append(entry.resolve())
         return sorted(files)
 

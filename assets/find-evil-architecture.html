@@ -1,0 +1,142 @@
+<!doctype html>
+<!--
+  Architecture diagram SOURCE for Evidence Integrity Enforcer.
+  Render to PNG:  node ../__shared-tools/screenshot-web.mjs \
+                    --url file://<abs>/assets/find-evil-architecture.html \
+                    --out assets/find-evil-architecture.png --width 1600 --height 1000
+  (or open in a browser and screenshot the .diagram element).
+  Satisfies SANS requirement #3: names the architectural pattern (Custom MCP
+  Server) and distinguishes architectural vs prompt-based guardrails.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root{
+    --bg:#0d1024; --panel:#171c3a; --panel2:#1f2750; --ink:#eef1ff;
+    --muted:#9aa3d4; --cyan:#36d6e7; --green:#39d98a; --amber:#f5b84a;
+    --crimson:#ff5d6c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Inter,system-ui,sans-serif}
+  body{background:#05060f;display:flex;justify-content:center;padding:24px}
+  .diagram{width:1552px;background:
+      radial-gradient(1200px 500px at 50% -10%, #182055 0%, var(--bg) 60%);
+    border:1px solid #2a3270;border-radius:18px;padding:30px 36px 34px;color:var(--ink)}
+  .head{display:flex;align-items:flex-start;justify-content:space-between;gap:24px}
+  h1{font-size:30px;letter-spacing:.2px}
+  h1 small{display:block;font-size:14px;color:var(--muted);font-weight:500;margin-top:4px}
+  .pattern{background:linear-gradient(90deg,#0e7f6e,#0e9c86);border:1px solid var(--green);
+    border-radius:10px;padding:10px 16px;text-align:right;white-space:nowrap}
+  .pattern b{font-size:15px;color:#eafff7} .pattern span{font-size:12px;color:#bff4e3}
+  .badges{margin-top:8px;font-size:12px;color:var(--muted);text-align:right}
+  .badges b{color:var(--cyan)}
+  .lane{display:flex;align-items:center;gap:16px;margin-top:16px}
+  .node{background:var(--panel);border:1px solid #36407f;border-radius:12px;padding:14px 18px}
+  .node .t{font-size:15px;font-weight:700} .node .s{font-size:12px;color:var(--muted);margin-top:2px}
+  .client{flex:0 0 250px;border-color:var(--cyan)}
+  .server{flex:1;background:linear-gradient(180deg,#1b2350,#141a39);border:1.5px solid var(--cyan);
+    border-radius:14px;padding:16px 18px}
+  .server .hdr{display:flex;justify-content:space-between;align-items:center}
+  .server .badge{font-size:11px;color:#06121f;background:var(--cyan);border-radius:6px;
+    padding:3px 8px;font-weight:700}
+  .tools{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+  .tool{background:#10173a;border:1px solid #2f3974;border-radius:9px;padding:9px 11px}
+  .tool b{font-size:12.5px} .tool span{display:block;font-size:11px;color:var(--muted)}
+  .arrow{color:var(--muted);font-size:12px;text-align:center;flex:0 0 120px}
+  .arrow .a{font-size:22px;color:var(--cyan)}
+  .store{display:flex;gap:14px}
+  .store .node{flex:1;border-color:#36407f}
+  .ro{color:var(--green);font-weight:700}
+  .guards{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px}
+  .gcol{border-radius:14px;padding:16px 18px}
+  .arch{background:linear-gradient(180deg,#0f2b22,#0c1f1b);border:2px solid var(--green)}
+  .prompt{background:linear-gradient(180deg,#2a2410,#211d11);border:2px dashed var(--amber)}
+  .gcol h3{font-size:15px;margin-bottom:2px}
+  .arch h3{color:var(--green)} .prompt h3{color:var(--amber)}
+  .gcol .sub{font-size:12px;color:var(--muted);margin-bottom:10px}
+  .gitem{display:flex;gap:9px;font-size:13px;margin:7px 0;align-items:flex-start}
+  .arch .gitem::before{content:"\2714";color:var(--green);font-weight:700}
+  .prompt .gitem::before{content:"\25CB";color:var(--amber);font-weight:700}
+  .gitem b{font-weight:600}
+  .verdict{margin-top:18px;background:#0c1130;border:1px solid #2a3270;border-left:4px solid var(--crimson);
+    border-radius:10px;padding:12px 16px;font-size:13.5px;color:#d8ddff}
+  .verdict b{color:#fff}
+  .legend{margin-top:14px;display:flex;gap:22px;font-size:12px;color:var(--muted);align-items:center}
+  .swatch{display:inline-block;width:26px;height:0;vertical-align:middle;margin-right:7px}
+  .sa{border-top:3px solid var(--green)} .sp{border-top:3px dashed var(--amber)}
+</style>
+</head>
+<body>
+<div class="diagram">
+  <div class="head">
+    <h1>Evidence Integrity Enforcer
+      <small>Autonomous DFIR agent — forensic evidence tampering made architecturally impossible</small></h1>
+    <div>
+      <div class="pattern"><b>Architectural Pattern: Custom MCP Server</b>
+        <span>(not Direct Agent Extension · not Multi-Agent · not Agentic IDE)</span></div>
+      <div class="badges">MIT License &nbsp;·&nbsp; <b>551 tests</b> (550 pass / 1 skip)
+        &nbsp;·&nbsp; MITRE ATT&amp;CK <b>15 techniques / 11 tactics</b></div>
+    </div>
+  </div>
+
+  <!-- Flow lane -->
+  <div class="lane">
+    <div class="node client"><div class="t">Claude Code Agent</div>
+      <div class="s">DFIR analyst · follows CLAUDE.md 7-phase protocol</div></div>
+    <div class="arrow"><div class="a">&#8644;</div>MCP&nbsp;stdio<br>(typed JSON)</div>
+    <div class="server">
+      <div class="hdr"><div class="t">find_evil MCP Server <span class="s">— FastMCP · Python 3.11 · THE enforcement point</span></div>
+        <div class="badge">enforce() gate runs server-side before every tool</div></div>
+      <div class="tools">
+        <div class="tool"><b>Session ×4</b><span>seal · verify · list · reseal</span></div>
+        <div class="tool"><b>Memory/Logs ×6</b><span>vol_* · evtx · registry</span></div>
+        <div class="tool"><b>Timeline/YARA ×2</b><span>build_timeline · yara_scan</span></div>
+        <div class="tool"><b>Findings/STIX ×3</b><span>submit · report · export</span></div>
+      </div>
+      <div class="s" style="margin-top:10px">15 typed, <span class="ro">READ-ONLY</span> tools — no write / shell / delete / modify function exists in the registry</div>
+    </div>
+  </div>
+
+  <div class="lane" style="justify-content:center;color:var(--green);font-size:12px">
+    &#9660;&nbsp; SIFT backends (Volatility3 · python-evtx · python-registry · yara-python · Plaso) — invoked read-only &nbsp;&#9660;</div>
+
+  <div class="lane store">
+    <div class="node"><div class="t">Sealed Evidence <span class="ro">(read-only)</span></div>
+      <div class="s">SHA-256 manifest · memory · disk · EVTX · registry hives</div></div>
+    <div class="node"><div class="t">Audit Trail</div>
+      <div class="s">append-only JSONL · UUID per call · output hashes</div></div>
+    <div class="node"><div class="t">Findings DB</div>
+      <div class="s">SQLite · DRS scores · provenance links</div></div>
+    <div class="node"><div class="t">Outputs</div>
+      <div class="s">IR report.md · STIX 2.1 bundle &#8594; MISP/OpenCTI</div></div>
+  </div>
+
+  <!-- The required distinction -->
+  <div class="guards">
+    <div class="gcol arch">
+      <h3>ARCHITECTURAL GUARDRAILS</h3>
+      <div class="sub">Server-side. Cannot be argued with, prompt-injected, or talked around.</div>
+      <div class="gitem"><span><b>Function registry as allowlist</b> — destructive tools were never implemented; attack surface is zero by construction.</span></div>
+      <div class="gitem"><span><b>SHA-256 content sealing + hash daemon</b> — re-verifies every 30s AND synchronously before each call.</span></div>
+      <div class="gitem"><span><b>enforce() pre-execution gate</b> — integrity + path-traversal checks run before any tool body executes.</span></div>
+      <div class="gitem"><span><b>Tamper &#8594; halt</b> — hash mismatch voids the session and all findings (chain of custody).</span></div>
+    </div>
+    <div class="gcol prompt">
+      <h3>PROMPT-BASED GUARDRAILS</h3>
+      <div class="sub">CLAUDE.md protocol. Advisory — guides the agent, does not enforce.</div>
+      <div class="gitem"><span><b>7-phase investigation order</b> (SEAL &#8594; TRIAGE &#8594; &#8230; &#8594; SYNTHESIS).</span></div>
+      <div class="gitem"><span><b>15-tool-call budget</b> per phase.</span></div>
+      <div class="gitem"><span><b>DRS confidence gate guidance</b> — 0.75 threshold; self-correct when corroboration is low.</span></div>
+      <div class="gitem"><span><b>Finding-format &amp; provenance</b> instructions.</span></div>
+    </div>
+  </div>
+
+  <div class="verdict">Most AI-DFIR tools put their integrity promise in the <b>right</b> column (a prompt that says "please don't modify evidence"). This submission's guarantee lives in the <b>left</b> column: <b>prompt rules guide behavior; architecture enforces it.</b></div>
+
+  <div class="legend">
+    <span><span class="swatch sa"></span>Architectural — enforced server-side</span>
+    <span><span class="swatch sp"></span>Prompt-based — advisory (client-side)</span>
+  </div>
+</div>
+</body>
+</html>

@@ -539,3 +539,36 @@ class TestIntegrityResultDetails:
         assert result.passed is False
         assert len(result.failures) == 3
         assert result.files_checked == 3
+
+
+# ---------------------------------------------------------------------------
+# 11. Extensionless registry hive recognition
+# ---------------------------------------------------------------------------
+
+class TestRegistryHiveRecognition:
+    """Real Windows registry hives have no file extension (SYSTEM, SOFTWARE,
+    SAM, SECURITY, NTUSER.DAT). A forensic sealer must recognize them by name."""
+
+    @pytest.mark.parametrize("hive_name", ["SYSTEM", "SOFTWARE", "SAM",
+                                           "SECURITY", "NTUSER.DAT"])
+    def test_extensionless_hive_is_sealed(self, tmp_path, hive_name):
+        (tmp_path / hive_name).write_bytes(b"regf" + b"\x00" * 64)
+        session = EvidenceSession()
+        info = session.initialize(str(tmp_path))
+        assert info.file_count == 1, f"Hive {hive_name} was not recognized"
+
+    def test_hive_name_is_case_insensitive(self, tmp_path):
+        (tmp_path / "system").write_bytes(b"regf" + b"\x00" * 64)
+        session = EvidenceSession()
+        info = session.initialize(str(tmp_path))
+        assert info.file_count == 1
+
+    def test_real_evidence_dir_seals_hives_and_evtx(self, tmp_path):
+        """Mixed real-evidence dir: .evtx + two extensionless hives = 3 sealed."""
+        (tmp_path / "Application.evtx").write_bytes(b"ElfFile\x00")
+        (tmp_path / "SYSTEM").write_bytes(b"regf" + b"\x00" * 64)
+        (tmp_path / "SOFTWARE").write_bytes(b"regf" + b"\x00" * 64)
+        (tmp_path / "notes.txt").write_text("not evidence")  # ignored
+        session = EvidenceSession()
+        info = session.initialize(str(tmp_path))
+        assert info.file_count == 3

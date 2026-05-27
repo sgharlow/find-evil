@@ -5,7 +5,7 @@
 # Quick start:
 #   docker-compose -f docker-compose.sift.yml up --build
 #
-# Run tests (544 total: 543 should pass; 1 Windows-admin symlink test skipped):
+# Run tests (551 total: 550 should pass; 1 Windows-admin symlink test skipped):
 #   docker-compose -f docker-compose.sift.yml run --rm mcp-server pytest tests/ -v --tb=short
 #
 # Run investigation demo:
