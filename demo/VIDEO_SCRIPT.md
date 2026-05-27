@@ -10,6 +10,32 @@
 
 ---
 
+## Recommended recording sequence (real data, ≤5 min) — RUN THESE ON CAMERA
+
+The current SANS requirement wants live terminal + narration + a **self-correction**
+sequence against **real case data**, plus the tamper moment. Record these three
+commands back-to-back; the per-section narration below maps onto them.
+
+1. **Cold open (~15s):** `python demo/validate_submission.py`
+   → "49 of 49 checks pass." Proof before demonstration.
+2. **Real-evidence investigation (~2 min):** `python demo/run_live_investigation.py`
+   → seals REAL evidence (SHA-256), runs live **python-evtx / python-registry /
+   yara-python** (point at `"mode": "live"` and the 9 real YARA hits — Cobalt
+   Strike, Mimikatz, C2), and the DRS gate **self-correcting** single-source
+   findings — the required self-correction moment, on real data. *(If a memory
+   image is in `evidence/`, `vol_pslist/netscan/malfind` also run live and the C2
+   finding flips to ACCEPT — call that out.)*
+3. **Tamper wow-moment + recovery + report (~2 min):** `python demo/video_demo.py`
+   → ACT 3 tampers a sealed file: red violation banner, "ANALYSIS HALTED, all
+   findings voided," then re-seal/recovery and the IR report with UUID provenance.
+   (Uses the scripted scenario for a clean tamper; you already showed real parsing
+   in step 2.)
+
+Total ~4–4.5 min — keep under 5:00, upload **Public** to YouTube. The original
+single-script flow below remains valid if you prefer one continuous take.
+
+---
+
 ## [0:00 - 0:20] THE HOOK
 
 **Run**: nothing yet — just you talking to camera or voiceover
