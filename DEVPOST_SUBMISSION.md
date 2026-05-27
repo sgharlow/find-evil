@@ -156,7 +156,8 @@ pip install -e ".[dev]"
 pytest tests/ -v                     # 551 tests, 550 pass + 1 skip
 python demo/tamper_demo.py           # live tamper detection demo
 python demo/run_investigation.py     # full 7-phase simulated investigation
-python demo/validate_submission.py   # 30+ automated judging-criteria checks
+python demo/run_live_investigation.py # REAL evidence — live python-evtx / registry / yara
+python demo/validate_submission.py   # 49 automated judging-criteria checks
 cat output/audit_trail.jsonl         # UUID-linked audit trail
 cat output/ir_report.md              # generated IR report
 ```
@@ -180,7 +181,7 @@ claude mcp add find-evil -- python -m find_evil.server
 python -c "from find_evil.server import mcp; names={t.name for t in mcp._tool_manager.list_tools()}; bad=names&{'execute_shell_cmd','write_file','rm','dd','shell','bash'}; assert not bad; print(f'{len(names)} tools, zero destructive — PASS')"
 ```
 
-Provided evidence: the simulated attack scenario is bundled in the repo (labeled `"mode": "simulated"` in every tool response). On a SIFT Workstation with real backends installed the same code switches to `"mode": "live"` against real images — no code changes.
+Provided evidence — two paths. **(1)** The bundled simulated attack scenario (labeled `"mode": "simulated"`) runs on any laptop. **(2)** `demo/run_live_investigation.py` runs **live** against the committed real evidence: a real Windows Application EVTX via python-evtx, real `SYSTEM`/`SOFTWARE` registry hives via python-registry (incl. the `WinUpdateHelper` persistence service), and a real IOC binary via yara-python (9 matches incl. Cobalt Strike, Mimikatz, known-C2) — producing `output/live_audit_trail.jsonl` with `"mode": "live"`. Drop a memory image into `evidence/` (or set `EVIDENCE_MEMORY`) to add live Volatility3 `vol_pslist/netscan/malfind` and corroborated ACCEPTs — no code changes.
 ```
 
 ### 3. Evidence Dataset Documentation  *(required — describes what the agent was tested against)*
@@ -357,7 +358,7 @@ Full detail: `docs/accuracy_report.md` and `docs/evidence_integrity_approach.md`
 - [ ] **Format:** JSONL, one object per event, structured (not prose)
 - [ ] **Includes:** UUID per invocation, tool name, arguments, timestamp, integrity-check status, output hash (SHA-256)
 - [ ] **Event types present:** `tool_call_start`, `tool_call_complete`, `finding_committed`, `self_correction`, `integrity_check`, `session_halt`
-- [ ] **This is a single-agent submission** → tool execution logs with timestamps + invocation UUIDs satisfy the "tool execution logs with timestamps and token usage" requirement. Token usage is emitted by Claude Code's own session transcript; link or attach that alongside `audit_trail.jsonl` if judges want the LLM-side view.
+- [ ] **This is a single-agent submission** → tool execution logs with timestamps + invocation UUIDs satisfy the tool-side half; **token usage** is documented in [`docs/agent_execution_logs.md`](./docs/agent_execution_logs.md) — measured per-tool output sizes + a per-phase token profile, plus a one-command `claude … /cost` capture for exact session figures. Attach that `/cost` output alongside `audit_trail.jsonl`.
 - [x] Trimmed, hostname-redacted excerpt committed at [`demo/audit_trail_sample.jsonl`](./demo/audit_trail_sample.jsonl) — 7 entries covering all 6 event types (`session_start`, `integrity_check`, `tool_call_start`, `tool_call_complete`, `finding_committed`, `self_correction`, `session_halt`). Regenerate with `python scripts/build_audit_sample.py` after re-running the demo. Full untrimmed `output/audit_trail.jsonl` is gitignored but produced fresh on every demo run.
 
 ### Built-With Tags (required at submit time)

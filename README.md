@@ -119,12 +119,18 @@ pytest tests/ -v
 # Run the tamper detection demo
 python demo/tamper_demo.py
 
-# Run a full simulated investigation
+# Run a full simulated investigation (runs on any laptop, mode: simulated)
 python demo/run_investigation.py
 
+# Run against REAL evidence (live mode: python-evtx + python-registry + yara-python)
+python demo/run_live_investigation.py   # seals & parses the committed real EVTX,
+                                         # registry hives, and IOC binary; drop a
+                                         # memory image in evidence/ to add live vol_*
+
 # Inspect outputs
-cat output/audit_trail.jsonl   # JSONL audit trail with UUID provenance
-cat output/ir_report.md        # Generated incident response report
+cat output/audit_trail.jsonl        # simulated run — JSONL audit trail w/ UUID provenance
+cat output/live_audit_trail.jsonl   # live run — real backends, mode: live
+cat output/ir_report.md             # generated incident response report
 ```
 
 ### Connect to Claude Code
@@ -232,7 +238,7 @@ Implementation: [`src/find_evil/tools/findings.py`](./src/find_evil/tools/findin
 | # | Deliverable | Location |
 |---|------------|----------|
 | 1 | Code Repository | This repo (MIT license) |
-| 2 | Demo Video | **https://youtu.be/7VTVS9E6cX8** (2:00) · `demo/video_demo.py` · `demo/VIDEO_SCRIPT.md` |
+| 2 | Demo Video | **https://youtu.be/7VTVS9E6cX8** (≤5 min) · `demo/video_demo.py` · `demo/VIDEO_SCRIPT.md` |
 | 3 | Architecture Diagram | This README (above) |
 | 4 | Project Description | This README + Devpost |
 | 5 | Dataset Documentation | `docs/dataset_documentation.md` |

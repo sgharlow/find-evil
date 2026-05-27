@@ -190,5 +190,5 @@ script first as a cold open:
 python demo/validate_submission.py
 ```
 
-This shows 45/45 checks passing in ~10 seconds. Then transition to the
+This shows 49/49 checks passing in ~10 seconds. Then transition to the
 full demo. This proves claims before demonstrating them.

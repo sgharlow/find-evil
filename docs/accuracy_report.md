@@ -9,6 +9,19 @@ enforcement.
 
 ## Test Methodology
 
+### Live-Mode Validation (real evidence)
+
+`demo/run_live_investigation.py` runs the tools against the committed **real**
+evidence (python-evtx, python-registry, yara-python) — see
+`dataset_documentation.md`. This validates the pipeline end-to-end on genuine
+artifacts: real EVTX parsing, real registry-hive parsing (incl. the
+`WinUpdateHelper` persistence service), and 9 real YARA matches. On single-tool
+evidence the DRS gate correctly **withholds** every finding (self-correction),
+demonstrating that the gate does not over-claim on uncorroborated real data; a
+dropped-in memory image corroborates the YARA C2 match (netscan) → ACCEPT. This
+is the honest counterpart to the simulated-scenario accuracy numbers below, which
+measure the pipeline against known ground truth.
+
 ### Simulated Scenario Assessment
 
 The simulated attack scenario (documented in `dataset_documentation.md`)

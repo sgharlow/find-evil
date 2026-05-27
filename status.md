@@ -1,87 +1,67 @@
 # Find-Evil — Submission Readiness Status
 
-> **OWNER ACTION REQUIRED (2026-05-24):** Devpost form submission is NOT confirmed by any in-repo artifact.
-> The PAGE 4 checklist in `DEVPOST_SUBMISSION.md` remains unchecked.
-> MEMORY.md says "SUBMITTED early May" but no in-repo evidence (confirmation screenshot,
-> submission ID, or checked checklist) corroborates that claim.
-> **Action:** Log into `devpost.com/submit-to/29127-find-evil/manage/submissions/995757`,
-> confirm whether the form was actually submitted, and capture a confirmation screenshot.
-> SANS deadline 2026-06-15 — 48-hr-buffer target is **2026-06-13**.
-> Also confirm `https://youtu.be/7VTVS9E6cX8` is set to **Public** (not Unlisted/Private)
-> — Devpost requires a publicly accessible video URL.
-> See **REMAINING TODO** below for the full owner checklist.
+> **OWNER ACTIONS REMAINING (as of 2026-05-26):**
+> 1. **Re-record the demo video** (~4–5 min, ≤5 min cap) per `demo/VIDEO_SCRIPT.md`:
+>    live terminal + audio narration, **a visible DRS self-correction**, the
+>    **tamper-detection HALT + recovery**, against real evidence. Upload **Public**
+>    to YouTube ≥48 h before the deadline. (The prior cut is ~2:00 and predates the
+>    current 5-min requirement.)
+> 2. **Fill + submit the Devpost form** from `DEVPOST_SUBMISSION.md` (field-by-field),
+>    upload `screenshots/find-evil-architecture.png` (now carries the pattern +
+>    guardrail call-outs) + thumbnail + title images, set the video URL, tick T&Cs,
+>    **Submit**, and capture a confirmation screenshot. *No in-repo artifact yet
+>    confirms the form was submitted — treat as NOT submitted until you see the
+>    confirmation.*
+> 3. **Confirm the YouTube video is Public** (open `https://youtu.be/7VTVS9E6cX8`
+>    in an incognito tab) — oembed shows it is not private, but public-vs-unlisted
+>    is unverified; Devpost wants public.
+> 4. **(Optional, high-value) Drop in a memory image** — place a `.raw`/`.vmem`/`.mem`
+>    in `evidence/` or set `EVIDENCE_MEMORY`, then run `python demo/run_live_investigation.py`
+>    to light up live `vol_pslist/netscan/malfind` and produce corroborated ACCEPTs.
+>    The memory phase is fully wired; only the image is missing.
 
-**Last reviewed:** 2026-04-26 (media assets added); banner added 2026-05-24 (no code/docs changed)
-**Hackathon:** SANS (Apr 15 – Jun 15, 2026)
-**Deadline:** 2026-06-15
-**Followup reminder:** **2026-06-01** — confirm Devpost form submission completed and YouTube link is public; final dry-run of `python demo/run_investigation.py` and verify YouTube link still live.
+**Hackathon:** SANS (Apr 15 – Jun 15, 2026) · **Deadline:** 2026-06-15
+**Submission target:** **2026-06-02** (next Tue; ~11 days inside the 48-h buffer of 2026-06-13)
 
-## Overall: 98% READY — GREEN LIGHT (Devpost form submission status unconfirmed)
+## Overall: technical deliverables COMPLETE; remaining work is video + form (owner) + optional memory image
 
-Repo clean (last commit `f86c4a4`, Apr 24). Tests 543 passing / 1 skipped (544 collected). CI green on Python 3.11 + 3.12. All technical deliverables complete; remaining items are user-only Devpost presentation tasks.
+Latest commit `2a6cd8e` (+ this sprint's follow-ups). Tests **550 passing / 1 skipped (551 collected)**.
+`python demo/validate_submission.py` → **49/49 checks pass**. CI green on Python 3.11 + 3.12.
 
-## DONE
+## DONE (8 SANS deliverables)
 
-- `SUBMISSION.md` — full SANS index, 8 deliverables mapped, no placeholders
-- `docs/sans-submission-answers.md` — Q1–Q8 answered (DRS methodology, evidence integrity layers, architecture)
-- `README.md` — 238 lines, ASCII architecture, judging-criteria map, MITRE coverage (15 techniques / 11 tactics), STIX format spec
-- 15 MCP tools verified real (4 session, 4 volatility, evtx, registry, timeline, yara, 3 findings/STIX)
-- STIX 2.1 export — `src/find_evil/tools/findings.py:464–512`, sample at `output/bundle.stix.json`
-- Demo video — `assets/Evidence_Integrity_Enforcer.mp4` (32 MB) + YouTube https://youtu.be/7VTVS9E6cX8 (uploaded Apr 18) — **NOTE: public visibility unverified as of 2026-05-24; Devpost requires the URL to be publicly accessible (not Unlisted or Private)**
-- Demo artifacts committed in `output/` — audit_trail.jsonl, ir_report.md, bundle.stix.json, findings.db
-- 13 screenshot frames + walkthrough.mp4 in `screenshots/`
-- **Devpost media assets generated** in `screenshots/` (2026-04-26):
-  - `find-evil-thumbnail.png` (+ `-mid` variant) — Devpost form page-1 thumbnail (3:2)
-  - `find-evil-architecture.png` (+ `-mid` variant) — rendered architecture diagram (replaces ASCII for Devpost)
-  - `find-evil-title.png` (+ `-mid` variant) — title card / video cover frame
-- LICENSE (MIT)
-- GitHub Actions CI passing on Python 3.11 / 3.12
-- Install paths: pip + Docker (`docker-compose.sift.yml`) + Claude Code MCP integration
-- `.gitignore` clean, no secrets leaked
+- **1 Code repo** — `https://github.com/sgharlow/find-evil` (public, MIT `LICENSE`, `README.md` with setup).
+- **2 Demo video** — script ready (`demo/VIDEO_SCRIPT.md`, 5-min). *Re-record pending (owner).*
+- **3 Architecture diagram** — `assets/find-evil-architecture.html` source → `screenshots/find-evil-architecture.png` (+ `-mid`). Now **names the pattern (Custom MCP Server)** and **contrasts architectural vs prompt-based guardrails** (Devpost requirement #3). Badge: 551 tests · MITRE 15/11.
+- **4 Written description** — `DEVPOST_SUBMISSION.md` (Devpost story format, paste-ready).
+- **5 Dataset documentation** — `docs/dataset_documentation.md` + `evidence/README.md` (real EVTX + registry hives + IOC binary; simulated scenario; planned live images).
+- **6 Accuracy report** — `docs/accuracy_report.md` + `docs/evidence_integrity_approach.md` (FP/missed/hallucination + bypass-attempt table).
+- **7 Try-it-out** — `docs/try_it_out.md` (pip + Docker + `claude mcp add` + security one-liner).
+- **8 Agent execution logs** — `output/audit_trail.jsonl` (tool side, real UUID/timestamp/hash) + **`docs/agent_execution_logs.md`** (token-usage profile + `/cost` capture for the LLM side). Sample: `demo/audit_trail_sample.jsonl`.
 
-## PARTIAL
+## This sprint (2026-05-26 — real-data hardening)
 
-- `DEVPOST_SUBMISSION.md` is copy-paste-structured but not a standalone PDF deck (acceptable — Devpost form takes pasted text)
-- README still references ASCII architecture (lines 24–86); rendered PNG now in `screenshots/find-evil-architecture.png` — *optional:* embed PNG into README
+- **Live-mode demo** `demo/run_live_investigation.py` — seals the **real** evidence dir and runs genuine live backends (python-evtx: 10 real events; python-registry: 3 real services incl. `WinUpdateHelper`; yara-python: 9 real matches incl. Cobalt Strike/Mimikatz/C2). Produces `output/live_audit_trail.jsonl` (27 real events) + `output/live_ir_report.md` (`Analysis Mode: live`). Memory phase wired to real Volatility3 (`vol`); activates on image drop-in.
+- **Core fix** — `EvidenceSession` now seals extensionless registry hives (`SYSTEM`/`SOFTWARE`/`SAM`/`NTUSER.DAT`). +7 unit tests (TDD).
+- **Architecture diagram** rebuilt with the required call-outs (above).
+- **`docs/agent_execution_logs.md`** added (deliverable #8 token usage).
+- **Docs reconciled** — test count → 551/550 across 8 docs; validate-script count → 49; video length → ≤5 min; `submission-needs.pdf` gitignored.
 
-## REMAINING TODO — User Tasks Only
+## REMAINING (owner)
 
-> **Status as of 2026-05-24:** No in-repo artifact confirms the Devpost form was submitted.
-> MEMORY.md records "SUBMITTED early May" but the PAGE 4 checklist in `DEVPOST_SUBMISSION.md`
-> is still unchecked and no confirmation screenshot is committed. Owner must verify.
-
-1. **Confirm or complete Devpost form submission** at `devpost.com/submit-to/29127-find-evil/manage/submissions/995757`:
-   - If already submitted: capture a confirmation screenshot and note the submission ID here.
-   - If not yet submitted, complete the form:
-     - Upload `screenshots/find-evil-thumbnail.png` as the cover/thumbnail
-     - Upload `screenshots/find-evil-architecture.png` in the gallery / project images section
-     - Optionally upload `screenshots/find-evil-title.png` as an additional gallery image
-     - Paste each section from `DEVPOST_SUBMISSION.md` into the matching form field
-     - Verify YouTube link `https://youtu.be/7VTVS9E6cX8` is set as the demo video URL and the video is **set to Public** on YouTube
-     - Confirm GitHub repo URL, license (MIT), and team info
-     - Submit and capture the confirmation screenshot
-2. **Confirm YouTube video public visibility** — open `https://youtu.be/7VTVS9E6cX8` in a private/incognito browser tab (no login). If it plays, it is Public. Devpost will reject or penalize a non-public link.
-3. **Commit the new media assets** — `git add screenshots/find-evil-*.png && git commit -m "docs: add Devpost media assets"` (currently uncommitted)
-4. *Optional:* Embed `screenshots/find-evil-architecture.png` into `README.md` above the ASCII diagram for richer GitHub presentation
-5. *Optional:* Docker SIFT live-mode end-to-end test (pip path already sufficient for judges)
-
-## Timeline
-
-| Milestone | Date | Status |
-|-----------|------|--------|
-| Demo video uploaded | 2026-04-18 | Done |
-| G2 + G3 gaps closed (docs/submission-gaps-2026-04-29.md) | 2026-05-01 | Done |
-| G1 + G4 gaps closed (docs/submission-gaps-2026-04-29.md) | 2026-05-08 | Done |
-| Devpost media assets added (`screenshots/find-evil-*.png`) | 2026-04-26 | Done (uncommitted) |
-| **Followup checkpoint — confirm Devpost submission + YouTube public** | **2026-06-01** | **OWNER ACTION — review this file and verify** |
-| Recommended submission target (48-hr buffer) | 2026-06-13 | Pending |
-| SANS deadline | 2026-06-15 | — |
+| # | Item | Owner |
+|---|------|-------|
+| 1 | Re-record ~5-min video (self-correction + tamper + real data), upload Public | Steve |
+| 2 | Fill + submit Devpost form; capture confirmation screenshot | Steve |
+| 3 | Confirm YouTube video is Public | Steve |
+| 4 | *(Optional)* Drop in a memory image → re-run live demo for corroborated ACCEPTs | Steve |
 
 ## Judges' Evaluation Path
 
-1. Read `SUBMISSION.md` → index to 8 deliverables
-2. Clone repo → `pip install -e ".[dev]" && pytest tests/` → 543 passed / 1 skipped
-3. Run demo → `python demo/run_investigation.py` (5 min) → audit trail + IR report + STIX bundle
-4. Verify security → `src/find_evil/server.py:238–243` + `try_it_out.md` check script → no destructive tools exist
-5. Trace finding provenance → UUID in `ir_report.md` → `audit_trail.jsonl`
-6. Check MITRE coverage → `README.md:171–193` → 15 techniques / 11 tactics
+1. `SUBMISSION.md` → index to deliverables.
+2. Clone → `pip install -e ".[dev]" && pytest tests/` → 550 passed / 1 skipped.
+3. `python demo/run_investigation.py` (simulated, any laptop) **or** `python demo/run_live_investigation.py` (real evidence) → audit trail + IR report + STIX.
+4. `python demo/validate_submission.py` → 49/49 checks.
+5. Verify security boundary → `src/find_evil/server.py` + the one-liner in `DEVPOST_SUBMISSION.md`.
+6. Trace provenance → finding UUID → `audit_trail.jsonl`.
+7. MITRE coverage → `README.md` (15 techniques / 11 tactics).

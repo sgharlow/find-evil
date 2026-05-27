@@ -1,6 +1,6 @@
 # Try It Out — Judge Setup Instructions
 
-**Want to see it first?** The 2-minute demo video is at **https://youtu.be/7VTVS9E6cX8** — live autonomous investigation with DRS self-correction, YARA matches, and STIX export.
+**Want to see it first?** The demo video is at **https://youtu.be/7VTVS9E6cX8** — live autonomous investigation with DRS self-correction, YARA matches, and STIX export.
 
 Get the Evidence Integrity Enforcer running in under 5 minutes.
 

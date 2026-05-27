@@ -160,18 +160,36 @@ def main():
             from find_evil.tools import volatility as vol
             mem_name = Path(mem_image).name
             mem_path = str(ev / mem_name)
-            for tool, fn in [
-                ("vol_pslist", getattr(vol, "_run_real_pslist", None)),
-                ("vol_netscan", getattr(vol, "_run_real_netscan", None)),
-                ("vol_malfind", getattr(vol, "_run_real_malfind", None)),
-            ]:
-                if fn is None:
-                    print(f"  [skip] {tool}: live helper not found in volatility module")
-                    continue
-                tc, rows = run_live_tool(ctx, tool, {"memory_image": mem_name},
-                                         lambda fn=fn: fn(mem_path), [mem_path])
+            # Real Volatility3 via the same CLI path the MCP tools use
+            # (_run_vol_plugin -> `vol -f <img> <plugin>` -> _parse_*_output).
+            mem_rows = {}
+            mem_plugins = [
+                ("vol_pslist", "windows.pslist.PsList", vol._parse_pslist_output),
+                ("vol_netscan", "windows.netscan.NetScan", vol._parse_netscan_output),
+                ("vol_malfind", "windows.malfind.Malfind", vol._parse_malfind_output),
+            ]
+            for tool, plugin, parser in mem_plugins:
+                tc, rows = run_live_tool(
+                    ctx, tool, {"memory_image": mem_name, "plugin": plugin},
+                    lambda p=plugin, pr=parser: pr(vol._run_vol_plugin(p, mem_path)),
+                    [mem_path])
                 if tc:
                     inv[tool] = tc.invocation_id
+                    mem_rows[tool] = rows
+            # Memory-native findings (these corroborate the YARA C2 match in Phase 6)
+            for row in mem_rows.get("vol_malfind", []):
+                findings.append({
+                    "description": f"Process injection in {row.get('Process','?')} "
+                                   f"(PID {row.get('PID','?')}) - {row.get('Protection','RWX')}",
+                    "artifact_type": "memory", "evidence_strength": 0.90,
+                    "sources": ["vol_malfind"], "mitre": "T1055.001"})
+            for conn in mem_rows.get("vol_netscan", []):
+                if vol._is_suspicious_connection(conn):
+                    findings.append({
+                        "description": f"Suspicious C2 connection to {conn.get('ForeignAddr')}:"
+                                       f"{conn.get('ForeignPort')} ({conn.get('Owner','?')})",
+                        "artifact_type": "network", "evidence_strength": 0.88,
+                        "sources": ["vol_netscan", "yara_scan"], "mitre": "T1071.001"})
         else:
             print("  [skip] No memory image present. Set EVIDENCE_MEMORY=/path/to/image")
             print("         or drop a *.raw/*.vmem into evidence/ to enable live vol_* .")

@@ -2,6 +2,25 @@
 
 ## Evidence Sources
 
+### Real Evidence (Live Mode — committed, parsed for real)
+
+The repo ships real forensic artifacts that `demo/run_live_investigation.py`
+seals (real SHA-256) and parses with the **actual backends** — not simulated:
+
+| Artifact | Tool / backend | What live parsing finds |
+|----------|----------------|-------------------------|
+| `evidence/Application_small.evtx` | `parse_evtx` / python-evtx | 10 real Windows Application log events |
+| `evidence/SYSTEM`, `evidence/SOFTWARE` | `registry_query` / python-registry | real services incl. the `WinUpdateHelper` persistence entry |
+| `evidence/evidence_iocs.bin` | `yara_scan` / yara-python | 9 real matches: Cobalt Strike beacon, Mimikatz, known-C2, encoded PowerShell, LOLBin, PsExec, … |
+
+Output goes to `output/live_audit_trail.jsonl` (`"mode": "live"`) + `output/live_ir_report.md`.
+**Honesty note:** with only single-tool evidence the DRS gate **self-corrects** every
+finding (it will not ACCEPT an uncorroborated claim — the gate working as designed on
+real data). Memory artifacts are simulated by default because real images are 1–8 GB and
+gitignored; drop a `.raw`/`.vmem` into `evidence/` (or set `EVIDENCE_MEMORY`) to run live
+Volatility3 `vol_pslist/netscan/malfind`, which corroborates the YARA C2 match across
+netscan and lifts it to ACCEPT.
+
 ### Simulated Attack Scenario (Development and Testing)
 
 For development and testing without a SIFT Workstation, the MCP server includes

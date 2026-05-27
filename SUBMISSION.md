@@ -5,7 +5,7 @@
 | | |
 |---|---|
 | **GitHub** | https://github.com/sgharlow/find-evil |
-| **Demo Video (2:00)** | https://youtu.be/7VTVS9E6cX8 |
+| **Demo Video (≤5 min)** | https://youtu.be/7VTVS9E6cX8 |
 
 Root-level pointer for judges. Detailed answers to the 8 SANS submission questions live in [`docs/sans-submission-answers.md`](./docs/sans-submission-answers.md).
 
@@ -45,7 +45,7 @@ Verified by `@mcp.tool()` decorator count across `src/find_evil/**/*.py`. MITRE 
 | 2 | Architecture diagram | [`README.md`](./README.md) lines 23-100 (ASCII) |
 | 3 | Tool inventory (15 tools, MITRE coverage) | Inline table above (15 Forensic Tools); MITRE mapping in [`README.md`](./README.md) MITRE ATT&CK Coverage + Judging Criteria Map |
 | 4 | Test strategy + results (551 tests) | [`README.md`](./README.md) Test Suite section + `pytest --collect-only` |
-| 5 | Demo video + scripts | **Video: https://youtu.be/7VTVS9E6cX8 (2:00)** · [`demo/run_investigation.py`](./demo/run_investigation.py) · [`demo/tamper_demo.py`](./demo/tamper_demo.py) · [`demo/VIDEO_SCRIPT.md`](./demo/VIDEO_SCRIPT.md) |
+| 5 | Demo video + scripts | **Video: https://youtu.be/7VTVS9E6cX8 (≤5 min)** · [`demo/run_investigation.py`](./demo/run_investigation.py) · [`demo/tamper_demo.py`](./demo/tamper_demo.py) · [`demo/VIDEO_SCRIPT.md`](./demo/VIDEO_SCRIPT.md) |
 | 6 | STIX 2.1 export format | [`README.md`](./README.md) STIX 2.1 Export Format section (sample indicator) |
 | 7 | Try-it-out guide | [`docs/try_it_out.md`](./docs/try_it_out.md) |
 | 8 | Accuracy / DRS methodology | [`docs/accuracy_report.md`](./docs/accuracy_report.md) |

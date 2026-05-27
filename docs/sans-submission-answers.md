@@ -210,7 +210,7 @@ cat output/ir_report.md          # Generated incident response report
 
 ### Validation Script
 
-`python demo/validate_submission.py` runs 30+ automated checks across all 7 judging categories. Every claim in this submission is verified programmatically. Judges can run it and see a pass/fail checklist with concrete evidence for each criterion.
+`python demo/validate_submission.py` runs 49 automated checks across all 7 judging categories. Every claim in this submission is verified programmatically. Judges can run it and see a pass/fail checklist with concrete evidence for each criterion.
 
 ## Judging Criteria Mapping
 
@@ -286,7 +286,7 @@ cat output/ir_report.md          # Generated incident response report
 - `docs/try_it_out.md`: Step-by-step judge setup instructions with troubleshooting table
 - `demo/tamper_demo.py`: Live tamper detection demonstration
 - `demo/run_investigation.py`: Full simulated investigation with output generation
-- `demo/validate_submission.py`: Automated proof script with 30+ checks
+- `demo/validate_submission.py`: Automated proof script with 49 checks
 
 ## Team
 
