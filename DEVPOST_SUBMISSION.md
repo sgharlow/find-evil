@@ -177,7 +177,7 @@ docker compose -f docker-compose.sift.yml build   # one-time: builds find-evil-s
 claude mcp add find-evil -- docker run --rm -i -v "$PWD/evidence:/evidence:ro" -v "$PWD/output:/output" find-evil-sift:latest
 claude mcp list                                    # expect: find-evil ... ✓ Connected
 ```
-(No Docker? The demo scripts above exercise the same sealing / DRS / audit pipeline standalone.)
+(No Docker? The pip path works too — `pip install -e ".[dev]"` (mcp ≥ 1.27), then `claude mcp add find-evil -- python -m find_evil`. Or the demo scripts above run standalone.)
 
 ### Verify the security boundary (constraint implementation)
 ```bash

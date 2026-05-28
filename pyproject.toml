@@ -15,7 +15,7 @@ authors = [
 keywords = ["dfir", "forensics", "mcp", "sift", "evidence-integrity"]
 
 dependencies = [
-    "mcp[cli]>=1.0.0",
+    "mcp[cli]>=1.27.0",  # <1.27 has a FastMCP Context-injection regression (ctx leaks into tool schema)
     "pydantic>=2.0.0",
 ]
 

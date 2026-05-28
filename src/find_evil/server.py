@@ -397,4 +397,9 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    # `python -m find_evil.server` loads this file as __main__, which builds a
+    # second FastMCP instance that never sees the 11 tool-module tools (only the
+    # 4 session tools defined here). Delegate to the canonical package module so
+    # the fully-populated find_evil.server.mcp (all 15 tools) is what runs.
+    from find_evil.server import main as _main
+    _main()

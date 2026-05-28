@@ -143,7 +143,7 @@ claude mcp add find-evil -- docker run --rm -i -v "$PWD/evidence:/evidence:ro" -
 claude mcp list                                    # expect: find-evil ... ✓ Connected
 ```
 
-No Docker? The bundled demo scripts (`validate_submission.py`, `run_investigation.py`, `run_live_investigation.py`) exercise the same sealing / DRS / audit pipeline standalone.
+No Docker? The pip path also works — `pip install -e ".[dev]"` (mcp ≥ 1.27), then `claude mcp add find-evil -- python -m find_evil`. Or run the bundled demo scripts (`validate_submission.py`, `run_investigation.py`, `run_live_investigation.py`) standalone.
 
 ### Docker
 
