@@ -49,7 +49,8 @@ python demo/run_live_investigation.py
 ## 6. Tamper detection (the integrity guarantee)
 
 ```bash
-python demo/video_demo.py        # or: python demo/tamper_demo.py
+python demo/live_tamper.py       # REAL: seals the actual EVTX, modifies a byte, real SHA-256 HALT
+python demo/video_demo.py        # polished scripted scenario + tamper (alternative)
 ```
 **Expect:** seal → investigate → a red `EVIDENCE INTEGRITY VIOLATION DETECTED` banner when a sealed file is modified → `ANALYSIS HALTED, all findings voided` → re-seal/recovery → IR report. Byte-content change is detected; a `touch` (mtime only) is not.
 
@@ -91,9 +92,10 @@ Every finding → `invocation_ids[]` → `tool_call_*` records → the verified 
 ## One-command orchestrator (used for the demo recording)
 
 ```bash
-python demo/record_demo.py                 # ACT 1 validate -> 3 real evidence -> 4 tamper, paced
-python demo/record_demo.py --with-agent    # also runs the REAL Claude agent (claude -p) as ACT 2
-python demo/record_demo.py --pause 0       # no pauses (fast)
+python demo/record_demo.py                 # BEAT1 hook -> BEAT2 live agent -> BEAT3 live tamper -> BEAT4 proof
+python demo/record_demo.py --no-agent      # BEAT2 = scripted run_investigation.py (no Claude)
+python demo/record_demo.py --manual-tamper # BEAT3 = you tamper a sealed file in another terminal
+python demo/record_demo.py --pause 0       # no pauses (fast dry-run)
 ```
 See [`../demo/VIDEO_SCRIPT.md`](../demo/VIDEO_SCRIPT.md) for the narration that maps onto these acts.
 

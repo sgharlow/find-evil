@@ -51,36 +51,26 @@ Then cut to `python demo/video_demo.py` for the **tamper wow-moment** (Act 3 bel
 
 ---
 
-## Recommended recording sequence (real data, ≤5 min) — RUN THESE ON CAMERA
+## Recommended recording sequence — the 4-beat arc (≤5 min)
 
-The current SANS requirement wants live terminal + narration + a **self-correction**
-sequence against **real case data**, plus the tamper moment.
-
-**One command runs them all, paced for narration:**
+**One command runs the whole arc, paced for narration:**
 ```bash
-python demo/record_demo.py --with-agent   # ACT1 validate -> ACT2 live Claude agent -> ACT3 real evidence -> ACT4 tamper
-python demo/record_demo.py                 # same, without the live-agent act
-python demo/record_demo.py --pause 4       # longer gaps to talk
+python demo/record_demo.py                 # BEAT1 hook -> BEAT2 live agent -> BEAT3 live tamper -> BEAT4 proof
+python demo/record_demo.py --no-agent      # BEAT2 = scripted run_investigation.py (no Claude)
+python demo/record_demo.py --manual-tamper # BEAT3 = you tamper a sealed file in another terminal
+python demo/record_demo.py --pause 4       # longer narration gaps
 ```
-Or run the commands individually; the per-section narration below maps onto them either way.
 
-1. **Cold open (~15s):** `python demo/validate_submission.py`
-   → "49 of 49 checks pass." Proof before demonstration.
-2. **Real-evidence investigation (~2 min):** `python demo/run_live_investigation.py`
-   → seals REAL evidence (SHA-256), runs live **python-evtx / python-registry /
-   yara-python** (point at `"mode": "live"` and the 9 real YARA hits — Cobalt
-   Strike, Mimikatz, C2), and the DRS gate **self-correcting** single-source
-   findings — the required self-correction moment, on real data. *(If a memory
-   image is in `evidence/`, `vol_pslist/netscan/malfind` also run live and the C2
-   finding flips to ACCEPT — call that out.)*
-3. **Tamper wow-moment + recovery + report (~2 min):** `python demo/video_demo.py`
-   → ACT 3 tampers a sealed file: red violation banner, "ANALYSIS HALTED, all
-   findings voided," then re-seal/recovery and the IR report with UUID provenance.
-   (Uses the scripted scenario for a clean tamper; you already showed real parsing
-   in step 2.)
+The four beats (run individually if you prefer; the timecoded narration below maps onto them):
 
-Total ~4–4.5 min — keep under 5:00, upload **Public** to YouTube. The original
-single-script flow below remains valid if you prefer one continuous take.
+1. **HOOK (~20s):** the problem — AI-DFIR leans on "please don't modify evidence" prompts; one silent write voids chain of custody. This makes tampering *architecturally* impossible.
+2. **★ REAL AGENT (~2 min) — the centerpiece:** interactive `claude` driving the MCP server (see the segment at the top). It **ACCEPTS** the corroborated `WinUpdateHelper` persistence (SYSTEM + SOFTWARE hives → `update.dll`, conf 0.77) and **HOLDS** the YARA-only Mimikatz / Cobalt Strike / C2 findings at **LOW CONFIDENCE** (self-corrected). Detection + rigor on real evidence. *(Drop a memory image into `evidence/` for a second corroborated ACCEPT on the C2.)*
+3. **LIVE TAMPER (~60s):** `python demo/live_tamper.py` — seals the **real** EVTX, then a one-byte change triggers a real SHA-256 `VIOLATION` → `ANALYSIS HALTED, findings voided` → re-seal. Real detection on real evidence (not a scripted banner). Use `--manual` to tamper it yourself in a second terminal on camera.
+4. **PROOF + PROVENANCE (~30s):** `python demo/validate_submission.py` (49/49) + trace a finding's UUID into `output/audit_trail.jsonl`. *"Every claim traces to the exact tool call and verified evidence state."*
+
+Total ~4–4.5 min — keep under 5:00, upload **Public** to YouTube.
+
+> The timecoded sections below are the original `video_demo.py` walkthrough narration. They remain a good narration reference, and `video_demo.py` is still a valid polished all-in-one alternative for BEATS 2–4 if you don't want the live agent.
 
 ---
 
