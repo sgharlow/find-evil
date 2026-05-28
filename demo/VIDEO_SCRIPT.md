@@ -50,8 +50,15 @@ Then cut to `python demo/video_demo.py` for the **tamper wow-moment** (Act 3 bel
 ## Recommended recording sequence (real data, ≤5 min) — RUN THESE ON CAMERA
 
 The current SANS requirement wants live terminal + narration + a **self-correction**
-sequence against **real case data**, plus the tamper moment. Record these three
-commands back-to-back; the per-section narration below maps onto them.
+sequence against **real case data**, plus the tamper moment.
+
+**One command runs them all, paced for narration:**
+```bash
+python demo/record_demo.py --with-agent   # ACT1 validate -> ACT2 live Claude agent -> ACT3 real evidence -> ACT4 tamper
+python demo/record_demo.py                 # same, without the live-agent act
+python demo/record_demo.py --pause 4       # longer gaps to talk
+```
+Or run the commands individually; the per-section narration below maps onto them either way.
 
 1. **Cold open (~15s):** `python demo/validate_submission.py`
    → "49 of 49 checks pass." Proof before demonstration.

@@ -127,6 +127,9 @@ python demo/run_live_investigation.py   # seals & parses the committed real EVTX
                                          # registry hives, and IOC binary; drop a
                                          # memory image in evidence/ to add live vol_*
 
+# Or run the whole demo in sequence, paced for recording (--with-agent adds the live Claude agent):
+python demo/record_demo.py
+
 # Inspect outputs
 cat output/audit_trail.jsonl        # simulated run — JSONL audit trail w/ UUID provenance
 cat output/live_audit_trail.jsonl   # live run — real backends, mode: live

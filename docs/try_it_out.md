@@ -1,136 +1,108 @@
-# Try It Out — Judge Setup Instructions
+# Try It Out — Judge Walkthrough
 
-**Want to see it first?** The demo video is at **https://youtu.be/7VTVS9E6cX8** — live autonomous investigation with DRS self-correction, YARA matches, and STIX export.
+**See it first (2 min):** demo video at **https://youtu.be/7VTVS9E6cX8**.
 
-Get the Evidence Integrity Enforcer running in under 5 minutes.
+Every step below is copy-paste with the **expected output** shown. Two ways to run:
+the **manual walkthrough** (this doc) or the **one-command orchestrator**
+(`python demo/record_demo.py` — runs the demo acts in sequence with pacing).
 
-## Option A: Local Install (Fastest)
+Prereqs: **Python 3.11+** (Docker optional, only for the full SIFT live environment).
 
-### Prerequisites
-- Python 3.11+
-- pip
+---
 
-### Steps
+## 1. Clone + install
 
 ```bash
-# 1. Clone the repository
 git clone https://github.com/sgharlow/find-evil.git
 cd find-evil
+pip install -e ".[dev]"        # installs mcp>=1.27 (required for the live agent)
+```
 
-# 2. Install
-pip install -e ".[dev]"
+## 2. Run the test suite
 
-# 3. Run the test suite (551 total: 550 passing, 1 skipped)
-pytest tests/ -v
+```bash
+pytest tests/ -q
+```
+**Expect:** `550 passed, 1 skipped` (the 1 skip is a Windows-admin-only symlink test; it runs on Linux/SIFT).
 
-# 4. Run the tamper detection demo
-python demo/tamper_demo.py
+## 3. Run the automated proof
 
-# 5. Run a full simulated investigation
+```bash
+python demo/validate_submission.py
+```
+**Expect:** a pass/fail checklist ending in `Total checks: 49 / Passed: 49 / Failed: 0 — ALL CHECKS PASSED`. This script *is* the proof — every claim is verified live.
+
+## 4. Run a simulated investigation (any laptop)
+
+```bash
 python demo/run_investigation.py
-
-# 6. Inspect the outputs
-cat output/audit_trail.jsonl | head -10   # JSONL audit trail
-cat output/ir_report.md                    # Generated IR report
 ```
+**Expect:** the 7-phase investigation, `6 accepted, 4 self-corrected`, and a ~149-entry audit trail. Writes `output/audit_trail.jsonl` + `output/ir_report.md` (`mode: simulated`).
 
-### Connect to Claude Code
+## 5. Run against REAL evidence (live backends)
 
 ```bash
-# Register the MCP server
+python demo/run_live_investigation.py
+```
+**Expect:** seals 3 real files (SHA-256), then **live** `python-evtx` (10 real events), `python-registry` (3 services incl. `WinUpdateHelper`), and `yara-python` (9 matches incl. Cobalt Strike / Mimikatz / C2). The DRS gate **self-corrects** every single-source finding (it will not accept an uncorroborated claim — the anti-hallucination control). Writes `output/live_audit_trail.jsonl` (`mode: live`). *Drop a `.raw`/`.vmem` memory image into `evidence/` to add live Volatility3 and corroborated ACCEPTs.*
+
+## 6. Tamper detection (the integrity guarantee)
+
+```bash
+python demo/video_demo.py        # or: python demo/tamper_demo.py
+```
+**Expect:** seal → investigate → a red `EVIDENCE INTEGRITY VIOLATION DETECTED` banner when a sealed file is modified → `ANALYSIS HALTED, all findings voided` → re-seal/recovery → IR report. Byte-content change is detected; a `touch` (mtime only) is not.
+
+## 7. Connect Claude Code (the live autonomous agent)
+
+**Simplest (pip, no Docker):**
+```bash
+claude mcp add find-evil -- python -m find_evil
+claude mcp list                  # expect: find-evil ... ✓ Connected
+claude                           # then ask it to investigate /evidence (or the repo's evidence/)
+```
+
+**Full SIFT environment (real Volatility3/Plaso backends in Docker):**
+```bash
+docker compose -f docker-compose.sift.yml build      # one-time: builds find-evil-sift:latest
 claude mcp add find-evil -- docker run --rm -i -v "$PWD/evidence:/evidence:ro" -v "$PWD/output:/output" find-evil-sift:latest
-
-# Now Claude Code can use all 15 forensic tools
-# Start a conversation and ask it to investigate evidence
 ```
+Then in a Claude session: *"Investigate the sealed evidence following your CLAUDE.md protocol; report findings with provenance."* Claude autonomously calls `session_init → verify_integrity → parse_evtx / registry_query / yara_scan …`, and every call is logged to `output/audit_trail.jsonl`.
 
-## Option B: Docker (Reproducible)
+> Requires `mcp>=1.27` (pinned in `pyproject.toml`); earlier versions had a Context-injection regression.
 
-### Prerequisites
-- Docker
-- Docker Compose
-
-### Steps
+## 8. Verify the security boundary (constraint implementation)
 
 ```bash
-# 1. Clone and build
-git clone https://github.com/sgharlow/find-evil.git
-cd find-evil
-docker-compose build
-
-# 2. Run tests in container
-docker-compose run mcp-server pytest tests/ -v
-
-# 3. Run the tamper demo
-docker-compose run mcp-server python demo/tamper_demo.py
-
-# 4. Run the full investigation
-docker-compose run mcp-server python demo/run_investigation.py
-
-# 5. Connect Claude Code to the container
-claude mcp add find-evil -- docker-compose exec mcp-server python -m find_evil
+python -c "from find_evil.server import mcp; n={t.name for t in mcp._tool_manager.list_tools()}; assert not (n & {'execute_shell_cmd','write_file','rm','dd','shell','bash'}); print(f'{len(n)} tools, zero destructive - PASS')"
 ```
+**Expect:** `15 tools, zero destructive - PASS`. The destructive functions were never implemented — attack surface is zero by construction.
 
-## What to Inspect
-
-### 1. Security Boundary (Constraint Implementation)
-
-Verify that no destructive tools exist:
+## 9. Trace provenance (audit trail)
 
 ```bash
-python -c "
-from find_evil.server import mcp
-tools = mcp._tool_manager.list_tools()
-names = {t.name for t in tools}
-print(f'{len(tools)} tools registered:')
-for t in tools: print(f'  {t.name}')
-bad = names & {'execute_shell_cmd','write_file','rm','dd','shell','bash'}
-assert not bad, f'VIOLATION: {bad}'
-print('Security check: PASSED')
-"
+cat output/ir_report.md          # findings cite invocation UUIDs
+cat output/audit_trail.jsonl     # one JSON event per line; match the UUIDs
 ```
+Every finding → `invocation_ids[]` → `tool_call_*` records → the verified evidence state at that moment.
 
-### 2. Tamper Detection (Evidence Integrity)
+---
+
+## One-command orchestrator (used for the demo recording)
 
 ```bash
-python demo/tamper_demo.py
+python demo/record_demo.py                 # ACT 1 validate -> 3 real evidence -> 4 tamper, paced
+python demo/record_demo.py --with-agent    # also runs the REAL Claude agent (claude -p) as ACT 2
+python demo/record_demo.py --pause 0       # no pauses (fast)
 ```
-
-Watch for: SHA-256 sealing, byte-level tamper detection (not `touch`),
-session halt, all findings voided, re-seal recovery.
-
-### 3. Audit Trail (Provenance Chain)
-
-After running the investigation:
-
-```bash
-# Each entry is one JSON object per line
-cat output/audit_trail.jsonl
-
-# Trace a finding back to its source tool calls:
-# finding_committed -> provenance[] -> invocation_ids -> tool_call_start
-```
-
-### 4. DRS Self-Correction (Autonomous Execution Quality)
-
-In the investigation output, look for findings that score below the 0.75
-threshold and are flagged for self-correction. The agent must seek
-additional corroborating evidence before these findings are accepted.
-
-### 5. Generated IR Report
-
-```bash
-cat output/ir_report.md
-```
-
-Contains: executive summary, findings with confidence scores and provenance
-UUIDs, self-correction log, IOC summary table, evidence integrity statement.
+See [`../demo/VIDEO_SCRIPT.md`](../demo/VIDEO_SCRIPT.md) for the narration that maps onto these acts.
 
 ## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
-| `ModuleNotFoundError: find_evil` | Run `pip install -e .` from the repo root |
-| Tests fail with import errors | Ensure Python 3.11+ (`python --version`) |
-| Docker build fails | Ensure Docker daemon is running |
-| `yara_scan` test skipped | Expected — yara-python not installed (optional dependency) |
+| `ModuleNotFoundError: find_evil` | `pip install -e .` from the repo root |
+| Live agent tools fail / `ctx` errors | Upgrade mcp: `pip install -U "mcp[cli]"` (need >=1.27) |
+| `claude mcp list` shows not connected | For the pip form, ensure `pip install -e ".[dev]"` ran; for Docker, build the image first |
+| `yara_scan` parsing skipped | Install the optional `yara-python` (`pip install -e ".[sift]"`) |
+| Tests: 1 skipped | Expected — Windows-admin-only symlink test; runs on Linux/SIFT |
