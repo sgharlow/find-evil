@@ -19,6 +19,13 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
+# This proof script intentionally tampers evidence to verify detection works,
+# which makes the hash daemon log expected ERROR-level "INTEGRITY VIOLATION"
+# lines. Silence them so the validator's pass/fail output stays clean (the
+# checks assert on return values, not log output).
+import logging
+logging.getLogger("find_evil.hash_daemon").setLevel(logging.CRITICAL)
+
 passed = 0
 failed = 0
 total = 0

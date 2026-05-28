@@ -4,6 +4,9 @@ FINDEVIL_OptionB_Spec.md
 # Devpost submission-form requirements screenshot (reference only, not source)
 submission-needs.pdf
 
+# Local terminal-preview frames of the demo (regenerable from demo/ scripts)
+walkthrough-preview/
+
 # Node
 node_modules/
 
