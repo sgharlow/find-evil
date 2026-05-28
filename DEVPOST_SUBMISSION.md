@@ -171,14 +171,17 @@ docker-compose run mcp-server pytest tests/ -v
 docker-compose run mcp-server python demo/run_investigation.py
 ```
 
-### Connect to Claude Code
+### Connect to Claude Code (live agent — SIFT Docker image)
 ```bash
-claude mcp add find-evil -- python -m find_evil.server
+docker compose -f docker-compose.sift.yml build   # one-time: builds find-evil-sift:latest
+claude mcp add find-evil -- docker run --rm -i -v "$PWD/evidence:/evidence:ro" -v "$PWD/output:/output" find-evil-sift:latest
+claude mcp list                                    # expect: find-evil ... ✓ Connected
 ```
+(No Docker? The demo scripts above exercise the same sealing / DRS / audit pipeline standalone.)
 
 ### Verify the security boundary (constraint implementation)
 ```bash
-python -c "from find_evil.server import mcp; names={t.name for t in mcp._tool_manager.list_tools()}; bad=names&{'execute_shell_cmd','write_file','rm','dd','shell','bash'}; assert not bad; print(f'{len(names)} tools, zero destructive — PASS')"
+python -c "from find_evil.server import mcp; names={t.name for t in mcp._tool_manager.list_tools()}; bad=names&{'execute_shell_cmd','write_file','rm','dd','shell','bash'}; assert not bad; print(f'{len(names)} tools, zero destructive - PASS')"
 ```
 
 Provided evidence — two paths. **(1)** The bundled simulated attack scenario (labeled `"mode": "simulated"`) runs on any laptop. **(2)** `demo/run_live_investigation.py` runs **live** against the committed real evidence: a real Windows Application EVTX via python-evtx, real `SYSTEM`/`SOFTWARE` registry hives via python-registry (incl. the `WinUpdateHelper` persistence service), and a real IOC binary via yara-python (9 matches incl. Cobalt Strike, Mimikatz, known-C2) — producing `output/live_audit_trail.jsonl` with `"mode": "live"`. Drop a memory image into `evidence/` (or set `EVIDENCE_MEMORY`) to add live Volatility3 `vol_pslist/netscan/malfind` and corroborated ACCEPTs — no code changes.

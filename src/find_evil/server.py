@@ -6,13 +6,13 @@ This is architectural enforcement, not a prompt restriction.
 
 Usage:
     # Direct
-    python -m find_evil.server
+    python -m find_evil
 
     # Via Claude Code
-    claude mcp add find-evil -- python -m find_evil.server
+    claude mcp add find-evil -- docker run --rm -i -v "$PWD/evidence:/evidence:ro" -v "$PWD/output:/output" find-evil-sift:latest
 
     # With evidence directory
-    EVIDENCE_DIR=/path/to/case-data python -m find_evil.server
+    EVIDENCE_DIR=/path/to/case-data python -m find_evil
 """
 
 from __future__ import annotations

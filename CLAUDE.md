@@ -127,5 +127,5 @@ python -m find_evil
 EVIDENCE_DIR=/path/to/case python -m find_evil
 
 # Connect Claude Code
-claude mcp add find-evil -- python -m find_evil.server
+claude mcp add find-evil -- docker run --rm -i -v "$PWD/evidence:/evidence:ro" -v "$PWD/output:/output" find-evil-sift:latest
 ```

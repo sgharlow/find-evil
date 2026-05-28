@@ -55,7 +55,7 @@ Verified by `@mcp.tool()` decorator count across `src/find_evil/**/*.py`. MITRE 
 ```bash
 # Pip path
 pip install -e ".[dev]"
-python -m find_evil.server
+python -m find_evil
 
 # Docker path (SIFT Workstation image)
 docker compose -f docker-compose.sift.yml up

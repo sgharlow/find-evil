@@ -135,9 +135,15 @@ cat output/ir_report.md             # generated incident response report
 
 ### Connect to Claude Code
 
+The live agent runs on the SIFT Docker image (real backends). Build once, then connect:
+
 ```bash
-claude mcp add find-evil -- python -m find_evil.server
+docker compose -f docker-compose.sift.yml build   # one-time: builds find-evil-sift:latest
+claude mcp add find-evil -- docker run --rm -i -v "$PWD/evidence:/evidence:ro" -v "$PWD/output:/output" find-evil-sift:latest
+claude mcp list                                    # expect: find-evil ... ✓ Connected
 ```
+
+No Docker? The bundled demo scripts (`validate_submission.py`, `run_investigation.py`, `run_live_investigation.py`) exercise the same sealing / DRS / audit pipeline standalone.
 
 ### Docker
 

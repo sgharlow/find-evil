@@ -80,7 +80,7 @@ offsets the static protocol). A focused single-phase triage is ~3–4K tokens.
 ### Capturing the exact figures (owner, one real session)
 
 ```bash
-claude mcp add find-evil -- python -m find_evil.server
+claude mcp add find-evil -- docker run --rm -i -v "$PWD/evidence:/evidence:ro" -v "$PWD/output:/output" find-evil-sift:latest
 claude            # run the 7-phase protocol against the bundled evidence
 /cost             # prints exact input/output/cache tokens + USD for the session
 ```

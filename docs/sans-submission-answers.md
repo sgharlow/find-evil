@@ -198,7 +198,7 @@ docker-compose run mcp-server python demo/run_investigation.py
 ### Connect to Claude Code
 
 ```bash
-claude mcp add find-evil -- python -m find_evil.server
+claude mcp add find-evil -- docker run --rm -i -v "$PWD/evidence:/evidence:ro" -v "$PWD/output:/output" find-evil-sift:latest
 ```
 
 ### Inspect Outputs
@@ -281,7 +281,7 @@ cat output/ir_report.md          # Generated incident response report
 **Evidence:**
 - `pip install -e ".[dev]"` -- one command to install
 - `docker-compose build && docker-compose run mcp-server pytest` -- containerized
-- `claude mcp add find-evil -- python -m find_evil.server` -- one command to connect to Claude Code
+- `claude mcp add find-evil -- docker run --rm -i -v "$PWD/evidence:/evidence:ro" -v "$PWD/output:/output" find-evil-sift:latest` -- one command to connect to Claude Code
 - 14 required files verified by `validate_submission.py` Section 6
 - `docs/try_it_out.md`: Step-by-step judge setup instructions with troubleshooting table
 - `demo/tamper_demo.py`: Live tamper detection demonstration

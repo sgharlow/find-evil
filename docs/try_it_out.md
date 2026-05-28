@@ -38,7 +38,7 @@ cat output/ir_report.md                    # Generated IR report
 
 ```bash
 # Register the MCP server
-claude mcp add find-evil -- python -m find_evil
+claude mcp add find-evil -- docker run --rm -i -v "$PWD/evidence:/evidence:ro" -v "$PWD/output:/output" find-evil-sift:latest
 
 # Now Claude Code can use all 15 forensic tools
 # Start a conversation and ask it to investigate evidence
