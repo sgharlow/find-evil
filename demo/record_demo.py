@@ -54,28 +54,33 @@ def run_py(script):
     return subprocess.run([PY, script], cwd=str(REPO)).returncode
 
 
-def run_agent():
-    banner("ACT 2", "REAL CLAUDE AGENT (autonomous)", "claude -p - Claude drives the MCP server itself")
-    print(f"  {DIM}$ claude -p \"{AGENT_PROMPT[:62]}...\" --allowedTools mcp__find-evil{RESET}\n", flush=True)
+def run_agent(batch=False):
+    banner("ACT 2", "REAL CLAUDE AGENT (autonomous)", "Claude drives the MCP server itself")
+    # --allowedTools pre-authorizes the (read-only) find-evil tools so the agent
+    # isn't blocked on approval prompts. Interactive `claude` STREAMS every tool
+    # call + result live in the TUI (what you want on camera); `claude -p`
+    # (--agent-batch) runs silently and prints only the final report at the end.
+    if batch:
+        cmd = ["claude", "-p", AGENT_PROMPT, "--allowedTools", "mcp__find-evil"]
+        print(f"  {DIM}$ claude -p \"...\" --allowedTools mcp__find-evil   (batch - no live stream){RESET}\n", flush=True)
+    else:
+        cmd = ["claude", AGENT_PROMPT, "--allowedTools", "mcp__find-evil"]
+        print(f"  {DIM}$ claude \"{AGENT_PROMPT[:50]}...\" --allowedTools mcp__find-evil{RESET}")
+        print(f"  {DIM}  interactive - watch the tool calls stream; type /exit (or Ctrl-C) when it finishes to continue{RESET}\n", flush=True)
     try:
-        # --allowedTools pre-authorizes the (read-only) find-evil tools so the
-        # headless agent can call them without an interactive approval prompt.
-        rc = subprocess.run(
-            ["claude", "-p", AGENT_PROMPT, "--allowedTools", "mcp__find-evil"],
-            cwd=str(REPO),
-        ).returncode
+        rc = subprocess.run(cmd, cwd=str(REPO)).returncode
         if rc != 0:
-            print(f"{AMBER}  (claude returned {rc} - is the find-evil MCP server connected? "
-                  f"see docs/try_it_out.md){RESET}")
+            print(f"{AMBER}  (claude exited {rc} - is the find-evil MCP server connected? see docs/try_it_out.md){RESET}")
     except FileNotFoundError:
-        print(f"{AMBER}  (claude CLI not on PATH - skipping the live-agent act; scripted acts still run){RESET}")
+        print(f"{AMBER}  (claude CLI not on PATH - skipping the agent act; scripted acts still run){RESET}")
 
 
 def main():
     ap = argparse.ArgumentParser(description="Evidence Integrity Enforcer demo orchestrator")
     ap.add_argument("--pause", type=float, default=2.5, help="seconds between acts (default 2.5; 0 = none)")
-    ap.add_argument("--with-agent", action="store_true", help="prepend the real Claude agent act")
+    ap.add_argument("--with-agent", action="store_true", help="prepend the real Claude agent act (interactive - watchable)")
     ap.add_argument("--agent-only", action="store_true", help="run only the real Claude agent act")
+    ap.add_argument("--agent-batch", action="store_true", help="run the agent via `claude -p` (batch, no live stream; for automation)")
     args = ap.parse_args()
 
     # Fresh output for a clean recording
@@ -85,7 +90,7 @@ def main():
         (out / f).unlink(missing_ok=True)
 
     if args.agent_only:
-        run_agent()
+        run_agent(batch=args.agent_batch)
         return
 
     banner("ACT 1", "COLD OPEN - automated proof", "validate_submission.py: 49 checks + 550 tests")
@@ -93,7 +98,7 @@ def main():
     pause(args.pause)
 
     if args.with_agent:
-        run_agent()
+        run_agent(batch=args.agent_batch)
         pause(args.pause)
 
     banner("ACT 3", "REAL EVIDENCE - live backends", "run_live_investigation.py: python-evtx + registry + yara on real files")
