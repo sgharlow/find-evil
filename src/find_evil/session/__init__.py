@@ -1,4 +1,4 @@
-"""Evidence session management — hash sealing and integrity verification."""
+"""Evidence session management - hash sealing and integrity verification."""
 
 from .manager import EvidenceSession
 from .models import IntegrityResult

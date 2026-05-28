@@ -364,7 +364,7 @@ async def yara_scan(
             "summary": (
                 f"{len(matches)} YARA matches found"
                 + (f" ({', '.join(f'{k}:{v}' for k, v in sorted(severity_counts.items()))})" if severity_counts else "")
-                + (f" — MITRE: {', '.join(mitre_techniques)}" if mitre_techniques else "")
+                + (f" - MITRE: {', '.join(mitre_techniques)}" if mitre_techniques else "")
             ),
         }
 

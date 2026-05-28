@@ -9,7 +9,7 @@ Every MCP tool in this server calls `enforce()` before executing, which:
 6. Records timing metrics (elapsed_ms) for each tool call
 
 If integrity fails, the tool returns an error instead of executing.
-There is no bypass path — the check happens server-side before any SIFT tool runs.
+There is no bypass path - the check happens server-side before any SIFT tool runs.
 """
 
 from __future__ import annotations
@@ -75,8 +75,8 @@ def enforce(
             evidence directory, the tool call is rejected.
 
     Returns:
-        ToolContext — if all checks pass. Tool should proceed with analysis.
-        dict — if any check fails. Tool should return this dict immediately.
+        ToolContext - if all checks pass. Tool should proceed with analysis.
+        dict - if any check fails. Tool should return this dict immediately.
     """
     lifespan = get_lifespan(ctx)
     session: EvidenceSession = lifespan["session"]
@@ -100,7 +100,7 @@ def enforce(
         return {
             "error": INTEGRITY_VIOLATION,
             "message": (
-                "ANALYSIS HALTED — chain of custody broken. "
+                "ANALYSIS HALTED - chain of custody broken. "
                 "All findings voided."
             ),
             "violations": integrity.failures,

@@ -4,7 +4,7 @@ Stores findings, their confidence scores, and the UUID links back to
 the tool invocations that produced them. Used by the report generator
 to produce the final IR report.
 
-SQLite is chosen for zero-dependency local deployment — no separate
+SQLite is chosen for zero-dependency local deployment - no separate
 database server needed on the SIFT Workstation.
 """
 

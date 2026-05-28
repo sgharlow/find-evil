@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tamper Detection Demo — the submission's signature moment.
+"""Tamper Detection Demo - the submission's signature moment.
 
 This script demonstrates the evidence integrity enforcement system:
 1. Creates mock evidence files
@@ -9,7 +9,7 @@ This script demonstrates the evidence integrity enforcement system:
 5. Verifies the daemon detects the tamper and halts the session
 
 IMPORTANT: The original spec used `touch` to demonstrate tampering.
-`touch` only changes mtime/atime metadata — SHA-256 hashes file CONTENT.
+`touch` only changes mtime/atime metadata - SHA-256 hashes file CONTENT.
 `touch` would NOT trigger detection. This demo correctly modifies bytes.
 
 Usage:
@@ -31,7 +31,7 @@ from find_evil.audit.logger import AuditLogger
 
 def main():
     print("=" * 70)
-    print("  EVIDENCE INTEGRITY ENFORCER — Tamper Detection Demo")
+    print("  EVIDENCE INTEGRITY ENFORCER - Tamper Detection Demo")
     print("=" * 70)
     print()
 
@@ -82,7 +82,7 @@ def main():
         # 5. Tamper with evidence (BYTE modification, NOT touch)
         target = evidence_dir / "victim-hdd.img"
         print(f"[STEP 4] TAMPERING with evidence: {target.name}")
-        print("  (Appending bytes — SHA-256 detects content changes, not metadata)")
+        print("  (Appending bytes - SHA-256 detects content changes, not metadata)")
         with open(target, "ab") as f:
             f.write(b"\x00\x00TAMPERED_BY_ADVERSARY\x00\x00")
         print("  Evidence file modified.")
@@ -105,7 +105,7 @@ def main():
                 print(f"  Expected: {violation['expected']}")
                 print(f"  Actual:   {violation['actual']}")
             print()
-            print("  ANALYSIS HALTED — chain of custody broken.")
+            print("  ANALYSIS HALTED - chain of custody broken.")
             print("  All findings voided. Session suspended.")
             audit.log_session_halt("Tamper detected during demo")
         else:
@@ -141,8 +141,8 @@ def main():
         print("  Demo complete. Evidence integrity enforcement verified.")
         print()
         print("  Key takeaway: SHA-256 hashes file CONTENT, not metadata.")
-        print("  `touch` would NOT trigger detection — byte modification does.")
-        print("  The agent cannot bypass this — destructive functions don't exist.")
+        print("  `touch` would NOT trigger detection - byte modification does.")
+        print("  The agent cannot bypass this - destructive functions don't exist.")
         print("=" * 70)
 
 

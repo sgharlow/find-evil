@@ -8,7 +8,7 @@ Every finding is scored on two dimensions before being accepted:
 
 Confidence = (evidence_strength * 0.6) + (corroboration * 0.4)
 
-Findings below the threshold (0.75) trigger self-correction — the agent
+Findings below the threshold (0.75) trigger self-correction - the agent
 must seek additional corroborating evidence before the finding is accepted.
 """
 
@@ -62,7 +62,7 @@ class DRSGate:
     """Confidence gate that evaluates findings before acceptance.
 
     Findings below the threshold are returned with guidance for the
-    agent to self-correct — seeking additional corroboration or
+    agent to self-correct - seeking additional corroboration or
     revising the finding.
     """
 
@@ -85,18 +85,18 @@ class DRSGate:
                 ),
             )
 
-        # Below threshold — trigger self-correction
+        # Below threshold - trigger self-correction
         guidance_parts = [
             f"Confidence {score:.2f} below threshold {self.threshold}.",
         ]
 
         if finding.evidence_strength < 0.7:
             guidance_parts.append(
-                "Evidence strength is low — seek more direct tool evidence."
+                "Evidence strength is low - seek more direct tool evidence."
             )
         if finding.corroboration < 0.5:
             guidance_parts.append(
-                "Corroboration is low — verify with a DIFFERENT tool or data source."
+                "Corroboration is low - verify with a DIFFERENT tool or data source."
             )
         if finding.contradicting_invocations:
             guidance_parts.append(

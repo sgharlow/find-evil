@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Polished Video Demo — Evidence Integrity Enforcer.
+"""Polished Video Demo - Evidence Integrity Enforcer.
 
 This is the single script you run while recording the 5-minute demo video.
 It produces clean, color-coded terminal output with dramatic timing at

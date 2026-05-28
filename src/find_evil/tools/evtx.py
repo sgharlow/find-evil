@@ -4,15 +4,15 @@ Parses .evtx files and returns structured event records filtered by
 Event ID, time range, and source. Key Event IDs for DFIR:
 
 Security.evtx:
-  4624/4625 — Successful/Failed logon
-  4688     — Process creation (with command line if audit policy enabled)
-  4720     — User account created
-  7045     — Service installed
+  4624/4625 - Successful/Failed logon
+  4688     - Process creation (with command line if audit policy enabled)
+  4720     - User account created
+  7045     - Service installed
 
 System.evtx:
-  7034/7036 — Service crashed/state change
-  1074     — Shutdown initiated
-  6005/6006 — Event Log service started/stopped
+  7034/7036 - Service crashed/state change
+  1074     - Shutdown initiated
+  6005/6006 - Event Log service started/stopped
 
 Backend: python-evtx library when available, simulated data for dev/testing.
 """
@@ -32,7 +32,7 @@ logger = logging.getLogger("find_evil.tools.evtx")
 
 
 def _load_computer_redact_map() -> dict[str, str]:
-    # FIND_EVIL_COMPUTER_REDACT_MAP="orig1=new1,orig2=new2" — applied to the
+    # FIND_EVIL_COMPUTER_REDACT_MAP="orig1=new1,orig2=new2" - applied to the
     # Computer field of parsed events. Lets fixtures captured on real hosts
     # be shared publicly without leaking hostnames.
     raw = os.environ.get("FIND_EVIL_COMPUTER_REDACT_MAP", "")
@@ -69,25 +69,25 @@ SIMULATED_EVENTS = [
     {"EventID": 4625, "TimeCreated": "2024-01-15T14:19:01Z", "Source": "Security", "Computer": "WORKSTATION1", "LogonType": 3, "TargetUserName": "administrator", "TargetDomainName": "CORP", "IpAddress": "192.168.1.200", "IpPort": "52001", "Status": "0xC000006D", "SubStatus": "0xC0000064"},
     {"EventID": 4625, "TimeCreated": "2024-01-15T14:19:04Z", "Source": "Security", "Computer": "WORKSTATION1", "LogonType": 3, "TargetUserName": "admin", "TargetDomainName": "CORP", "IpAddress": "192.168.1.200", "IpPort": "52010", "Status": "0xC000006D", "SubStatus": "0xC000006A"},
     {"EventID": 4625, "TimeCreated": "2024-01-15T14:19:07Z", "Source": "Security", "Computer": "WORKSTATION1", "LogonType": 3, "TargetUserName": "admin", "TargetDomainName": "CORP", "IpAddress": "192.168.1.200", "IpPort": "52015", "Status": "0xC000006D", "SubStatus": "0xC000006A"},
-    # Process creation — the attack chain
+    # Process creation - the attack chain
     {"EventID": 4688, "TimeCreated": "2024-01-15T14:22:47Z", "Source": "Security", "Computer": "WORKSTATION1", "NewProcessName": "C:\\Windows\\System32\\cmd.exe", "ParentProcessName": "C:\\Windows\\System32\\svchost.exe", "CommandLine": "cmd.exe /c powershell -ep bypass -nop -w hidden -enc ...", "SubjectUserName": "admin", "TokenElevationType": "%%1937"},
     {"EventID": 4688, "TimeCreated": "2024-01-15T14:22:49Z", "Source": "Security", "Computer": "WORKSTATION1", "NewProcessName": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "ParentProcessName": "C:\\Windows\\System32\\cmd.exe", "CommandLine": "powershell -ep bypass -nop -w hidden -enc ...", "SubjectUserName": "admin", "TokenElevationType": "%%1937"},
     {"EventID": 4688, "TimeCreated": "2024-01-15T14:23:15Z", "Source": "Security", "Computer": "WORKSTATION1", "NewProcessName": "C:\\Windows\\System32\\rundll32.exe", "ParentProcessName": "C:\\Windows\\System32\\svchost.exe", "CommandLine": "rundll32.exe C:\\Users\\victim\\AppData\\Local\\Temp\\update.dll,DllRegisterServer", "SubjectUserName": "admin", "TokenElevationType": "%%1937"},
     # Service installation (persistence)
     {"EventID": 7045, "TimeCreated": "2024-01-15T14:24:02Z", "Source": "System", "Computer": "WORKSTATION1", "ServiceName": "Windows Update Helper", "ImagePath": "C:\\Users\\victim\\AppData\\Local\\Temp\\update.dll", "ServiceType": "user mode service", "StartType": "auto start", "AccountName": "LocalSystem"},
-    # Lateral movement — PsExec service installation on remote host
+    # Lateral movement - PsExec service installation on remote host
     {"EventID": 7045, "TimeCreated": "2024-01-15T14:25:11Z", "Source": "System", "Computer": "FILESERVER1", "ServiceName": "PSEXESVC", "ImagePath": "%SystemRoot%\\PSEXESVC.exe", "ServiceType": "user mode service", "StartType": "demand start", "AccountName": "LocalSystem"},
-    # Lateral movement — WMI remote process creation
+    # Lateral movement - WMI remote process creation
     {"EventID": 4688, "TimeCreated": "2024-01-15T14:26:03Z", "Source": "Security", "Computer": "FILESERVER1", "NewProcessName": "C:\\Windows\\System32\\wbem\\WmiPrvSE.exe", "ParentProcessName": "C:\\Windows\\System32\\svchost.exe", "CommandLine": "C:\\Windows\\system32\\wbem\\wmiprvse.exe -secured -Embedding", "SubjectUserName": "admin", "TokenElevationType": "%%1937"},
     {"EventID": 4688, "TimeCreated": "2024-01-15T14:26:05Z", "Source": "Security", "Computer": "FILESERVER1", "NewProcessName": "C:\\Windows\\System32\\cmd.exe", "ParentProcessName": "C:\\Windows\\System32\\wbem\\WmiPrvSE.exe", "CommandLine": "cmd.exe /c whoami && net user && net group \"Domain Admins\" /domain", "SubjectUserName": "admin", "TokenElevationType": "%%1937"},
-    # Lateral movement — RDP logon (LogonType 10)
+    # Lateral movement - RDP logon (LogonType 10)
     {"EventID": 4624, "TimeCreated": "2024-01-15T14:28:44Z", "Source": "Security", "Computer": "DC01", "LogonType": 10, "TargetUserName": "admin", "TargetDomainName": "CORP", "IpAddress": "192.168.1.105", "IpPort": "53211", "LogonProcessName": "User32"},
-    # Privilege escalation — special privileges assigned (token manipulation indicator)
+    # Privilege escalation - special privileges assigned (token manipulation indicator)
     {"EventID": 4672, "TimeCreated": "2024-01-15T14:21:35Z", "Source": "Security", "Computer": "WORKSTATION1", "SubjectUserName": "admin", "SubjectDomainName": "CORP", "PrivilegeList": "SeDebugPrivilege SeImpersonatePrivilege SeTcbPrivilege SeAssignPrimaryTokenPrivilege"},
-    # Privilege escalation — UAC bypass via eventvwr.exe (process creation)
+    # Privilege escalation - UAC bypass via eventvwr.exe (process creation)
     {"EventID": 4688, "TimeCreated": "2024-01-15T14:22:30Z", "Source": "Security", "Computer": "WORKSTATION1", "NewProcessName": "C:\\Windows\\System32\\eventvwr.exe", "ParentProcessName": "C:\\Windows\\System32\\cmd.exe", "CommandLine": "eventvwr.exe", "SubjectUserName": "admin", "TokenElevationType": "%%1937", "MandatoryLabel": "S-1-16-12288"},
     {"EventID": 4688, "TimeCreated": "2024-01-15T14:22:32Z", "Source": "Security", "Computer": "WORKSTATION1", "NewProcessName": "C:\\Windows\\System32\\mmc.exe", "ParentProcessName": "C:\\Windows\\System32\\eventvwr.exe", "CommandLine": "\"C:\\Windows\\System32\\mmc.exe\" \"C:\\Windows\\System32\\eventvwr.msc\"", "SubjectUserName": "admin", "TokenElevationType": "%%1937", "MandatoryLabel": "S-1-16-12288"},
-    # Privilege escalation — sensitive privilege use (SeDebugPrivilege)
+    # Privilege escalation - sensitive privilege use (SeDebugPrivilege)
     {"EventID": 4673, "TimeCreated": "2024-01-15T14:23:03Z", "Source": "Security", "Computer": "WORKSTATION1", "SubjectUserName": "admin", "SubjectDomainName": "CORP", "Service": "-", "PrivilegeName": "SeDebugPrivilege", "ObjectType": "Process", "AccessMask": "0x1FFFFF"},
     # Normal system events
     {"EventID": 7036, "TimeCreated": "2024-01-15T08:00:30Z", "Source": "System", "Computer": "WORKSTATION1", "ServiceName": "Windows Update", "State": "running"},
@@ -119,8 +119,8 @@ async def parse_evtx(
     Args:
         evtx_path: Path to .evtx file (must be a sealed evidence file).
         event_ids: Comma-separated Event IDs to filter (e.g., "4624,4625,4688").
-        time_after: ISO timestamp — only events after this time.
-        time_before: ISO timestamp — only events before this time.
+        time_after: ISO timestamp - only events after this time.
+        time_before: ISO timestamp - only events before this time.
         source: Filter by event source (e.g., "Security", "System").
         max_events: Maximum number of events to return (default 500).
     """
@@ -196,7 +196,7 @@ def _is_suspicious_event(event: dict) -> bool:
         if hour.isdigit() and (int(hour) < 6 or int(hour) > 22):
             return True
 
-    # RDP logon (type 10) — lateral movement indicator
+    # RDP logon (type 10) - lateral movement indicator
     if eid == 4624 and event.get("LogonType") == 10:
         return True
 
@@ -224,14 +224,14 @@ def _is_suspicious_event(event: dict) -> bool:
         if "psexesvc" in svc_name or "psexesvc" in path:
             return True
 
-    # Privilege escalation — special privileges assigned
+    # Privilege escalation - special privileges assigned
     if eid == 4672:
         privs = event.get("PrivilegeList", "").lower()
         if any(x in privs for x in ["sedebugprivilege", "seimpersonateprivilege",
                                       "setcbprivilege", "seassignprimarytokenprivilege"]):
             return True
 
-    # Privilege escalation — sensitive privilege use
+    # Privilege escalation - sensitive privilege use
     if eid == 4673:
         priv_name = event.get("PrivilegeName", "").lower()
         if priv_name in ("sedebugprivilege", "seimpersonateprivilege",
@@ -244,7 +244,7 @@ def _is_suspicious_event(event: dict) -> bool:
 def _parse_real_evtx(evtx_path: str) -> list[dict]:
     """Parse a real .evtx file using python-evtx library.
 
-    Handles malformed records gracefully — python-evtx can throw KeyError,
+    Handles malformed records gracefully - python-evtx can throw KeyError,
     UnicodeDecodeError, and other exceptions on certain record types
     (e.g., binary XML substitution type 132). These are skipped with a
     warning rather than aborting the entire parse.

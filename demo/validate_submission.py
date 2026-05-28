@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Submission Validation Script — Automated proof for judges.
+"""Submission Validation Script - Automated proof for judges.
 
 Systematically verifies every claim made in the submission by running
 real checks against the codebase and producing a pass/fail checklist.
@@ -111,7 +111,7 @@ def main():
         session = EvidenceSession()
         session.initialize(str(p))
         import os
-        os.utime(p / "test.img", (0, 0))  # touch — changes mtime only
+        os.utime(p / "test.img", (0, 0))  # touch - changes mtime only
         result = session.verify_all()
         check("touch (mtime-only) does NOT trigger detection (correct)",
               result.passed,
@@ -131,7 +131,7 @@ def main():
         (p / "test.raw").write_bytes(b"EVIDENCE_DATA_ABCDEF")
         sess = EvidenceSession()
         sess.initialize(str(p))
-        # Don't start the daemon's background thread — it can race with the
+        # Don't start the daemon's background thread - it can race with the
         # main thread and detect the tamper first, setting is_active=False
         # before enforce() runs.  enforce() calls daemon.verify_now()
         # synchronously, so the background thread is not needed for this test.

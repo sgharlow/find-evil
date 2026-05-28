@@ -279,7 +279,7 @@ def main():
                 "mitre": "T1021.001",
             },
             {
-                "description": "Suspicious svchost.exe (PID 4200) — unusual parent (powershell)",
+                "description": "Suspicious svchost.exe (PID 4200) - unusual parent (powershell)",
                 "artifact_type": "memory",
                 "evidence_strength": 0.60,
                 "sources": ["vol_pslist"],

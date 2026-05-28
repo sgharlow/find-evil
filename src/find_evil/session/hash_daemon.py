@@ -1,4 +1,4 @@
-"""Hash Verification Daemon — continuous background integrity monitoring.
+"""Hash Verification Daemon - continuous background integrity monitoring.
 
 Runs as a daemon thread that re-verifies evidence file hashes every 30 seconds.
 Any mismatch immediately halts the analysis session and voids all findings.
@@ -74,7 +74,7 @@ class HashDaemon:
         )
         self._thread.start()
         logger.info(
-            "Hash daemon started — %ds verification cycle", self._interval
+            "Hash daemon started - %ds verification cycle", self._interval
         )
 
     def stop(self) -> None:
@@ -119,11 +119,11 @@ class HashDaemon:
                     result.summary,
                 )
                 # Session is now halted (verify_all sets _active=False).
-                # Stop the daemon — no point continuing checks.
+                # Stop the daemon - no point continuing checks.
                 break
 
             logger.debug(
-                "Integrity check #%d passed — %d files verified",
+                "Integrity check #%d passed - %d files verified",
                 self._check_count,
                 result.files_checked,
             )

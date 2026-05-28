@@ -1,4 +1,4 @@
-"""Evidence Session Manager — SHA-256 hash sealing and integrity verification.
+"""Evidence Session Manager - SHA-256 hash sealing and integrity verification.
 
 This is the most critical component. It cryptographically seals evidence files
 at session start and provides continuous integrity verification. Any modification
@@ -74,7 +74,7 @@ class EvidenceSession:
         """Hash-seal all evidence files in the given directory.
 
         Recursively discovers evidence files by extension, computes SHA-256
-        for each, and stores the manifest. The session is now sealed — any
+        for each, and stores the manifest. The session is now sealed - any
         subsequent modification to these files will be detected by verify_all().
         """
         path = Path(evidence_dir)
@@ -224,6 +224,6 @@ class EvidenceSession:
                 for chunk in iter(lambda: f.read(65536), b""):
                     sha256.update(chunk)
         except (OSError, PermissionError) as e:
-            # File deleted or inaccessible — treat as tampered
+            # File deleted or inaccessible - treat as tampered
             return f"ERROR:{e}"
         return sha256.hexdigest()

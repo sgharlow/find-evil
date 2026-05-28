@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""LIVE Autonomous DFIR Investigation — real evidence, real backends.
+"""LIVE Autonomous DFIR Investigation - real evidence, real backends.
 
 Unlike demo/run_investigation.py (which replays a labelled *simulated*
 scenario so it runs on any laptop), this script seals the committed
@@ -12,7 +12,7 @@ real artifacts:
 
 If a memory image is supplied (env EVIDENCE_MEMORY=/path/to/image.raw, or a
 *.raw / *.vmem / *.mem / *.lime file present in evidence/), the Volatility3
-memory tools also run live and corroborate the YARA/network findings — which
+memory tools also run live and corroborate the YARA/network findings - which
 is what lifts findings across the DRS 0.75 acceptance threshold. Without a
 memory image, single-tool findings honestly self-correct (the gate working as
 designed on real data).
@@ -112,7 +112,7 @@ def main():
     for stale in ("live_audit_trail.jsonl", "live_findings.db"):
         (OUTPUT_DIR / stale).unlink(missing_ok=True)
     print("\n  " + "#" * 62)
-    print("  #  EVIDENCE INTEGRITY ENFORCER  —  LIVE MODE".ljust(61) + "#")
+    print("  #  EVIDENCE INTEGRITY ENFORCER  -  LIVE MODE".ljust(61) + "#")
     print("  #  Autonomous DFIR Investigation against REAL evidence".ljust(61) + "#")
     print("  " + "#" * 62)
 

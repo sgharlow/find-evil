@@ -1,4 +1,4 @@
-"""Evidence Integrity Enforcer — MCP Server entry point.
+"""Evidence Integrity Enforcer - MCP Server entry point.
 
 FastMCP server exposing ONLY read-only forensic analysis tools.
 Destructive commands (shell, write, delete) do not exist in this server.
@@ -43,7 +43,7 @@ async def lifespan(server: FastMCP) -> AsyncIterator[dict]:
 
     The lifespan context manager creates the evidence session, hash daemon,
     and audit logger exactly once. Every tool function receives these via
-    the Context parameter — no global mutable state.
+    the Context parameter - no global mutable state.
     """
     session = EvidenceSession()
     audit = AuditLogger(
@@ -166,7 +166,7 @@ async def verify_integrity(ctx: Context) -> dict:
         "files_checked": result.files_checked,
         "violations": result.failures,
         "message": (
-            "EVIDENCE INTEGRITY VIOLATION — chain of custody broken. "
+            "EVIDENCE INTEGRITY VIOLATION - chain of custody broken. "
             "All findings voided. Session halted. "
             "Re-seal evidence to start a new session."
         ),
@@ -231,40 +231,40 @@ async def reseal_evidence(ctx: Context) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Forensic analysis tools — imported AFTER mcp is defined to avoid circular
+# Forensic analysis tools - imported AFTER mcp is defined to avoid circular
 # imports. Each module does `from find_evil.server import mcp` and registers
 # tools via @mcp.tool(). The import triggers registration.
 #
-# NOT AVAILABLE (by design — these functions do not exist):
+# NOT AVAILABLE (by design - these functions do not exist):
 #   - execute_shell_cmd()
 #   - write_file() / rm() / dd()
 #   - modify_evidence()
 #   - Any function that writes to disk
 # ---------------------------------------------------------------------------
 
-import find_evil.tools.volatility  # noqa: E402, F401 — registers vol_pslist, vol_netscan, vol_malfind, vol_cmdline
-import find_evil.tools.evtx  # noqa: E402, F401 — registers parse_evtx
-import find_evil.tools.registry  # noqa: E402, F401 — registers registry_query
-import find_evil.tools.timeline  # noqa: E402, F401 — registers build_timeline
-import find_evil.tools.yara_scan  # noqa: E402, F401 — registers yara_scan
-import find_evil.tools.findings  # noqa: E402, F401 — registers submit_finding, generate_report
+import find_evil.tools.volatility  # noqa: E402, F401 - registers vol_pslist, vol_netscan, vol_malfind, vol_cmdline
+import find_evil.tools.evtx  # noqa: E402, F401 - registers parse_evtx
+import find_evil.tools.registry  # noqa: E402, F401 - registers registry_query
+import find_evil.tools.timeline  # noqa: E402, F401 - registers build_timeline
+import find_evil.tools.yara_scan  # noqa: E402, F401 - registers yara_scan
+import find_evil.tools.findings  # noqa: E402, F401 - registers submit_finding, generate_report
 
 
 # ---------------------------------------------------------------------------
-# MCP Resources — expose read-only data through the MCP protocol.
+# MCP Resources - expose read-only data through the MCP protocol.
 # This goes beyond Tools to show full MCP mastery.
 # ---------------------------------------------------------------------------
 
 @mcp.resource("evidence://session")
 def get_session_resource() -> str:
-    """Current evidence session metadata — session ID, sealed files, integrity status.
+    """Current evidence session metadata - session ID, sealed files, integrity status.
 
     Read this resource to check what evidence is currently sealed
     and whether the session is active.
     """
     import json
     # Access session via the module-level lifespan (available after startup)
-    # This is a best-effort resource — returns empty if no session yet
+    # This is a best-effort resource - returns empty if no session yet
     try:
         session = mcp._lifespan_context["session"]  # type: ignore[attr-defined]
     except (AttributeError, KeyError, TypeError):
@@ -296,7 +296,7 @@ def get_audit_trail_resource() -> str:
         with open(audit_path) as f:
             return f.read()
     except FileNotFoundError:
-        return "[]  # No audit trail yet — run session_init and analysis tools first"
+        return "[]  # No audit trail yet - run session_init and analysis tools first"
 
 
 @mcp.resource("evidence://tool-registry")
@@ -321,17 +321,17 @@ def get_tool_registry_resource() -> str:
         "not_available": not_available,
         "total_registered": len(registered),
         "total_blocked": len(not_available),
-        "security_model": "allowlist — destructive functions were never implemented",
+        "security_model": "allowlist - destructive functions were never implemented",
     }, indent=2)
 
 
 # ---------------------------------------------------------------------------
-# MCP Prompts — pre-built investigation templates.
+# MCP Prompts - pre-built investigation templates.
 # ---------------------------------------------------------------------------
 
 @mcp.prompt()
 def triage(evidence_dir: str = "./evidence") -> str:
-    """Quick triage of a new evidence set — memory + network only.
+    """Quick triage of a new evidence set - memory + network only.
 
     Runs Phase 1 (TRIAGE) from the investigation protocol:
     vol_pslist and vol_netscan to identify suspicious processes
@@ -343,7 +343,7 @@ def triage(evidence_dir: str = "./evidence") -> str:
         f"Then run vol_pslist and vol_netscan on the memory image. "
         f"Report any suspicious processes (unusual parent-child chains) "
         f"and network connections (external IPs, non-standard ports). "
-        f"Do NOT proceed to deeper analysis — just triage."
+        f"Do NOT proceed to deeper analysis - just triage."
     )
 
 
@@ -374,7 +374,7 @@ def full_investigation(evidence_dir: str = "./evidence") -> str:
 
 @mcp.prompt()
 def persistence_hunt(evidence_dir: str = "./evidence") -> str:
-    """Focused persistence mechanism hunt — registry + services + scheduled tasks.
+    """Focused persistence mechanism hunt - registry + services + scheduled tasks.
 
     Targets Phase 4 (PERSISTENCE) artifacts: Run keys, RunOnce, Services,
     UserAssist execution history. Use after triage identifies compromise.
@@ -382,9 +382,9 @@ def persistence_hunt(evidence_dir: str = "./evidence") -> str:
     return (
         f"Hunt for persistence mechanisms in the evidence at {evidence_dir}. "
         f"Focus on:\n"
-        f"- registry_query with query_type='run_keys' — auto-start entries\n"
-        f"- registry_query with query_type='services' — installed services\n"
-        f"- registry_query with query_type='userassist' — execution history\n"
+        f"- registry_query with query_type='run_keys' - auto-start entries\n"
+        f"- registry_query with query_type='services' - installed services\n"
+        f"- registry_query with query_type='userassist' - execution history\n"
         f"Flag any entries pointing to Temp directories, AppData, or "
         f"user-writable paths. Cross-reference with parse_evtx Event ID 7045 "
         f"(service install) for corroboration."

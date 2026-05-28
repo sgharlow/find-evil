@@ -26,9 +26,9 @@ class IntegrityResult(BaseModel):
     @property
     def summary(self) -> str:
         if self.passed:
-            return f"OK — {self.files_checked} files verified"
+            return f"OK - {self.files_checked} files verified"
         return (
-            f"VIOLATION — {len(self.failures)} file(s) tampered, "
+            f"VIOLATION - {len(self.failures)} file(s) tampered, "
             f"{self.files_checked} checked"
         )
 

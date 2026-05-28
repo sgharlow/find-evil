@@ -4,7 +4,7 @@ These tools close the analysis loop:
 - submit_finding: Agent records a scored finding with provenance
 - generate_report: Agent produces a structured IR report from all findings
 
-Both tools go through the integrity gate — if evidence is tampered
+Both tools go through the integrity gate - if evidence is tampered
 mid-reporting, the report is halted.
 """
 
@@ -90,7 +90,7 @@ async def submit_finding(
 
     Every finding is scored on evidence strength and corroboration.
     Findings below the 0.75 confidence threshold are flagged for
-    self-correction — seek additional corroborating evidence.
+    self-correction - seek additional corroborating evidence.
 
     Args:
         description: Specific observable fact (not interpretation).
@@ -225,7 +225,7 @@ async def generate_report(ctx: Context, title: str = "Incident Response Report")
             return complete(tc, {
                 "tool": "generate_report",
                 "error": "No active session",
-                "summary": "Cannot generate report — no evidence session active.",
+                "summary": "Cannot generate report - no evidence session active.",
             })
 
         findings = db.get_findings(session.session_id)
@@ -410,7 +410,7 @@ def _stix_indicator(ioc_type: str, value: str, finding_ids: list[str]) -> dict:
 def build_stix_bundle(findings: list[dict], session_id: str, file_count: int) -> dict:
     """Build a STIX 2.1 bundle from a list of findings.
 
-    Pure function with no MCP dependency — callable from demo scripts and tests.
+    Pure function with no MCP dependency - callable from demo scripts and tests.
     The MCP tool wrapper export_stix() composes this with session context.
     """
     iocs = _extract_iocs(findings)
@@ -434,7 +434,7 @@ def build_stix_bundle(findings: list[dict], session_id: str, file_count: int) ->
         "id": report_id,
         "created": now,
         "modified": now,
-        "name": f"Evidence Integrity Enforcer — Session {session_id[:8]}",
+        "name": f"Evidence Integrity Enforcer - Session {session_id[:8]}",
         "published": now,
         "report_types": ["threat-report"],
         "object_refs": indicator_ids,
@@ -484,7 +484,7 @@ async def export_stix(ctx: Context) -> dict:
             return complete(tc, {
                 "tool": "export_stix",
                 "error": "No active session",
-                "summary": "Cannot export — no evidence session active.",
+                "summary": "Cannot export - no evidence session active.",
             })
 
         findings = db.get_findings(session.session_id)

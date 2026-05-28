@@ -2,11 +2,11 @@
 
 Wraps Plaso (log2timeline) CLI to produce a unified chronological timeline
 of all file system, registry, event log, and other artifact timestamps.
-The super-timeline is the most powerful DFIR correlation tool — it puts
+The super-timeline is the most powerful DFIR correlation tool - it puts
 all events from all sources on a single time axis.
 
 Backend: Plaso CLI (subprocess) when available. Plaso is not designed as a
-Python library — the CLI is the stable, documented interface.
+Python library - the CLI is the stable, documented interface.
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ SIMULATED_TIMELINE = [
     {"timestamp": "2024-01-15T08:01:15Z", "source": "EVT", "source_type": "Security", "type": "Content Modification Time", "description": "[4624] Logon Type 2: jsmith - Interactive logon", "filename": "Security.evtx", "inode": "-"},
     {"timestamp": "2024-01-15T09:14:33Z", "source": "PE", "source_type": "PE Compilation Time", "type": "Creation Time", "description": "chrome.exe executed", "filename": "C:/Program Files/Google/Chrome/Application/chrome.exe", "inode": "12847"},
 
-    # Attack sequence begins — brute force
+    # Attack sequence begins - brute force
     {"timestamp": "2024-01-15T14:19:01Z", "source": "EVT", "source_type": "Security", "type": "Content Modification Time", "description": "[4625] Failed logon: administrator from 192.168.1.200", "filename": "Security.evtx", "inode": "-"},
     {"timestamp": "2024-01-15T14:19:04Z", "source": "EVT", "source_type": "Security", "type": "Content Modification Time", "description": "[4625] Failed logon: admin from 192.168.1.200", "filename": "Security.evtx", "inode": "-"},
     {"timestamp": "2024-01-15T14:19:07Z", "source": "EVT", "source_type": "Security", "type": "Content Modification Time", "description": "[4625] Failed logon: admin from 192.168.1.200", "filename": "Security.evtx", "inode": "-"},
@@ -51,10 +51,10 @@ SIMULATED_TIMELINE = [
     # Successful logon after brute force
     {"timestamp": "2024-01-15T14:21:33Z", "source": "EVT", "source_type": "Security", "type": "Content Modification Time", "description": "[4624] Logon Type 3: admin from 192.168.1.200 - Network logon", "filename": "Security.evtx", "inode": "-"},
 
-    # Privilege escalation — SeDebugPrivilege assigned immediately after logon
-    {"timestamp": "2024-01-15T14:21:35Z", "source": "EVT", "source_type": "Security", "type": "Content Modification Time", "description": "[4672] Special privileges assigned: admin — SeDebugPrivilege, SeImpersonatePrivilege, SeTcbPrivilege", "filename": "Security.evtx", "inode": "-"},
+    # Privilege escalation - SeDebugPrivilege assigned immediately after logon
+    {"timestamp": "2024-01-15T14:21:35Z", "source": "EVT", "source_type": "Security", "type": "Content Modification Time", "description": "[4672] Special privileges assigned: admin - SeDebugPrivilege, SeImpersonatePrivilege, SeTcbPrivilege", "filename": "Security.evtx", "inode": "-"},
 
-    # Privilege escalation — UAC bypass via eventvwr.exe
+    # Privilege escalation - UAC bypass via eventvwr.exe
     {"timestamp": "2024-01-15T14:22:30Z", "source": "EVT", "source_type": "Security", "type": "Content Modification Time", "description": "[4688] UAC bypass: eventvwr.exe spawned by cmd.exe (High Integrity)", "filename": "Security.evtx", "inode": "-"},
 
     # Lateral movement and payload delivery
@@ -78,17 +78,17 @@ SIMULATED_TIMELINE = [
     {"timestamp": "2024-01-15T14:24:02Z", "source": "EVT", "source_type": "System", "type": "Content Modification Time", "description": "[7045] Service installed: Windows Update Helper (update.dll, AUTO_START)", "filename": "System.evtx", "inode": "-"},
     {"timestamp": "2024-01-15T14:24:10Z", "source": "REG", "source_type": "Registry", "type": "Key Last Written Time", "description": "Run key added: WindowsUpdateHelper -> rundll32.exe update.dll", "filename": "NTUSER.DAT", "inode": "-"},
 
-    # Lateral movement — PsExec to FILESERVER1
+    # Lateral movement - PsExec to FILESERVER1
     {"timestamp": "2024-01-15T14:25:11Z", "source": "EVT", "source_type": "System", "type": "Content Modification Time", "description": "[7045] PsExec service installed on FILESERVER1: PSEXESVC (demand start, LocalSystem)", "filename": "System.evtx", "inode": "-"},
 
-    # Lateral movement — WMI remote execution on FILESERVER1
-    {"timestamp": "2024-01-15T14:26:05Z", "source": "EVT", "source_type": "Security", "type": "Content Modification Time", "description": "[4688] WMI remote exec on FILESERVER1: WmiPrvSE.exe spawned process — whoami, net user, Domain Admins enumeration", "filename": "Security.evtx", "inode": "-"},
+    # Lateral movement - WMI remote execution on FILESERVER1
+    {"timestamp": "2024-01-15T14:26:05Z", "source": "EVT", "source_type": "Security", "type": "Content Modification Time", "description": "[4688] WMI remote exec on FILESERVER1: WmiPrvSE.exe spawned process - whoami, net user, Domain Admins enumeration", "filename": "Security.evtx", "inode": "-"},
 
     # C2 beacon pattern (4-minute intervals)
     {"timestamp": "2024-01-15T14:27:18Z", "source": "NET", "source_type": "Network Connection", "type": "Connection Time", "description": "TCP 192.168.1.105:52400 -> 185.220.101.34:8443 CLOSE_WAIT (rundll32.exe)", "filename": "-", "inode": "-"},
 
-    # Lateral movement — RDP to Domain Controller
-    {"timestamp": "2024-01-15T14:28:44Z", "source": "EVT", "source_type": "Security", "type": "Content Modification Time", "description": "[4624] Logon Type 10 (RDP): admin from 192.168.1.105 to DC01 — lateral movement to Domain Controller", "filename": "Security.evtx", "inode": "-"},
+    # Lateral movement - RDP to Domain Controller
+    {"timestamp": "2024-01-15T14:28:44Z", "source": "EVT", "source_type": "Security", "type": "Content Modification Time", "description": "[4624] Logon Type 10 (RDP): admin from 192.168.1.105 to DC01 - lateral movement to Domain Controller", "filename": "Security.evtx", "inode": "-"},
 
     {"timestamp": "2024-01-15T14:31:18Z", "source": "NET", "source_type": "Network Connection", "type": "Connection Time", "description": "TCP 192.168.1.105:52456 -> 185.220.101.34:8443 ESTABLISHED (rundll32.exe)", "filename": "-", "inode": "-"},
 ]
@@ -109,13 +109,13 @@ async def build_timeline(
     sources: file system ($MFT), event logs, registry, prefetch, network,
     and more. This is the most powerful DFIR correlation tool.
 
-    The timeline enables temporal correlation — seeing what happened before,
+    The timeline enables temporal correlation - seeing what happened before,
     during, and after a suspicious event across all evidence sources.
 
     Args:
         evidence_path: Path to disk image or evidence directory.
-        time_after: ISO timestamp — only events after this time.
-        time_before: ISO timestamp — only events before this time.
+        time_after: ISO timestamp - only events after this time.
+        time_before: ISO timestamp - only events before this time.
         source_filter: Filter by source type (e.g., "EVT", "FILE", "REG", "NET", "PREFETCH").
         max_entries: Maximum entries to return (default 1000).
     """

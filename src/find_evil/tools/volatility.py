@@ -87,7 +87,7 @@ SIMULATED_PSLIST = [
     {"PID": 1024, "PPID": 616, "ImageFileName": "svchost.exe", "CreateTime": "2024-01-15T08:00:13Z", "ExitTime": "", "Threads": 22, "Handles": 614, "SessionId": 0, "Wow64": False, "Offset": "0x88012e6c8080"},
     {"PID": 2184, "PPID": 2104, "ImageFileName": "explorer.exe", "CreateTime": "2024-01-15T08:01:22Z", "ExitTime": "", "Threads": 42, "Handles": 1847, "SessionId": 1, "Wow64": False, "Offset": "0x88012e8f0080"},
     {"PID": 3472, "PPID": 2184, "ImageFileName": "chrome.exe", "CreateTime": "2024-01-15T09:14:33Z", "ExitTime": "", "Threads": 24, "Handles": 498, "SessionId": 1, "Wow64": False, "Offset": "0x88012f1a2080"},
-    # Suspicious processes — the ones an analyst should flag
+    # Suspicious processes - the ones an analyst should flag
     {"PID": 4088, "PPID": 788, "ImageFileName": "cmd.exe", "CreateTime": "2024-01-15T14:22:47Z", "ExitTime": "", "Threads": 1, "Handles": 23, "SessionId": 0, "Wow64": False, "Offset": "0x88012f4e8300"},
     {"PID": 4112, "PPID": 4088, "ImageFileName": "powershell.exe", "CreateTime": "2024-01-15T14:22:49Z", "ExitTime": "", "Threads": 14, "Handles": 487, "SessionId": 0, "Wow64": False, "Offset": "0x88012f4f2080"},
     {"PID": 4200, "PPID": 4112, "ImageFileName": "svchost.exe", "CreateTime": "2024-01-15T14:23:01Z", "ExitTime": "", "Threads": 3, "Handles": 89, "SessionId": 0, "Wow64": False, "Offset": "0x88012f510340"},
@@ -100,7 +100,7 @@ SIMULATED_NETSCAN = [
     {"Proto": "TCPv4", "LocalAddr": "0.0.0.0", "LocalPort": 5357, "ForeignAddr": "0.0.0.0", "ForeignPort": 0, "State": "LISTENING", "PID": 4, "Owner": "System", "CreateTime": "2024-01-15T08:00:01Z"},
     {"Proto": "TCPv4", "LocalAddr": "192.168.1.105", "LocalPort": 49723, "ForeignAddr": "142.250.80.46", "ForeignPort": 443, "State": "ESTABLISHED", "PID": 3472, "Owner": "chrome.exe", "CreateTime": "2024-01-15T09:14:40Z"},
     {"Proto": "TCPv4", "LocalAddr": "192.168.1.105", "LocalPort": 49812, "ForeignAddr": "20.198.162.76", "ForeignPort": 443, "State": "ESTABLISHED", "PID": 856, "Owner": "svchost.exe", "CreateTime": "2024-01-15T10:30:00Z"},
-    # Suspicious connection — C2 beacon
+    # Suspicious connection - C2 beacon
     {"Proto": "TCPv4", "LocalAddr": "192.168.1.105", "LocalPort": 52344, "ForeignAddr": "185.220.101.34", "ForeignPort": 8443, "State": "ESTABLISHED", "PID": 4344, "Owner": "rundll32.exe", "CreateTime": "2024-01-15T14:23:18Z"},
     {"Proto": "TCPv4", "LocalAddr": "192.168.1.105", "LocalPort": 52400, "ForeignAddr": "185.220.101.34", "ForeignPort": 8443, "State": "CLOSE_WAIT", "PID": 4344, "Owner": "rundll32.exe", "CreateTime": "2024-01-15T14:27:18Z"},
     {"Proto": "TCPv4", "LocalAddr": "192.168.1.105", "LocalPort": 52456, "ForeignAddr": "185.220.101.34", "ForeignPort": 8443, "State": "ESTABLISHED", "PID": 4344, "Owner": "rundll32.exe", "CreateTime": "2024-01-15T14:31:18Z"},
@@ -118,7 +118,7 @@ SIMULATED_MALFIND = [
         "Hexdump": "4d 5a 90 00 03 00 00 00 04 00 00 00 ff ff 00 00",
         "Disasm": "dec ebp; pop edx; nop; add [eax], al",
         "Suspicious": True,
-        "Reason": "MZ header in PAGE_EXECUTE_READWRITE region — injected PE",
+        "Reason": "MZ header in PAGE_EXECUTE_READWRITE region - injected PE",
     },
     {
         "PID": 4344,
@@ -301,7 +301,7 @@ async def vol_cmdline(memory_image: str, ctx: Context, pid: int | None = None) -
     """Get command-line arguments for processes from a memory image.
 
     Returns the full command line used to launch each process. Essential for
-    understanding what malware was doing — encoded PowerShell, LOLBin abuse,
+    understanding what malware was doing - encoded PowerShell, LOLBin abuse,
     suspicious DLL loading, etc.
 
     Args:
@@ -386,7 +386,7 @@ def _is_suspicious_connection(conn: dict) -> bool:
     port = conn.get("ForeignPort", 0)
     owner = conn.get("Owner", "").lower()
 
-    # Known suspicious ranges (example — real implementation would check threat intel)
+    # Known suspicious ranges (example - real implementation would check threat intel)
     if foreign.startswith("185.220.101."):
         return True  # Tor exit node range
 
@@ -471,7 +471,7 @@ def _parse_netscan_output(raw: str) -> list[dict]:
 
 def _parse_malfind_output(raw: str) -> list[dict]:
     """Parse Volatility3 malfind output."""
-    # Malfind output is block-formatted — simplified parser
+    # Malfind output is block-formatted - simplified parser
     findings = []
     current: dict[str, Any] = {}
     for line in raw.strip().split("\n"):

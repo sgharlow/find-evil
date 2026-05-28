@@ -2,7 +2,7 @@
 
 Watches output/audit_trail.jsonl as it grows, pretty-prints each tool call,
 and shows ir_report.md / bundle.stix.json when they appear. This is the
-screen the recording focuses on — claude itself runs silently in the
+screen the recording focuses on - claude itself runs silently in the
 background.
 
 Run: python scripts/live-demo-display.py
@@ -23,7 +23,7 @@ REPORT = REPO / "output" / "ir_report.md"
 BUNDLE = REPO / "output" / "bundle.stix.json"
 DB = REPO / "output" / "findings.db"
 
-# ANSI colors — most terminals on Windows 10+ support these
+# ANSI colors - most terminals on Windows 10+ support these
 CYAN = "\033[96m"
 GREEN = "\033[92m"
 YELLOW = "\033[93m"
@@ -40,9 +40,9 @@ def clear():
 
 def banner():
     print(f"{CYAN}{BOLD}" + "=" * 78 + f"{RESET}")
-    print(f"{CYAN}{BOLD}  EVIDENCE INTEGRITY ENFORCER — LIVE INVESTIGATION{RESET}")
+    print(f"{CYAN}{BOLD}  EVIDENCE INTEGRITY ENFORCER - LIVE INVESTIGATION{RESET}")
     print(f"{CYAN}{BOLD}" + "=" * 78 + f"{RESET}")
-    print(f"{DIM}  Watching: {AUDIT.name}  |  claude is analyzing in the background…{RESET}")
+    print(f"{DIM}  Watching: {AUDIT.name}  |  claude is analyzing in the background...{RESET}")
     print()
 
 
@@ -61,7 +61,7 @@ def pretty_event(entry: dict) -> str:
         uuid = entry.get("invocation_id", "")[:8]
         dur = entry.get("elapsed_ms")
         dur_s = f" {int(dur)}ms" if dur else ""
-        return f"{GREEN}[{ts}]{RESET}    {GREEN}✓ complete{RESET}  uuid={uuid}{DIM}{dur_s}{RESET}"
+        return f"{GREEN}[{ts}]{RESET}    {GREEN}OK complete{RESET}  uuid={uuid}{DIM}{dur_s}{RESET}"
     if kind == "finding_submitted":
         desc = entry.get("description", "")[:60]
         conf = entry.get("confidence", 0)
@@ -69,7 +69,7 @@ def pretty_event(entry: dict) -> str:
         marker = f"{GREEN}ACCEPTED{RESET}" if accepted else f"{YELLOW}SELF-CORRECT{RESET}"
         return f"{CYAN}[{ts}]{RESET}    {BOLD}finding{RESET} conf={conf:.2f} {marker}  {DIM}{desc}{RESET}"
     if kind == "integrity_violation":
-        return f"{RED}[{ts}]{RESET} {BOLD}{RED}!! INTEGRITY VIOLATION — ANALYSIS HALTED{RESET}"
+        return f"{RED}[{ts}]{RESET} {BOLD}{RED}!! INTEGRITY VIOLATION - ANALYSIS HALTED{RESET}"
     if kind == "session_halt":
         return f"{RED}[{ts}]{RESET} {BOLD}{RED}SESSION HALTED{RESET}"
 
@@ -99,7 +99,7 @@ def show_report():
         else:
             print(line)
     if len(lines) > 80:
-        print(f"{DIM}  … (+{len(lines) - 80} more lines in output/ir_report.md){RESET}")
+        print(f"{DIM}  ... (+{len(lines) - 80} more lines in output/ir_report.md){RESET}")
     return True
 
 
@@ -136,7 +136,7 @@ def main():
     startup_deadline = time.time() + 60
     while not AUDIT.exists():
         if time.time() > startup_deadline:
-            print(f"{YELLOW}  (waiting for audit trail to appear…){RESET}")
+            print(f"{YELLOW}  (waiting for audit trail to appear...){RESET}")
             startup_deadline = time.time() + 60
         time.sleep(0.5)
 

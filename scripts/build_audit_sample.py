@@ -57,7 +57,7 @@ def main() -> int:
         sample.append(redact(match))
 
     # Generate a real session_halt event via AuditLogger.
-    # Uses a tempdir so we don't pollute output/ — we just want one well-formed line.
+    # Uses a tempdir so we don't pollute output/ - we just want one well-formed line.
     with tempfile.TemporaryDirectory() as td:
         tmp_log = Path(td) / "halt.jsonl"
         logger = AuditLogger(path=str(tmp_log))

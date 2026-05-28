@@ -4,23 +4,23 @@ Queries registry hives for persistence indicators and configuration data.
 Key hives and areas for DFIR:
 
 SYSTEM:
-  - ControlSet001/Services — installed services (persistence)
-  - ControlSet001/Control/Session Manager — boot execution
-  - ControlSet001/Control/ComputerName — hostname
+  - ControlSet001/Services - installed services (persistence)
+  - ControlSet001/Control/Session Manager - boot execution
+  - ControlSet001/Control/ComputerName - hostname
 
 SOFTWARE:
-  - Microsoft/Windows/CurrentVersion/Run — auto-start programs
-  - Microsoft/Windows/CurrentVersion/RunOnce — one-time auto-start
-  - Microsoft/Windows NT/CurrentVersion — OS version info
-  - Microsoft/Windows/CurrentVersion/Uninstall — installed software
+  - Microsoft/Windows/CurrentVersion/Run - auto-start programs
+  - Microsoft/Windows/CurrentVersion/RunOnce - one-time auto-start
+  - Microsoft/Windows NT/CurrentVersion - OS version info
+  - Microsoft/Windows/CurrentVersion/Uninstall - installed software
 
 NTUSER.DAT (per-user):
-  - Software/Microsoft/Windows/CurrentVersion/Run — user auto-start
-  - Software/Microsoft/Windows/CurrentVersion/Explorer/RunMRU — run dialog history
-  - Software/Microsoft/Windows/CurrentVersion/Explorer/UserAssist — program execution
+  - Software/Microsoft/Windows/CurrentVersion/Run - user auto-start
+  - Software/Microsoft/Windows/CurrentVersion/Explorer/RunMRU - run dialog history
+  - Software/Microsoft/Windows/CurrentVersion/Explorer/UserAssist - program execution
 
 SAM:
-  - SAM/Domains/Account/Users — local user accounts
+  - SAM/Domains/Account/Users - local user accounts
 
 Backend: regrippy/python-registry when available, simulated data for dev/testing.
 """
@@ -69,7 +69,7 @@ def _has_regipy() -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Simulated registry data — consistent with the attack scenario
+# Simulated registry data - consistent with the attack scenario
 # ---------------------------------------------------------------------------
 
 SIMULATED_RUN_KEYS = [

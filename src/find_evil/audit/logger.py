@@ -4,7 +4,7 @@ Every tool invocation, finding, integrity check, and self-correction is
 logged as a JSONL record. Each record has a UUID that can be traced back
 through the provenance chain to the raw evidence.
 
-Format: JSONL (one JSON object per line) — append-only, grep-friendly.
+Format: JSONL (one JSON object per line) - append-only, grep-friendly.
 This directly satisfies the Audit Trail Quality judging criterion.
 """
 
@@ -139,7 +139,7 @@ class AuditLogger:
             "event": "session_halt",
             "reason": reason,
             "message": (
-                "ANALYSIS HALTED — chain of custody broken. "
+                "ANALYSIS HALTED - chain of custody broken. "
                 "All findings voided."
             ),
         })
