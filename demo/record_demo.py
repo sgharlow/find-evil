@@ -31,9 +31,11 @@ PY = sys.executable
 CYAN, GREEN, DIM, AMBER, RESET = "\033[96m", "\033[92m", "\033[2m", "\033[93m", "\033[0m"
 
 AGENT_PROMPT = (
-    "Investigate the sealed evidence at /evidence following your CLAUDE.md protocol: "
-    "seal and verify integrity, then triage and parse the event log. Report findings "
-    "with their tool-call provenance UUIDs."
+    "Investigate the sealed evidence at /evidence following your CLAUDE.md protocol. "
+    "Seal and verify integrity, then run the phases for the available artifacts: parse the "
+    "Application event log; query the SYSTEM and SOFTWARE registry hives for persistence "
+    "(services and Run keys); and YARA-scan /evidence/evidence_iocs.bin for malware indicators. "
+    "Score every finding through the DRS gate and report findings with tool-call provenance UUIDs."
 )
 
 

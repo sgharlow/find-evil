@@ -16,6 +16,7 @@
 
 services:
   mcp-server:
+    image: find-evil-sift:latest    # so `docker compose build` matches `docker run ... find-evil-sift:latest`
     build:
       context: .
       dockerfile: Dockerfile.sift
