@@ -10,6 +10,43 @@
 
 ---
 
+## ⭐ Real-agent segment (Claude Code driving the MCP server) — RECORD THIS FIRST
+
+This is the strongest scene and the one judges weight most (autonomous execution):
+the **actual** agent, not a script. **Verified working** via the SIFT Docker server —
+an MCP client listed all **15 tools**, sealed `/evidence`, and ran `parse_evtx` in
+`mode: live` against the real EVTX (hostname redacted to `VICTUS`).
+
+**Setup (one-time, off-camera)** — full guide: `docs/guides/live-demo-setup.md`
+```bash
+docker compose -f docker-compose.sift.yml build        # builds find-evil-sift:latest
+claude mcp add find-evil -- docker run --rm -i \
+  -e FIND_EVIL_COMPUTER_REDACT_MAP=<your-host>=VICTUS \
+  -v "$PWD/evidence:/evidence:ro" -v "$PWD/output:/output" find-evil-sift:latest
+claude mcp list                                         # confirm: find-evil ... ✓ Connected
+```
+> NOTE: use the **Docker** server, not `python -m find_evil(.server)` — the pip MCP
+> path is currently broken (mcp 1.13.1 Context-injection + a `__main__` double-import).
+
+**On camera**
+```text
+$ claude
+> Investigate the sealed evidence at /evidence following your CLAUDE.md protocol.
+  Seal and verify integrity first, then triage and parse the event log. Report
+  findings with their tool-call provenance.
+```
+**Narrate as Claude works autonomously:**
+- It calls `session_init` → `verify_integrity` (real SHA-256 seal of `/evidence`).
+- It calls `parse_evtx` / `registry_query` / `yara_scan` — **real backends, `mode: live`**.
+- Every call lands in `output/audit_trail.jsonl` with a UUID (show the file).
+- The DRS gate makes it **self-correct** low-corroboration findings.
+- Say it plainly: *"This is Claude Code autonomously driving the MCP server — real
+  tool calls against real evidence, not a script."*
+
+Then cut to `python demo/video_demo.py` for the **tamper wow-moment** (Act 3 below).
+
+---
+
 ## Recommended recording sequence (real data, ≤5 min) — RUN THESE ON CAMERA
 
 The current SANS requirement wants live terminal + narration + a **self-correction**
