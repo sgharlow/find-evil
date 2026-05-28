@@ -54,9 +54,14 @@ def run_py(script):
 
 def run_agent():
     banner("ACT 2", "REAL CLAUDE AGENT (autonomous)", "claude -p - Claude drives the MCP server itself")
-    print(f"  {DIM}$ claude -p \"{AGENT_PROMPT[:62]}...\"{RESET}\n", flush=True)
+    print(f"  {DIM}$ claude -p \"{AGENT_PROMPT[:62]}...\" --allowedTools mcp__find-evil{RESET}\n", flush=True)
     try:
-        rc = subprocess.run(["claude", "-p", AGENT_PROMPT], cwd=str(REPO)).returncode
+        # --allowedTools pre-authorizes the (read-only) find-evil tools so the
+        # headless agent can call them without an interactive approval prompt.
+        rc = subprocess.run(
+            ["claude", "-p", AGENT_PROMPT, "--allowedTools", "mcp__find-evil"],
+            cwd=str(REPO),
+        ).returncode
         if rc != 0:
             print(f"{AMBER}  (claude returned {rc} - is the find-evil MCP server connected? "
                   f"see docs/try_it_out.md){RESET}")

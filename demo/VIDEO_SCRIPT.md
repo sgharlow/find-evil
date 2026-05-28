@@ -25,8 +25,8 @@ claude mcp add find-evil -- docker run --rm -i \
   -v "$PWD/evidence:/evidence:ro" -v "$PWD/output:/output" find-evil-sift:latest
 claude mcp list                                         # confirm: find-evil ... ✓ Connected
 ```
-> NOTE: use the **Docker** server, not `python -m find_evil(.server)` — the pip MCP
-> path is currently broken (mcp 1.13.1 Context-injection + a `__main__` double-import).
+> Either path works now: **Docker** (above — full real-backend SIFT environment) or
+> **pip** (`claude mcp add find-evil -- python -m find_evil`, needs mcp ≥ 1.27).
 
 **On camera**
 ```text
@@ -35,6 +35,10 @@ $ claude
   Seal and verify integrity first, then triage and parse the event log. Report
   findings with their tool-call provenance.
 ```
+> Interactive `claude` will prompt to approve each find-evil tool — approve them
+> (all read-only), or launch `claude --allowedTools mcp__find-evil` for an
+> uninterrupted take. `python demo/record_demo.py --with-agent` pre-authorizes them.
+
 **Narrate as Claude works autonomously:**
 - It calls `session_init` → `verify_integrity` (real SHA-256 seal of `/evidence`).
 - It calls `parse_evtx` / `registry_query` / `yara_scan` — **real backends, `mode: live`**.
