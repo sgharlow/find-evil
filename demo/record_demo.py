@@ -35,7 +35,8 @@ AGENT_PROMPT = (
     "Seal and verify integrity, then run the phases for the available artifacts: parse the "
     "Application event log; query the SYSTEM and SOFTWARE registry hives for persistence "
     "(services and Run keys); and YARA-scan /evidence/evidence_iocs.bin for malware indicators. "
-    "Score every finding through the DRS gate and report findings with tool-call provenance UUIDs."
+    "Score every finding through the DRS gate and report findings with tool-call provenance UUIDs. "
+    "Finally, call export_stix to write the extracted IOCs to a STIX 2.1 bundle for threat-intel handoff."
 )
 
 
