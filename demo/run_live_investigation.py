@@ -205,7 +205,7 @@ def main():
             print(f"  [+] Real Windows Application log parsed: {len(events)} events"
                   f" from {', '.join(comps)[:60]}")
 
-        # Phase 4: PERSISTENCE (live python-registry)
+        # Phase 4: PERSISTENCE (live python-registry) - SYSTEM services + SOFTWARE Run keys
         hdr("Phase 4", "PERSISTENCE (python-registry)")
         sys_path = str(ev / "SYSTEM")
         tc, services = run_live_tool(ctx, "registry_query",
@@ -224,6 +224,34 @@ def main():
                         "sources": ["registry_query"],
                         "mitre": "T1543.003",
                     })
+
+        # Second hive, SAME tool: a Run key for the same malware (update.dll). The
+        # service and the Run key independently confirm the persistence mechanism,
+        # but BOTH come from one tool (python-registry). The DRS gate counts
+        # independent *tools*, so this stays single-source (corr 0.25 -> conf 0.61)
+        # and self-corrects until a DIFFERENT tool (event log / memory) confirms it.
+        # Shown explicitly: real corroboration, gate still withholding - by design.
+        soft_path = str(ev / "SOFTWARE")
+        tc, runkeys = run_live_tool(ctx, "registry_query",
+                                    {"hive_path": "SOFTWARE", "query_type": "run_keys"},
+                                    lambda: _parse_real_registry(soft_path, "run_keys"),
+                                    [soft_path])
+        if tc:
+            inv["registry_query:SOFTWARE"] = tc.invocation_id
+            for rk in runkeys:
+                if _is_suspicious_registry(rk):
+                    findings.append({
+                        "description": f"Suspicious Run key '{rk.get('value_name')}'"
+                                       f" -> {rk.get('value_data', 'n/a')}",
+                        "artifact_type": "registry",
+                        "evidence_strength": 0.85,
+                        "sources": ["registry_query:SOFTWARE"],
+                        "mitre": "T1547.001",
+                    })
+            print("  [CORRELATE] SYSTEM service + SOFTWARE Run key both reference "
+                  "...\\Temp\\update.dll")
+            print("              same tool (registry) -> DRS holds single-source "
+                  "until a 2nd, independent tool confirms")
 
         # Phase 6: IOC SCAN (live yara-python)
         hdr("Phase 6", "YARA IOC SCAN (yara-python)")
