@@ -26,7 +26,7 @@ MCP server making forensic evidence tampering architecturally impossible: 15 rea
 
 ### Thumbnail  *(JPG/PNG/GIF, 5 MB max, 3:2 ratio recommended)*
 
-Upload: `demo/thumbnail.png` (3:2 crop of the architecture diagram, or a clean title card reading "Evidence Integrity Enforcer — architectural guardrails for AI DFIR"). If not generated yet, use the banner style from `demo/VIDEO_SCRIPT.md`.
+Upload: `screenshots/find-evil-thumbnail.png` (3:2 crop of the architecture diagram, or a clean title card reading "Evidence Integrity Enforcer — architectural guardrails for AI DFIR"). If not generated yet, use the banner style from `demo/VIDEO_SCRIPT.md`.
 
 ---
 
@@ -63,7 +63,7 @@ Output is a court-quality incident response report plus a STIX 2.1 bundle for do
 - **Seven components:** Evidence Session Manager, Hash Daemon (background thread), `enforce()` gate, 15-tool typed registry, JSONL Audit Logger, DRS Confidence Gate, Findings DB (SQLite).
 - **Three MCP surfaces:** Tools (15), Resources (3: `evidence://session`, `evidence://audit-trail`, `evidence://tool-registry`), Prompts (3: `triage`, `full_investigation`, `persistence_hunt`). Full protocol coverage, not just the tool API.
 - **Investigation protocol in `CLAUDE.md`:** 7 mandatory phases (SEAL → TRIAGE → DEEP MEMORY → LOGS → PERSISTENCE → TIMELINE → IOC SCAN → SYNTHESIS), 15-call budget per phase, DRS gate between every finding and the report.
-- **Tests:** 551 pytest tests (554 passing, 1 skipped — a Windows-admin-only symlink test). Includes 21 security-bypass tests and 11 dedicated spoliation tests.
+- **Tests:** 555 pytest tests (554 passing, 1 skipped — a Windows-admin-only symlink test). Includes 21 security-bypass tests and 11 dedicated spoliation tests.
 
 Key design tradeoff: **simulated evidence for reproducibility, live SIFT backends for production.** Tool output is labeled `"mode": "simulated"` vs `"mode": "live"` so judges can run the full pipeline on any laptop, and the same code runs against real images on a SIFT Workstation.
 
@@ -85,7 +85,7 @@ Key design tradeoff: **simulated evidence for reproducibility, live SIFT backend
 
 - **Zero attack surface, proven.** 5 dedicated tests assert no shell/write/delete/modify tools exist in the live registry. Tool count is pinned to exactly 15 — any unexpected addition fails CI.
 - **11 spoliation tests, all green.** Byte-append, deletion, same-size replacement, mid-investigation tamper, daemon detection, on-demand detection, audit logging, reseal recovery.
-- **551 total tests. 100% true-positive, 0% false-positive, 0% hallucination rate** on the simulated attack scenario.
+- **555 total tests. 100% true-positive, 0% false-positive, 0% hallucination rate** on the simulated attack scenario.
 - **MITRE coverage spans 15 techniques across 11 tactics** (initial access through C2, with lateral movement).
 
 ## What we learned
@@ -127,7 +127,7 @@ Recommended uploads, in order:
 2. DRS gate decision tree (screenshot from `demo/run_investigation.py` output showing ACCEPT vs SELF-CORRECT).
 3. Audit trail excerpt (pretty-printed JSONL showing `tool_call_start → tool_call_complete → finding_committed → provenance` chain).
 4. MITRE ATT&CK coverage heatmap (15 techniques × 11 tactics from `README.md`).
-5. Test suite summary screenshot (`pytest tests/ -v` tail showing 554 passed / 1 skipped — 551 total).
+5. Test suite summary screenshot (`pytest tests/ -v` tail showing 554 passed / 1 skipped — 555 total).
 
 ---
 
@@ -153,7 +153,7 @@ No live deployment — this is a local MCP server. Paste the following:
 git clone https://github.com/sgharlow/find-evil.git
 cd find-evil
 pip install -e ".[dev]"
-pytest tests/ -v                     # 555 tests, 550 pass + 1 skip
+pytest tests/ -v                     # 555 tests, 554 pass + 1 skip
 python demo/tamper_demo.py           # live tamper detection demo
 python demo/run_investigation.py     # full 7-phase simulated investigation
 python demo/run_live_investigation.py # REAL evidence — live python-evtx / registry / yara
@@ -385,7 +385,7 @@ claude-code, python, python-3.11, mcp, fastmcp, custom-mcp-server, sift-workstat
 
 ```bash
 # From the repo root
-pytest tests/ -v                             # expect 554 passed, 1 skipped (551 total)
+pytest tests/ -v                             # expect 554 passed, 1 skipped (555 total)
 python demo/validate_submission.py           # expect all sections PASS
 python demo/run_investigation.py             # regenerates audit_trail.jsonl
 ls -lh output/audit_trail.jsonl output/ir_report.md   # both present, non-empty
