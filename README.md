@@ -247,7 +247,7 @@ Implementation: [`src/find_evil/tools/findings.py`](./src/find_evil/tools/findin
 | # | Deliverable | Location |
 |---|------------|----------|
 | 1 | Code Repository | This repo (MIT license) |
-| 2 | Demo Video | **https://youtu.be/7VTVS9E6cX8** (≤5 min) · `demo/video_demo.py` · `demo/VIDEO_SCRIPT.md` |
+| 2 | Demo Video | **https://youtu.be/EeMW7Uhc-GQ** (≤5 min) · `demo/video_demo.py` · `demo/VIDEO_SCRIPT.md` |
 | 3 | Architecture Diagram | This README (above) |
 | 4 | Project Description | This README + Devpost |
 | 5 | Dataset Documentation | `docs/dataset_documentation.md` |

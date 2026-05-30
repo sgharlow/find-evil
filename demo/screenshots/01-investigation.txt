@@ -92,9 +92,9 @@
   ============================================================
 
   Findings:         6 accepted, 4 self-corrected
-  Audit trail:      31 entries -> C:\Users\Steve.Harlow\CascadeProjects\find-evil\output\audit_trail.jsonl
-  IR Report:        C:\Users\Steve.Harlow\CascadeProjects\find-evil\output\ir_report.md
-  Findings DB:      C:\Users\Steve.Harlow\CascadeProjects\find-evil\output\findings.db
+  Audit trail:      31 entries -> C:\Users\analyst\CascadeProjects\find-evil\output\audit_trail.jsonl
+  IR Report:        C:\Users\analyst\CascadeProjects\find-evil\output\ir_report.md
+  Findings DB:      C:\Users\analyst\CascadeProjects\find-evil\output\findings.db
 
   Sample audit trail (first 5 entries):
     2026-04-17T04:08:42 | session_start             | 

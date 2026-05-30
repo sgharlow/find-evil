@@ -195,7 +195,7 @@
 ### Find Evil end-to-end demo (clean run)
 
 ```bash
-cd C:/Users/Steve.Harlow/CascadeProjects/find-evil
+cd ~/CascadeProjects/find-evil
 rm -f output/audit_trail.jsonl output/findings.db output/bundle.stix.json
 PYTHONIOENCODING=utf-8 python demo/video_demo.py
 ```
@@ -203,14 +203,14 @@ PYTHONIOENCODING=utf-8 python demo/video_demo.py
 ### Find Evil validate_submission cold-open
 
 ```bash
-cd C:/Users/Steve.Harlow/CascadeProjects/find-evil
+cd ~/CascadeProjects/find-evil
 PYTHONIOENCODING=utf-8 python demo/validate_submission.py
 ```
 
 ### Find Evil SIFT live-mode bonus shot
 
 ```bash
-cd C:/Users/Steve.Harlow/CascadeProjects/find-evil
+cd ~/CascadeProjects/find-evil
 # NOTE: --entrypoint python is required because Dockerfile.sift sets ENTRYPOINT=["python","-m","find_evil"]
 # without the override, the `python -c` args are swallowed by the MCP server entrypoint.
 docker compose -f docker-compose.sift.yml run --rm --entrypoint python mcp-server -c "from find_evil.tools.evtx import _parse_real_evtx; print(len(_parse_real_evtx('/evidence/Application_small.evtx')))"
@@ -220,7 +220,7 @@ docker compose -f docker-compose.sift.yml run --rm --entrypoint python mcp-serve
 ### Find Evil full test suite (regression check)
 
 ```bash
-cd C:/Users/Steve.Harlow/CascadeProjects/find-evil
+cd ~/CascadeProjects/find-evil
 PYTHONIOENCODING=utf-8 python -m pytest tests/ -q
 # Expected: 543 passed, 1 skipped in ~13s
 ```
@@ -228,7 +228,7 @@ PYTHONIOENCODING=utf-8 python -m pytest tests/ -q
 ### Find Evil STIX bundle structure validation
 
 ```bash
-cd C:/Users/Steve.Harlow/CascadeProjects/find-evil
+cd ~/CascadeProjects/find-evil
 python -c "import json; b = json.load(open('output/bundle.stix.json', encoding='utf-8')); print('id:', b['id']); print('objects:', len(b['objects'])); print('types:', sorted(set(o['type'] for o in b['objects']))); print('spec_version:', b['objects'][0].get('spec_version'))"
 # Expected: type bundle, 3+ objects, types include indicator/report/relationship, spec_version 2.1
 ```

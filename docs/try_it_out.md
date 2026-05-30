@@ -1,6 +1,6 @@
 # Try It Out — Judge Walkthrough
 
-**See it first (2 min):** demo video at **https://youtu.be/7VTVS9E6cX8**.
+**See it first (2 min):** demo video at **https://youtu.be/EeMW7Uhc-GQ**.
 
 Every step below is copy-paste with the **expected output** shown. Two ways to run:
 the **manual walkthrough** (this doc) or the **one-command orchestrator**

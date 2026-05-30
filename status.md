@@ -12,7 +12,7 @@
 >    **Submit**, and capture a confirmation screenshot. *No in-repo artifact yet
 >    confirms the form was submitted — treat as NOT submitted until you see the
 >    confirmation.*
-> 3. **Confirm the YouTube video is Public** (open `https://youtu.be/7VTVS9E6cX8`
+> 3. **Confirm the YouTube video is Public** (open `https://youtu.be/EeMW7Uhc-GQ`
 >    in an incognito tab) — oembed shows it is not private, but public-vs-unlisted
 >    is unverified; Devpost wants public.
 > 4. **(Optional, high-value) Drop in a memory image** — place a `.raw`/`.vmem`/`.mem`

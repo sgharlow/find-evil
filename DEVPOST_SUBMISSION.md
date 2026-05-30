@@ -116,7 +116,7 @@ python, python-3.11, claude-code, mcp, fastmcp, custom-mcp-server, sift-workstat
 | Label | URL |
 |-------|-----|
 | GitHub repository | `https://github.com/sgharlow/find-evil` |
-| Demo video (YouTube) | https://youtu.be/7VTVS9E6cX8 |
+| Demo video (YouTube) | https://youtu.be/EeMW7Uhc-GQ |
 | Automated validation script | `https://github.com/sgharlow/find-evil/blob/main/demo/validate_submission.py` |
 | Audit-trail sample (UUID-linked, all 6 event types) | `https://github.com/sgharlow/find-evil/blob/main/demo/audit_trail_sample.jsonl` |
 

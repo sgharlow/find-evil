@@ -16,7 +16,7 @@
 | 6 | Demo artifacts present + non-empty | `ls -lh output/audit_trail.jsonl output/ir_report.md` | **PASS** — 58K + 4.3K |
 | 7 | Audit-trail excerpt for judges | `demo/audit_trail_sample.jsonl` | **PASS** — 7 entries, all 6 required event types (`session_start`, `integrity_check`, `tool_call_start`, `tool_call_complete`, `finding_committed`, `self_correction`, `session_halt`); regenerable via `python scripts/build_audit_sample.py` |
 | 8 | Anonymity / employer scrub | `grep -inE "opus.?inspection\|virginia\b\|\b189\b\|\b191\b\|\b198\b" SUBMISSION.md DEVPOST_SUBMISSION.md README.md docs/sans-submission-answers.md docs/dataset_documentation.md docs/accuracy_report.md` | **PASS** — zero hits across all 6 submission docs |
-| 9 | Demo video URL | `https://youtu.be/7VTVS9E6cX8` | **PASS** — referenced in `SUBMISSION.md` and `DEVPOST_SUBMISSION.md` |
+| 9 | Demo video URL | `https://youtu.be/EeMW7Uhc-GQ` | **PASS** — referenced in `SUBMISSION.md` and `DEVPOST_SUBMISSION.md` |
 | 10 | GitHub URL | `https://github.com/sgharlow/find-evil` | **PASS** — referenced in `SUBMISSION.md` and `DEVPOST_SUBMISSION.md` |
 
 ## Local environment now matches the docs claim
