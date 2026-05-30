@@ -23,7 +23,7 @@ pip install -e ".[dev]"        # installs mcp>=1.27 (required for the live agent
 ```bash
 pytest tests/ -q
 ```
-**Expect:** `550 passed, 1 skipped` (the 1 skip is a Windows-admin-only symlink test; it runs on Linux/SIFT).
+**Expect:** `554 passed, 1 skipped` (the 1 skip is a Windows-admin-only symlink test; it runs on Linux/SIFT).
 
 ## 3. Run the automated proof
 

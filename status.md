@@ -25,14 +25,14 @@
 
 ## Overall: technical deliverables COMPLETE; remaining work is video + form (owner) + optional memory image
 
-Latest commit `2a6cd8e` (+ this sprint's follow-ups). Tests **550 passing / 1 skipped (551 collected)**.
+Latest commit `2a6cd8e` (+ this sprint's follow-ups). Tests **554 passing / 1 skipped (551 collected)**.
 `python demo/validate_submission.py` → **49/49 checks pass**. CI green on Python 3.11 + 3.12.
 
 ## DONE (8 SANS deliverables)
 
 - **1 Code repo** — `https://github.com/sgharlow/find-evil` (public, MIT `LICENSE`, `README.md` with setup).
 - **2 Demo video** — script ready (`demo/VIDEO_SCRIPT.md`, 5-min). *Re-record pending (owner).*
-- **3 Architecture diagram** — `assets/find-evil-architecture.html` source → `screenshots/find-evil-architecture.png` (+ `-mid`). Now **names the pattern (Custom MCP Server)** and **contrasts architectural vs prompt-based guardrails** (Devpost requirement #3). Badge: 551 tests · MITRE 15/11.
+- **3 Architecture diagram** — `assets/find-evil-architecture.html` source → `screenshots/find-evil-architecture.png` (+ `-mid`). Now **names the pattern (Custom MCP Server)** and **contrasts architectural vs prompt-based guardrails** (Devpost requirement #3). Badge: 555 tests · MITRE 15/11.
 - **4 Written description** — `DEVPOST_SUBMISSION.md` (Devpost story format, paste-ready).
 - **5 Dataset documentation** — `docs/dataset_documentation.md` + `evidence/README.md` (real EVTX + registry hives + IOC binary; simulated scenario; planned live images).
 - **6 Accuracy report** — `docs/accuracy_report.md` + `docs/evidence_integrity_approach.md` (FP/missed/hallucination + bypass-attempt table).
@@ -59,7 +59,7 @@ Latest commit `2a6cd8e` (+ this sprint's follow-ups). Tests **550 passing / 1 sk
 ## Judges' Evaluation Path
 
 1. `SUBMISSION.md` → index to deliverables.
-2. Clone → `pip install -e ".[dev]" && pytest tests/` → 550 passed / 1 skipped.
+2. Clone → `pip install -e ".[dev]" && pytest tests/` → 554 passed / 1 skipped.
 3. `python demo/run_investigation.py` (simulated, any laptop) **or** `python demo/run_live_investigation.py` (real evidence) → audit trail + IR report + STIX.
 4. `python demo/validate_submission.py` → 49/49 checks.
 5. Verify security boundary → `src/find_evil/server.py` + the one-liner in `DEVPOST_SUBMISSION.md`.

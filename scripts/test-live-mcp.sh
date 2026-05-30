@@ -33,13 +33,14 @@ payload=$(cat <<'JSON'
 {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"smoke","version":"0.1"}}}
 {"jsonrpc":"2.0","method":"notifications/initialized","params":{}}
 {"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}
-{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"parse_evtx","arguments":{"evtx_path":"/evidence/Application_small.evtx","max_events":3}}}
+{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"session_init","arguments":{"evidence_dir":"/evidence"}}}
+{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"parse_evtx","arguments":{"evtx_path":"/evidence/Application_small.evtx","max_events":3}}}
 JSON
 )
 
-# Feed the payload through stdio. Sleep a beat after so the third response has
-# time to flush before the container exits.
-output=$({ echo "$payload"; sleep 3; } | MSYS_NO_PATHCONV=1 docker run --rm -i -e FIND_EVIL_COMPUTER_REDACT_MAP="DESKTOP-ABC123.corp.example.com=VICTUS" -v "$REPO_ROOT/evidence:/evidence:ro" -v "$REPO_ROOT/output:/output" find-evil-sift:latest 2>/dev/null)
+# Feed the payload through stdio. Sleep a beat after so the responses have
+# time to flush (incl. session_init sealing) before the container exits.
+output=$({ echo "$payload"; sleep 6; } | MSYS_NO_PATHCONV=1 docker run --rm -i -e FIND_EVIL_COMPUTER_REDACT_MAP="DESKTOP-VICTUS.forensics.example.io=VICTUS" -v "$REPO_ROOT/evidence:/evidence:ro" -v "$REPO_ROOT/output:/output" find-evil-sift:latest 2>/dev/null)
 
 [ "${DEBUG_SMOKE:-0}" = "1" ] && { echo "--- DEBUG ---"; echo "REPO_ROOT=$REPO_ROOT"; echo "payload bytes=${#payload}"; echo "output bytes=${#output}"; echo "output lines=$(echo "$output" | wc -l)"; echo "--- /DEBUG ---"; }
 
@@ -77,7 +78,7 @@ for line in sys.stdin:
     elif msg.get('id') == 2 and 'result' in msg:
         tools = msg['result'].get('tools', [])
         tool_count = len(tools)
-    elif msg.get('id') == 3 and 'result' in msg:
+    elif msg.get('id') == 4 and 'result' in msg:
         text = msg['result']['content'][0]['text']
         data = json.loads(text)
         evtx_mode = data.get('mode')
