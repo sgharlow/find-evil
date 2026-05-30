@@ -1,11 +1,15 @@
-Evidence Integrity Enforcer — a DFIR agent with fifteen read-only MCP tools. Every evidence file is sealed with a SHA-256 hash before a single tool runs. This is constraint by architecture, not by prompt.
+Evidence Integrity Enforcer — making forensic evidence tampering architecturally impossible.
 
-Claude invokes volatility plugins, registry queries, event log parsers, YARA scans, and timeline builder. Every call logged to JSONL with a UUID. No shell, no write, no delete — those functions don't exist in the server. The attack surface is zero.
+Most AI forensics tools just ask the model not to modify evidence. We flip it — a custom MCP server with fifteen read-only tools. No shell, no write, no delete; they simply don't exist.
 
-Now the DRS confidence gate. Each finding is scored on two dimensions: evidence strength, weighted point six, plus cross-tool corroboration, weighted point four. Below the point seven-five threshold, the agent self-corrects — seeks a second independent tool to confirm before committing. The yellow self-correction lines are the agent catching itself in real time and going back for more evidence. No human in the loop.
+First, the cold-open proof: forty-nine of forty-nine checks pass, five hundred fifty-four tests green — every claim verified before we begin. Now a live investigation on real evidence. Files are sealed with real SHA-256 hashes, then the agent runs read-only tools: event logs, registry, YARA. Watch the confidence gate — it scores each finding and self-corrects the ones a single tool can't corroborate. An agent that refuses to over-claim. Then one byte of a sealed file changes, and a real hash mismatch halts the session and voids every finding — a cryptographic stop, not a prompt. And the audit trail logs every action with a UUID.
 
-parse_evtx catches encoded PowerShell in the security log — execution policy bypass. YARA matches certutil dash urlcache — the LOLBin download stage. A Cobalt Strike beacon signature hits at memory offset 5016. C2 traffic to 185.220.101.34 on port 8443 — the standard Cobalt Strike HTTPS listener. Process injection via rundll32, MITRE ATT&CK technique T1055.001. Eight findings committed, each with an evidence score, a corroboration count, and UUID provenance linking back to exact tool calls in the audit trail.
+Every finding links by UUID to the exact tool call — and the evidence verified at that moment.
 
-generate_report writes the IR markdown — findings, IOCs, recommendations. export_stix produces a STIX 2.1 bundle — indicator, relationship, and report objects — ready to push into MISP, OpenCTI, or ThreatConnect. Threat intel in a format any SOC already consumes.
+That was real evidence, where corroboration was thin. Here's the same engine on a full attack chain — brute force, encoded PowerShell, service and Run-key persistence, process injection, lateral movement, and command-and-control beaconing. Fifteen MITRE techniques across eleven tactics. This time multiple independent tools confirm each finding, so the gate accepts them. And tampering still triggers the same instant halt. Detection and rigor, on one architecture.
 
-Investigation complete. Chain of custody intact. Defender clock: thirty-four seconds. Adversary breakout time: seven minutes. Every finding, forensically defensible.
+Output is a STIX two-point-one bundle — ready for MISP, OpenCTI, or ThreatConnect. Court-quality reporting to threat-intel, in one tool call.
+
+Five hundred fifty-four automated tests — twenty-one of them security-bypass tests. Fifteen MITRE techniques. MIT licensed.
+
+Allowlists beat blocklists. Architecture beats vibes. Evidence Integrity Enforcer.

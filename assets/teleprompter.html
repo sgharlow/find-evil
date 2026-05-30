@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Find-Evil Narration Teleprompter</title>
+<style>
+  :root { --indigo:#1a1f3a; --cyan:#00b4d8; --crimson:#d93636; --cream:#f5f1e8; --panel:#232a4d; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#0d1020; color:var(--cream); font-family:"Segoe UI",system-ui,sans-serif; }
+  header { background:var(--indigo); padding:10px 18px; border-bottom:2px solid var(--cyan);
+           display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  header h1 { font-size:16px; margin:0; color:var(--cyan); font-weight:600; }
+  .tip { font-size:13px; color:#aeb6cf; }
+  .wrap { display:flex; gap:16px; padding:16px; align-items:flex-start; }
+  .left { flex:0 0 46%; }
+  .right { flex:1; min-width:0; }
+  video { width:100%; border-radius:8px; background:#000; }
+  .controls { margin-top:10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  button, label.file { background:var(--panel); color:var(--cream); border:1px solid #3a4577;
+           padding:8px 14px; border-radius:6px; cursor:pointer; font-size:14px; }
+  button:hover, label.file:hover { border-color:var(--cyan); }
+  input[type=file] { display:none; }
+  .seglabel { color:var(--cyan); font-size:14px; letter-spacing:.04em; text-transform:uppercase; margin-bottom:6px; }
+  .narr { font-size:30px; line-height:1.5; min-height:300px; padding:18px 22px; background:var(--panel);
+          border-radius:10px; border-left:5px solid var(--cyan); }
+  .meta { display:flex; gap:20px; margin:12px 2px; font-variant-numeric:tabular-nums; color:#c7cde0; font-size:15px; }
+  .meta b { color:var(--cream); }
+  .countdown.soon { color:var(--crimson); font-weight:700; }
+  .bar { height:8px; background:var(--panel); border-radius:4px; overflow:hidden; margin:6px 2px 14px; }
+  .bar > i { display:block; height:100%; width:0; background:var(--cyan); }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { font-size:12px; padding:4px 9px; border-radius:20px; background:var(--panel); color:#9aa3c4; }
+  .chip.active { background:var(--cyan); color:var(--indigo); font-weight:700; }
+  .chip.done { color:#5d6a8a; opacity:.5; }
+  kbd { background:#000; border:1px solid #3a4577; border-radius:4px; padding:1px 6px; font-size:12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Find-Evil · Narration Teleprompter</h1>
+  <span class="tip">▶ Start <b>Windows Voice Recorder</b>, then load the video, press <kbd>Space</kbd> to play, and read each line as it appears. The text switches automatically at each cut.</span>
+</header>
+
+<div class="wrap">
+  <div class="left">
+    <video id="vid" playsinline></video>
+    <div class="controls">
+      <label class="file">📂 Load video<input type="file" id="file" accept="video/mp4,video/*"></label>
+      <button id="play">▶ Play / Pause (Space)</button>
+      <button id="restart">⟲ Restart</button>
+      <button id="mute">🔇 Mute video</button>
+    </div>
+    <div class="tip" style="margin-top:8px">Load <code>find-evil-demo-final.mp4</code>. Mute the video so only your voice is recorded.</div>
+  </div>
+
+  <div class="right">
+    <div class="seglabel" id="seglabel">— load the video to begin —</div>
+    <div class="narr" id="narr">Click “Load video”, choose <b>find-evil-demo-final.mp4</b>, then press <kbd>Space</kbd>.</div>
+    <div class="meta">
+      <span>Time <b id="time">0:00</b> / <b>2:50</b></span>
+      <span>Segment <b id="segn">–</b>/8</span>
+      <span class="countdown" id="cd"></span>
+    </div>
+    <div class="bar"><i id="prog"></i></div>
+    <div class="chips" id="chips"></div>
+  </div>
+</div>
+
+<script>
+// Segments: [startSec, endSec, label, text] — matches assets/narration.txt + the 2:49.7 video.
+const SEGS = [
+  [0,    5,    "1 · Intro slide",
+   "Evidence Integrity Enforcer — making forensic evidence tampering architecturally impossible."],
+  [5,    20,   "2 · Architecture",
+   "Most AI forensics tools just ask the model not to modify evidence. We flip it — a custom MCP server with fifteen read-only tools. No shell, no write, no delete; they simply don't exist."],
+  [20,   95.7, "3 · Live core",
+   "First, the cold-open proof: forty-nine of forty-nine checks pass, five hundred fifty-four tests green — every claim verified before we begin. Now a live investigation on real evidence. Files are sealed with real SHA-256 hashes, then the agent runs read-only tools: event logs, registry, YARA. Watch the confidence gate — it scores each finding and self-corrects the ones a single tool can't corroborate. An agent that refuses to over-claim. Then one byte of a sealed file changes, and a real hash mismatch halts the session and voids every finding — a cryptographic stop, not a prompt. And the audit trail logs every action with a UUID."],
+  [95.7, 104.7,"4 · Provenance still",
+   "Every finding links by UUID to the exact tool call — and the evidence verified at that moment."],
+  [104.7,146.7,"5 · Simulated attack",
+   "That was real evidence, where corroboration was thin. Here's the same engine on a full attack chain — brute force, encoded PowerShell, service and Run-key persistence, process injection, lateral movement, and command-and-control beaconing. Fifteen MITRE techniques across eleven tactics. This time multiple independent tools confirm each finding, so the gate accepts them. And tampering still triggers the same instant halt. Detection and rigor, on one architecture."],
+  [146.7,156.7,"6 · STIX still",
+   "Output is a STIX two-point-one bundle — ready for MISP, OpenCTI, or ThreatConnect. Court-quality reporting to threat-intel, in one tool call."],
+  [156.7,164.7,"7 · Credibility card",
+   "Five hundred fifty-four automated tests — twenty-one of them security-bypass tests. Fifteen MITRE techniques. MIT licensed."],
+  [164.7,169.7,"8 · Outro slide",
+   "Allowlists beat blocklists. Architecture beats vibes. Evidence Integrity Enforcer."],
+];
+
+const vid=document.getElementById('vid'), narr=document.getElementById('narr'),
+  seglabel=document.getElementById('seglabel'), timeEl=document.getElementById('time'),
+  segnEl=document.getElementById('segn'), cd=document.getElementById('cd'),
+  prog=document.getElementById('prog'), chips=document.getElementById('chips');
+
+SEGS.forEach((s,i)=>{ const c=document.createElement('span'); c.className='chip'; c.id='chip'+i;
+  c.textContent=s[2].split(' · ')[1]; chips.appendChild(c); });
+
+const fmt=t=>{t=Math.max(0,t|0);return (t/60|0)+':'+String(t%60).padStart(2,'0');};
+let cur=-1;
+function update(){
+  const t=vid.currentTime||0;
+  timeEl.textContent=fmt(t);
+  prog.style.width=(t/169.7*100).toFixed(1)+'%';
+  let idx=SEGS.findIndex(s=>t>=s[0]&&t<s[1]); if(idx<0) idx=t>=169.7?SEGS.length-1:0;
+  if(idx!==cur){
+    cur=idx; const s=SEGS[idx];
+    narr.textContent=s[3]; seglabel.textContent=s[2]; segnEl.textContent=idx+1;
+    SEGS.forEach((_,i)=>{const c=document.getElementById('chip'+i);
+      c.className='chip'+(i===idx?' active':(i<idx?' done':''));});
+  }
+  const left=SEGS[idx][1]-t;
+  cd.textContent='next cut in '+left.toFixed(0)+'s';
+  cd.className='countdown'+(left<=3?' soon':'');
+}
+vid.addEventListener('timeupdate',update);
+document.getElementById('file').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(f){ vid.src=URL.createObjectURL(f); vid.muted=true; cur=-1; update(); }});
+document.getElementById('play').onclick=()=>vid.paused?vid.play():vid.pause();
+document.getElementById('restart').onclick=()=>{vid.currentTime=0;update();};
+document.getElementById('mute').onclick=()=>{vid.muted=!vid.muted;};
+document.addEventListener('keydown',e=>{ if(e.code==='Space'){e.preventDefault(); vid.paused?vid.play():vid.pause();}});
+</script>
+</body>
+</html>

@@ -2,7 +2,11 @@
 //
 // Usage:
 //   export OPENAI_API_KEY=sk-...
-//   node generate-narration.mjs
+//   node --use-system-ca generate-narration.mjs
+//
+// --use-system-ca makes Node trust the OS (Windows) cert store. Required behind a
+// TLS-intercepting proxy (corporate network) or fetch fails with
+// UNABLE_TO_VERIFY_LEAF_SIGNATURE. Needs Node 22.15+ / 23+.
 //
 // Defaults: onyx voice, tts-1-hd, speed=0.88 (calibrated for this script vs 81.8s target video).
 // Tune SPEED=X if duration drifts.
