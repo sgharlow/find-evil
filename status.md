@@ -25,7 +25,7 @@
 
 ## Overall: technical deliverables COMPLETE; remaining work is video + form (owner) + optional memory image
 
-Latest commit `2a6cd8e` (+ this sprint's follow-ups). Tests **554 passing / 1 skipped (551 collected)**.
+Latest commit `2a6cd8e` (+ this sprint's follow-ups). Tests **554 passing / 1 skipped (555 collected)**.
 `python demo/validate_submission.py` → **49/49 checks pass**. CI green on Python 3.11 + 3.12.
 
 ## DONE (8 SANS deliverables)
@@ -45,7 +45,7 @@ Latest commit `2a6cd8e` (+ this sprint's follow-ups). Tests **554 passing / 1 sk
 - **Core fix** — `EvidenceSession` now seals extensionless registry hives (`SYSTEM`/`SOFTWARE`/`SAM`/`NTUSER.DAT`). +7 unit tests (TDD).
 - **Architecture diagram** rebuilt with the required call-outs (above).
 - **`docs/agent_execution_logs.md`** added (deliverable #8 token usage).
-- **Docs reconciled** — test count → 551/550 across 8 docs; validate-script count → 49; video length → ≤5 min; `submission-needs.pdf` gitignored.
+- **Docs reconciled** — test count → 555/554 across docs (corrected 2026-05-30 from a stale 551/550); validate-script count → 49; video length → ≤5 min; `submission-needs.pdf` gitignored.
 
 ## REMAINING (owner)
 

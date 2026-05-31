@@ -113,7 +113,7 @@ git clone https://github.com/sgharlow/find-evil.git
 cd find-evil
 pip install -e ".[dev]"
 
-# Run tests (551 total: 554 passing, 1 skipped)
+# Run tests (555 total: 554 passing, 1 skipped)
 pytest tests/ -v
 
 # Run the tamper detection demo

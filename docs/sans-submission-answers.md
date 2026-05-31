@@ -117,7 +117,7 @@ It cannot. The function does not exist. The server returns an error. This is not
 
 ## Accuracy and Testing
 
-### Test Suite: 551 Tests (554 passing, 1 skipped)
+### Test Suite: 555 Tests (554 passing, 1 skipped)
 
 | Category | Tests | Passing | What They Verify |
 |----------|-------|---------|-----------------|

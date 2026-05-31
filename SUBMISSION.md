@@ -65,7 +65,7 @@ Full setup in [`docs/guides/docker-sift-setup.md`](./docs/guides/docker-sift-set
 
 ## Tests
 
-- **551 automated tests** (554 passing, 1 Windows-admin symlink test skipped) — `pytest`.
+- **555 automated tests** (554 passing, 1 Windows-admin symlink test skipped) — `pytest`.
 - Breakdown in [`README.md`](./README.md) Test Suite section.
 - CI: [`.github/workflows/`](./.github/workflows/).
 
