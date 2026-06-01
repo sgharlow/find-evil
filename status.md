@@ -1,29 +1,19 @@
-# Find-Evil — Submission Readiness Status
+# Find-Evil — Submission Status
 
-> **OWNER ACTIONS REMAINING (as of 2026-05-26):**
-> 1. **Re-record the demo video** (~4–5 min, ≤5 min cap) per `demo/VIDEO_SCRIPT.md`:
->    live terminal + audio narration, **a visible DRS self-correction**, the
->    **tamper-detection HALT + recovery**, against real evidence. Upload **Public**
->    to YouTube ≥48 h before the deadline. (The prior cut is ~2:00 and predates the
->    current 5-min requirement.)
-> 2. **Fill + submit the Devpost form** from `DEVPOST_SUBMISSION.md` (field-by-field),
->    upload `screenshots/find-evil-architecture.png` (now carries the pattern +
->    guardrail call-outs) + thumbnail + title images, set the video URL, tick T&Cs,
->    **Submit**, and capture a confirmation screenshot. *No in-repo artifact yet
->    confirms the form was submitted — treat as NOT submitted until you see the
->    confirmation.*
-> 3. **Confirm the YouTube video is Public** (open `https://youtu.be/EeMW7Uhc-GQ`
->    in an incognito tab) — oembed shows it is not private, but public-vs-unlisted
->    is unverified; Devpost wants public.
-> 4. **(Optional, high-value) Drop in a memory image** — place a `.raw`/`.vmem`/`.mem`
->    in `evidence/` or set `EVIDENCE_MEMORY`, then run `python demo/run_live_investigation.py`
->    to light up live `vol_pslist/netscan/malfind` and produce corroborated ACCEPTs.
->    The memory phase is fully wired; only the image is missing.
+> **✅ SUBMITTED 2026-05-31** to the SANS DFIR hackathon (Devpost), ~15 days
+> ahead of the 2026-06-15 deadline. All eight required deliverables shipped;
+> demo video is live and Public at `https://youtu.be/EeMW7Uhc-GQ`. **Awaiting
+> results.** Devpost edits remain open until the deadline, so polish is optional.
+>
+> **Optional, post-submission (high-value, not required):** drop a memory image
+> (`.raw`/`.vmem`/`.mem`) in `evidence/` or set `EVIDENCE_MEMORY`, then run
+> `python demo/run_live_investigation.py` to light up live `vol_pslist/netscan/malfind`
+> and produce corroborated ACCEPTs. The memory phase is fully wired; only the
+> image is missing.
 
-**Hackathon:** SANS (Apr 15 – Jun 15, 2026) · **Deadline:** 2026-06-15
-**Submission target:** **2026-06-02** (next Tue; ~11 days inside the 48-h buffer of 2026-06-13)
+**Hackathon:** SANS (Apr 15 – Jun 15, 2026) · **Deadline:** 2026-06-15 · **Submitted:** 2026-05-31
 
-## Overall: technical deliverables COMPLETE; remaining work is video + form (owner) + optional memory image
+## Overall: SUBMITTED 2026-05-31 — all deliverables complete; awaiting results
 
 Latest commit `2a6cd8e` (+ this sprint's follow-ups). Tests **554 passing / 1 skipped (555 collected)**.
 `python demo/validate_submission.py` → **49/49 checks pass**. CI green on Python 3.11 + 3.12.
@@ -31,7 +21,7 @@ Latest commit `2a6cd8e` (+ this sprint's follow-ups). Tests **554 passing / 1 sk
 ## DONE (8 SANS deliverables)
 
 - **1 Code repo** — `https://github.com/sgharlow/find-evil` (public, MIT `LICENSE`, `README.md` with setup).
-- **2 Demo video** — script ready (`demo/VIDEO_SCRIPT.md`, 5-min). *Re-record pending (owner).*
+- **2 Demo video** — **LIVE + Public** at `https://youtu.be/EeMW7Uhc-GQ` (2:50, 8-segment narrated cut). Script at `demo/VIDEO_SCRIPT.md`.
 - **3 Architecture diagram** — `assets/find-evil-architecture.html` source → `screenshots/find-evil-architecture.png` (+ `-mid`). Now **names the pattern (Custom MCP Server)** and **contrasts architectural vs prompt-based guardrails** (Devpost requirement #3). Badge: 555 tests · MITRE 15/11.
 - **4 Written description** — `DEVPOST_SUBMISSION.md` (Devpost story format, paste-ready).
 - **5 Dataset documentation** — `docs/dataset_documentation.md` + `evidence/README.md` (real EVTX + registry hives + IOC binary; simulated scenario; planned live images).
