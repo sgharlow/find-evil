@@ -1,3 +1,5 @@
+> 📦 **Archived** — FIND EVIL: evidence-integrity enforcer MCP server, SANS DFIR hackathon entry, submitted May 2026; event concluded. Not maintained. Code and history remain browsable.
+
 # Evidence Integrity Enforcer
 
 **FIND EVIL! SANS Hackathon** (April 15 - June 15, 2026)
