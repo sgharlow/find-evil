@@ -1,5 +1,9 @@
 # Find-Evil — Submission Status
 
+> 📦 **HISTORICAL (banner added 2026-07-24):** the event concluded (deadline 2026-06-15) and the
+> repo is ARCHIVED (README banner, 2026-07-18). This doc is the frozen submission record —
+> "awaiting results" and any open-sounding items below are pre-deadline state, not current work.
+
 > **✅ SUBMITTED 2026-05-31** to the SANS DFIR hackathon (Devpost), ~15 days
 > ahead of the 2026-06-15 deadline. All eight required deliverables shipped;
 > demo video is live and Public at `https://youtu.be/EeMW7Uhc-GQ`. **Awaiting
@@ -37,14 +41,18 @@ Latest commit `2a6cd8e` (+ this sprint's follow-ups). Tests **554 passing / 1 sk
 - **`docs/agent_execution_logs.md`** added (deliverable #8 token usage).
 - **Docs reconciled** — test count → 555/554 across docs (corrected 2026-05-30 from a stale 551/550); validate-script count → 49; video length → ≤5 min; `submission-needs.pdf` gitignored.
 
-## REMAINING (owner)
+## REMAINING (owner) — CLOSED 2026-07-24 (post-event reconcile)
 
-| # | Item | Owner |
-|---|------|-------|
-| 1 | Re-record ~5-min video (self-correction + tamper + real data), upload Public | Steve |
-| 2 | Fill + submit Devpost form; capture confirmation screenshot | Steve |
-| 3 | Confirm YouTube video is Public | Steve |
-| 4 | *(Optional)* Drop in a memory image → re-run live demo for corroborated ACCEPTs | Steve |
+All rows below were pre-submission tasks, resolved by the 2026-05-31 submission (banner at top;
+demo video went live per the submission record) and mooted by the 2026-06-15 deadline passing.
+The repo is ARCHIVED (see README banner, 2026-07-18) — nothing here is actionable.
+
+| # | Item | Owner | Resolution |
+|---|------|-------|------------|
+| 1 | Re-record ~5-min video (self-correction + tamper + real data), upload Public | Steve | Done pre-submission (demo video live at submission) |
+| 2 | Fill + submit Devpost form; capture confirmation screenshot | Steve | Done — submitted 2026-05-31 (this file's own banner) |
+| 3 | Confirm YouTube video is Public | Steve | Subsumed by submission |
+| 4 | *(Optional)* Memory-image live demo for corroborated ACCEPTs | Steve | Mooted — deadline passed 2026-06-15 |
 
 ## Judges' Evaluation Path
 
